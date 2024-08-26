@@ -82,4 +82,14 @@ public class AccountService {
         }
 
     }
+
+    public Account getAccountById(Long id) {
+        Optional<Account> _account = repository.findById(id);
+
+        if (_account.isPresent()) {
+            return _account.get();
+        } else {
+            return null;
+        }
+    }
 }
