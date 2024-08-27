@@ -1,13 +1,20 @@
 package com.example.budgeKeemi.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Entity
 public class Budget {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int amount;
@@ -22,4 +29,23 @@ public class Budget {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @Builder
+    public Budget(Long id, int amount, LocalDate startDate, LocalDate endDate) {
+        this.id = id;
+        this.amount = amount;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public void addCategory(Category category) {
+        this.category = category;
+    }
+
+    public void updateAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public void updateEndDate(LocalDate endDate) {
+        this.endDate=endDate;
+    }
 }
