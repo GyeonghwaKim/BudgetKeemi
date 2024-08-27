@@ -24,6 +24,7 @@ public class Transaction {
     @Column(name = "transac_date")
     private LocalDateTime transacDate;
 
+    @Lob
     private String description;
 
     @ManyToOne
