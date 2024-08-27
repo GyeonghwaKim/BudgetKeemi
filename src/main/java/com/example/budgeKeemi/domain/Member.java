@@ -1,17 +1,20 @@
 package com.example.budgeKeemi.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Entity
 public class Member {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "username")
@@ -21,4 +24,12 @@ public class Member {
 
     @Column(name = "join_date")
     private LocalDateTime joinDate;
+
+    @Builder
+    public Member(String name, String email, String password, LocalDateTime joinDate) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.joinDate = joinDate;
+    }
 }
