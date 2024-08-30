@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 @Getter
 public class RespMember {
     private Long id;
-    private String name;
+    private String username;
     private String email;
     private LocalDateTime joinDate;
 
     @Builder
-    public RespMember(Long id, String name, String email, LocalDateTime joinDate) {
+    public RespMember(Long id, String username, String email, LocalDateTime joinDate) {
         this.id = id;
-        this.name = name;
+        this.username = username;
         this.email = email;
         this.joinDate = joinDate;
     }
@@ -23,7 +23,7 @@ public class RespMember {
     public static RespMember toDto(Member savedMember) {
         return RespMember.builder()
                 .id(savedMember.getId())
-                .name(savedMember.getName())
+                .username(savedMember.getUsername())
                 .email(savedMember.getEmail())
                 .joinDate(savedMember.getJoinDate())
                 .build();

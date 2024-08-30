@@ -1,10 +1,10 @@
 package com.example.budgeKeemi.controller;
 
 import com.example.budgeKeemi.domain.RespMember;
+import com.example.budgeKeemi.dto.JoinForm;
 import com.example.budgeKeemi.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

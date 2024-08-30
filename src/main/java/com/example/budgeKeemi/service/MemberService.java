@@ -1,6 +1,6 @@
 package com.example.budgeKeemi.service;
 
-import com.example.budgeKeemi.controller.JoinForm;
+import com.example.budgeKeemi.dto.JoinForm;
 import com.example.budgeKeemi.domain.Member;
 import com.example.budgeKeemi.domain.RespMember;
 import com.example.budgeKeemi.repository.MemberRepository;

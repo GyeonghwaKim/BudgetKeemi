@@ -8,16 +8,14 @@ import java.time.LocalDateTime;
 
 @Getter
 public class JoinForm {
-    private String name;
+    private String username;
     private String email;
-    private String password;
 
 
     public static Member toEntity(JoinForm joinForm) {
         return Member.builder()
-                .name(joinForm.getName())
+                .username(joinForm.getUsername())
                 .email(joinForm.getEmail())
-                .password(joinForm.getPassword())
                 .joinDate(LocalDateTime.now())
                 .build();
 
