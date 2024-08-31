@@ -41,4 +41,4 @@ out/
 application-secrets.properties
 
 
-resources/static/
+src/main/resources/static/
