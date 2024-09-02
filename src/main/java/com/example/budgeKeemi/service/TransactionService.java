@@ -2,7 +2,9 @@ package com.example.budgeKeemi.service;
 
 import com.example.budgeKeemi.domain.Account;
 import com.example.budgeKeemi.domain.Category;
+import com.example.budgeKeemi.domain.CategoryStatus;
 import com.example.budgeKeemi.domain.Transaction;
+import com.example.budgeKeemi.dto.MonthlySummary;
 import com.example.budgeKeemi.dto.ReqTransaction;
 import com.example.budgeKeemi.dto.RespTransaction;
 import com.example.budgeKeemi.repository.TransactionRepository;
@@ -10,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,5 +100,34 @@ public class TransactionService {
         }else{
             return false;
         }
+    }
+
+    public MonthlySummary getMonthlySummary(YearMonth yearMonth) {
+        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23,59,59);
+
+        List<Transaction> transactionList=repository.findByMonth(startDate,endDate);
+
+        int totalIncome = transactionList
+                .stream()
+                .filter(transaction -> transaction.getCategory().getStatus()== CategoryStatus.INCOME)
+                .mapToInt(Transaction::getAmount)
+                .sum();
+
+        int totalExpense = transactionList
+                .stream()
+                .filter(transaction -> transaction.getCategory().getStatus()== CategoryStatus.EXPENSE)
+                .mapToInt(Transaction::getAmount)
+                .sum();
+
+        MonthlySummary monthlySummary = MonthlySummary.builder()
+                .yearMonth(yearMonth)
+                .totalIncome(totalIncome)
+                .totalExpense(totalExpense)
+                .build();
+
+        return monthlySummary;
+
+
     }
 }

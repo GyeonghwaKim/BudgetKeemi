@@ -1,14 +1,17 @@
 package com.example.budgeKeemi.controller;
 
+import com.example.budgeKeemi.dto.MonthlySummary;
 import com.example.budgeKeemi.dto.ReqTransaction;
 import com.example.budgeKeemi.dto.RespTransaction;
 import com.example.budgeKeemi.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.YearMonth;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -65,5 +68,12 @@ public class TransactionController {
         //return ResponseEntity.badRequest().build();
     }
 
+
+    //한달 총 거래내역 출력
+    @GetMapping("/monthlySummary/{yearMonth}")
+    public ResponseEntity<?> getMonthlySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth){
+        MonthlySummary monthlySummary=service.getMonthlySummary(yearMonth);
+        return ResponseEntity.ok(monthlySummary);
+    }
 
 }
