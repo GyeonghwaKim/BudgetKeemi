@@ -39,6 +39,3 @@ out/
 ### Document ###
 엔티티.hwpx
 application-secrets.properties
-
-
-src/main/resources/static/
