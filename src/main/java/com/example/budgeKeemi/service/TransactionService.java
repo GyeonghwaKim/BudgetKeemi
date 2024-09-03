@@ -4,18 +4,16 @@ import com.example.budgeKeemi.domain.Account;
 import com.example.budgeKeemi.domain.Category;
 import com.example.budgeKeemi.domain.CategoryStatus;
 import com.example.budgeKeemi.domain.Transaction;
-import com.example.budgeKeemi.dto.MonthlySummary;
-import com.example.budgeKeemi.dto.ReqTransaction;
-import com.example.budgeKeemi.dto.RespTransaction;
+import com.example.budgeKeemi.dto.*;
 import com.example.budgeKeemi.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -128,6 +126,45 @@ public class TransactionService {
 
         return monthlySummary;
 
+    }
 
+    public List<DailySummary> getDaySummary(YearMonth yearMonth) {
+        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23,59,59);
+
+        List<Transaction> transactionList=repository.findByMonth(startDate,endDate);
+
+        Map<LocalDate,Integer> incomeMap=new HashMap<>();
+        Map<LocalDate,Integer> expenseMap=new HashMap<>();
+
+        //지출, 수입 분류
+        for (Transaction transaction : transactionList) {
+            LocalDate key = transaction.getTransacDate().toLocalDate();
+            if(transaction.getCategory().getStatus()==CategoryStatus.INCOME) {
+                incomeMap.put(key, incomeMap.getOrDefault(key,0)+transaction.getAmount());
+            }else{
+                expenseMap.put(key, expenseMap.getOrDefault(key,0)+transaction.getAmount());
+            }
+        }
+
+        List<DailySummary> dailySummaries=new ArrayList<>();
+//수입
+        for (Map.Entry<LocalDate, Integer> localDateIntegerEntry : incomeMap.entrySet()) {
+            dailySummaries.add(DailySummary.builder()
+                    .date(localDateIntegerEntry.getKey())
+                    .status(CategoryStatus.INCOME)
+                    .total(localDateIntegerEntry.getValue())
+                    .build());
+        }
+//지출
+        for (Map.Entry<LocalDate,Integer> localDateIntegerEntry : expenseMap.entrySet()) {
+            dailySummaries.add(DailySummary.builder()
+                    .date(localDateIntegerEntry.getKey())
+                    .status(CategoryStatus.EXPENSE)
+                    .total(localDateIntegerEntry.getValue())
+                    .build());
+        }
+
+        return dailySummaries;
     }
 }

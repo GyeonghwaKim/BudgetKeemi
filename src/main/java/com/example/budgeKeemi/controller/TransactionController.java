@@ -1,5 +1,6 @@
 package com.example.budgeKeemi.controller;
 
+import com.example.budgeKeemi.dto.DailySummary;
 import com.example.budgeKeemi.dto.MonthlySummary;
 import com.example.budgeKeemi.dto.ReqTransaction;
 import com.example.budgeKeemi.dto.RespTransaction;
@@ -69,11 +70,19 @@ public class TransactionController {
     }
 
 
-    //한달 총 거래내역 출력
+    //한달 거래내역 총 합계 출력
     @GetMapping("/monthlySummary/{yearMonth}")
     public ResponseEntity<?> getMonthlySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth){
         MonthlySummary monthlySummary=service.getMonthlySummary(yearMonth);
         return ResponseEntity.ok(monthlySummary);
+    }
+
+    //한달 거래 내역 리스트
+    @GetMapping("/monthly/{yearMonth}")
+    public ResponseEntity<?> getDaySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth){
+        List<DailySummary> dailySummaries=service.getDaySummary(yearMonth);
+
+        return ResponseEntity.ok(dailySummaries);
     }
 
 }

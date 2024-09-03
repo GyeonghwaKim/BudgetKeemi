@@ -6,8 +6,11 @@
 
   <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
   <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+  <link rel="stylesheet" href="/css/toast/app.css" />
 
-  <link rel="stylesheet" href="../static/css/toast/app.css" />
+<!--제이쿼리-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
   
 </head>
@@ -17,10 +20,10 @@
       <button class="button is-rounded today">Today</button>
       <button class="button is-rounded prev">
         <img src="" alt="">
-        <img alt="prev" src="../static/images/ic-arrow-line-left.png" srcset="../static/images/ic-arrow-line-left@2x.png 2x, ../static/images/ic-arrow-line-left@3x.png 3x">
+        <img alt="prev" src="/images/ic-arrow-line-left.png" srcset="/images/ic-arrow-line-left@2x.png 2x, /images/ic-arrow-line-left@3x.png 3x">
       </button>
       <button class="button is-rounded next">
-        <img alt="next" src="../static/images/ic-arrow-line-right.png" srcset="../static/images/ic-arrow-line-right@2x.png 2x, ../static/images/ic-arrow-line-right@3x.png 3x
+        <img alt="next" src="/images/ic-arrow-line-right.png" srcset="/images/ic-arrow-line-right@2x.png 2x, /images/ic-arrow-line-right@3x.png 3x
           ">
       </button>
       <span class="navbar--range"></span>
@@ -29,13 +32,16 @@
   <div id="calendar" style="height: 600px;"></div>
 
 
+
   <!-- CDN과 브라우저 환경에서 namespace -->
 <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.ie11.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 <script src="../static/scripts/toast/utils.js"></script>
-<script src="./scripts/data.js"></script>
 
 <script>
+// import { fetchDailySummaries } from '../static/scripts/data.js'; 
+
+
   const Calendar = tui.Calendar;
   const container = document.getElementById('calendar');
   const options = {
@@ -51,12 +57,12 @@
   },
   calendars: [
     {
-      id: 'cal1',
+      id: 'EXPENSE',
       name: 'EXPENSE',
       
     },
     {
-      id: 'cal2',
+      id: 'INCOME',
       name: 'INCOME',
     },
   ],
@@ -66,14 +72,14 @@ const calendar = new Calendar(container, options);
 
 calendar.setCalendars([
   {
-    id: 'cal1',
+    id: 'EXPENSE',
     name: 'EXPENSE',
     color: '#f20707',
     backgroundColor: '#ffffff',
     borderColor: '#ffffff',
   },
   {
-    id: 'cal2',
+    id: 'INCOME',
     name: 'INCOME',
     color: '#1302fa',
     backgroundColor: '#ffffff',
@@ -81,28 +87,48 @@ calendar.setCalendars([
   },
 ]);
 
-calendar.createEvents([
 
-  {
-    id: 'event1',
-    calendarId: 'cal1',
-    title: ' - 2,000,000',
-    start: '2024-07-30',
-    end:'2024-07-30',
-    category:"allday"
+console.log("AJAX 요청 시작");
+
+const url = 'http://localhost:8080/transactions/monthly/2024-09';
+let events = [];
+
+$.ajax({
+  url: url,
+  method: 'GET',
+  dataType: 'json',
+  success: function(data) {
+    console.log('일별 요약 데이터:', data);
+
+    events= data.map((item, index) => {
+      return {
+        id: `dailySummary${index + 1}`,
+        calendarId: item.status,
+        title: item.total,
+        start: item.date,
+        end: item.date,
+        category: "allDay"
+      };
+    });
+
+    console.log(events)
+
+    // AJAX 요청이 성공적으로 완료된 후에 이벤트를 생성합니다.
+    console.log("이벤트 생성 시작");
+    calendar.createEvents(events);
+    console.log("이벤트가 성공적으로 생성되었습니다.");
   },
-  {
-    id: 'event2',
-    calendarId: 'cal2',
-    title: ' + 200,000',
-    start: '2024-08-31',
-    end: '2024-08-31',
-    category:"allday"
+  error: function(error) {
+    console.error('AJAX 오류:', error);
+  }
+});
 
-  },
-  
-])
+console.log("AJAX 요청 끝");
 
+
+calendar.createEvents();
+
+//날짜 버튼
  const prev=document.querySelector(".prev").addEventListener('click',function(){
 
  calendar.prev()
