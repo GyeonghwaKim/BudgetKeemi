@@ -18,7 +18,7 @@ public class securityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
-
+//TODO: OAuth2 로그인을 위한 설정
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web -> web.ignoring()
