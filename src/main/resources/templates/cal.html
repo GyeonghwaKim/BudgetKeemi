@@ -27,6 +27,7 @@
       <span class="navbar--range"></span>
     </nav>
   </header>
+<div id="total"></div>
   <div id="calendar" style="height: 600px;"></div>
 
 
@@ -97,6 +98,7 @@ displayRenderRange();
 const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
 
  ajaxMonthly(yearMonth)
+ ajaxTotalMonthly(yearMonth)
 });
 
 const next=document.querySelector(".next").addEventListener('click',function(){
@@ -106,6 +108,7 @@ displayRenderRange();
 const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
 
  ajaxMonthly(yearMonth)
+ ajaxTotalMonthly(yearMonth)
 
 });
 
@@ -116,6 +119,7 @@ displayRenderRange();
 const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
 
  ajaxMonthly(yearMonth)
+ ajaxTotalMonthly(yearMonth)
 
 });
 
@@ -162,6 +166,30 @@ function displayRenderRange() {
  ajaxMonthly(yearMonth)
 
 
+ //총 집계
+ function ajaxTotalMonthly(yearMonth){
+
+const url = `http://localhost:8080/transactions/monthlySummary/${yearMonth}`;
+
+const total=document.querySelector('#total');
+
+$.ajax({
+  url: url,
+  method: 'GET',
+  dataType: 'json',
+  success: function(data) {
+
+    total.innerHTML=`'<h2>총 지출: ${data.totalExpense}</h2>
+    '<h2>총 수입: ${data.totalIncome}</h2>`
+
+  },
+  error: function(error) {
+    console.error('AJAX 오류:', error);
+  }
+});
+
+}
+ajaxTotalMonthly(yearMonth)
 
 </script>
 
