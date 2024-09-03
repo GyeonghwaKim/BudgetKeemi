@@ -89,116 +89,78 @@ calendar.setCalendars([
 ]);
 
 
-console.log("AJAX 요청 시작");
+//날짜 버튼
+const prev=document.querySelector(".prev").addEventListener('click',function(){
 
-const url = 'http://localhost:8080/transactions/monthly/2024-09';
-let events = [];
+calendar.prev()
+displayRenderRange();
+const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
 
-$.ajax({
-  url: url,
-  method: 'GET',
-  dataType: 'json',
-  success: function(data) {
-    console.log('일별 요약 데이터:', data);
-
-    events= data.map((item, index) => {
-      return {
-        id: `dailySummary${index + 1}`,
-        calendarId: item.status,
-        title: item.status === 'EXPENSE' ? `- ${item.total}` : `+ ${item.total}`,
-        start: item.date,
-        end: item.date,
-        category: "allday"
-      };
-    });
-
-    console.log(events)
-
-    // AJAX 요청이 성공적으로 완료된 후에 이벤트를 생성합니다.
-    console.log("이벤트 생성 시작");
-    calendar.createEvents(events);
-    console.log("이벤트가 성공적으로 생성되었습니다.");
-  },
-  error: function(error) {
-    console.error('AJAX 오류:', error);
-  }
+ ajaxMonthly(yearMonth)
 });
 
-console.log("AJAX 요청 끝");
+const next=document.querySelector(".next").addEventListener('click',function(){
 
-console.log([
-
-{
-  id: 'hi',
-  calendarId: 'EXPENSE',
-  title: ' - 2,000,000',
-  start: '2024-09-30',
-  end:'2024-09-30',
-  category:"allday"
-},
-{
-  id: 'event2',
-  calendarId: 'INCOME',
-  title: ' + 200,000',
-  start: '2024-09-21',
-  end: '2024-09-21',
-  category:"allday"
-
-},
-
-])
-
-calendar.createEvents([
-
-{
-  id: 'hi',
-  calendarId: 'EXPENSE',
-  title: ' - 2,000,000',
-  start: '2024-09-30',
-  end:'2024-09-30',
-  category:"allday"
-},
-{
-  id: 'event2',
-  calendarId: 'INCOME',
-  title: ' + 200,000',
-  start: '2024-09-21',
-  end: '2024-09-21',
-  category:"allday"
-
-},
-
-])
-
-//날짜 버튼
- const prev=document.querySelector(".prev").addEventListener('click',function(){
-
- calendar.prev()
+calendar.next()
 displayRenderRange();
+const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
 
- });
+ ajaxMonthly(yearMonth)
 
- const next=document.querySelector(".next").addEventListener('click',function(){
+});
 
- calendar.next()
+const today=document.querySelector(".today").addEventListener('click',function(){
+
+calendar.today()
 displayRenderRange();
+const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
 
- });
+ ajaxMonthly(yearMonth)
 
- const today=document.querySelector(".today").addEventListener('click',function(){
+});
 
- calendar.today()
-displayRenderRange();
+const range=document.querySelector(".navbar--range");
 
- });
+function displayRenderRange() {
+   range.textContent = getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month');
+ }
 
- const range=document.querySelector(".navbar--range");
+ displayRenderRange();
 
- function displayRenderRange() {
-    range.textContent = getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month');
+ function ajaxMonthly(yearMonth){
+
+  const url = `http://localhost:8080/transactions/monthly/${yearMonth}`;
+  let events = [];
+
+  $.ajax({
+    url: url,
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+
+      events= data.map((item, index) => {
+        return {
+          id: `dailySummary${index + 1}`,
+          calendarId: item.status,
+          title: item.status === 'EXPENSE' ? `- ${item.total}` : `+ ${item.total}`,
+          start: item.date,
+          end: item.date,
+          category: "allday"
+        };
+      });
+      calendar.createEvents(events);
+    },
+    error: function(error) {
+      console.error('AJAX 오류:', error);
+    }
+  });
+
   }
 
-  displayRenderRange();
+ const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
+
+ ajaxMonthly(yearMonth)
+
 
 
 </script>
