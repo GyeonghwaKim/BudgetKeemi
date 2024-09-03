@@ -3,197 +3,146 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-
   <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
   <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
   <link rel="stylesheet" href="/css/toast/app.css" />
-
-
-
-  
 </head>
 <body>
   <header class="header">
     <nav class="navbar">
       <button class="button is-rounded today">Today</button>
       <button class="button is-rounded prev">
-        <img src="" alt="">
         <img alt="prev" src="/images/ic-arrow-line-left.png" srcset="/images/ic-arrow-line-left@2x.png 2x, /images/ic-arrow-line-left@3x.png 3x">
       </button>
       <button class="button is-rounded next">
-        <img alt="next" src="/images/ic-arrow-line-right.png" srcset="/images/ic-arrow-line-right@2x.png 2x, /images/ic-arrow-line-right@3x.png 3x
-          ">
+        <img alt="next" src="/images/ic-arrow-line-right.png" srcset="/images/ic-arrow-line-right@2x.png 2x, /images/ic-arrow-line-right@3x.png 3x">
       </button>
       <span class="navbar--range"></span>
     </nav>
   </header>
-<div id="total"></div>
+  <div id="total"></div>
   <div id="calendar" style="height: 600px;"></div>
 
+  <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.ie11.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="/scripts/toast/utils.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-
-<!-- CDN과 브라우저 환경에서 namespace -->
-<script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.ie11.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-<script src="/scripts/toast/utils.js"></script>
-<!--제이쿼리-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-
-<script>
-// import { fetchDailySummaries } from '../static/scripts/data.js'; 
-
-
-  const Calendar = tui.Calendar;
-  const container = document.getElementById('calendar');
-  const options = {
-  defaultView: 'month',
-  timezone: {
-    zones: [
-      {
-        timezoneName: 'Asia/Seoul',
-        displayLabel: 'Seoul',
+  <script>
+    const Calendar = tui.Calendar;
+    const container = document.getElementById('calendar');
+    const calendarOptions = {
+      defaultView: 'month',
+      timezone: {
+        zones: [
+          {
+            timezoneName: 'Asia/Seoul',
+            displayLabel: 'Seoul',
+          },
+        ],
       },
-      
-    ],
-  },
-  calendars: [
-    {
-      id: 'EXPENSE',
-      name: 'EXPENSE',
-      
-    },
-    {
-      id: 'INCOME',
-      name: 'INCOME',
-    },
-  ],
-};
+      calendars: [
+        { id: 'EXPENSE', name: 'EXPENSE' },
+        { id: 'INCOME', name: 'INCOME' },
+      ],
+    };
 
-const calendar = new Calendar(container, options);
+    const calendar = new Calendar(container, calendarOptions);
 
-calendar.setCalendars([
-  {
-    id: 'EXPENSE',
-    name: 'EXPENSE',
-    color: '#f20707',
-    backgroundColor: '#ffffff',
-    borderColor: '#ffffff',
-  },
-  {
-    id: 'INCOME',
-    name: 'INCOME',
-    color: '#1302fa',
-    backgroundColor: '#ffffff',
-    borderColor: '#ffffff',
-  },
-]);
+    calendar.setCalendars([
+      {
+        id: 'EXPENSE',
+        name: 'EXPENSE',
+        color: '#f20707',
+        backgroundColor: '#ffffff',
+        borderColor: '#ffffff',
+      },
+      {
+        id: 'INCOME',
+        name: 'INCOME',
+        color: '#1302fa',
+        backgroundColor: '#ffffff',
+        borderColor: '#ffffff',
+      },
+    ]);
 
-
-//날짜 버튼
-const prev=document.querySelector(".prev").addEventListener('click',function(){
-
-calendar.prev()
-displayRenderRange();
-const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
-
- ajaxMonthly(yearMonth)
- ajaxTotalMonthly(yearMonth)
-});
-
-const next=document.querySelector(".next").addEventListener('click',function(){
-
-calendar.next()
-displayRenderRange();
-const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
-
- ajaxMonthly(yearMonth)
- ajaxTotalMonthly(yearMonth)
-
-});
-
-const today=document.querySelector(".today").addEventListener('click',function(){
-
-calendar.today()
-displayRenderRange();
-const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
-
- ajaxMonthly(yearMonth)
- ajaxTotalMonthly(yearMonth)
-
-});
-
-const range=document.querySelector(".navbar--range");
-
-function displayRenderRange() {
-   range.textContent = getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month');
- }
-
- displayRenderRange();
-
- function ajaxMonthly(yearMonth){
-
-  const url = `http://localhost:8080/transactions/monthly/${yearMonth}`;
-  let events = [];
-
-  $.ajax({
-    url: url,
-    method: 'GET',
-    dataType: 'json',
-    success: function(data) {
-
-      events= data.map((item, index) => {
-        return {
-          id: `dailySummary${index + 1}`,
-          calendarId: item.status,
-          title: item.status === 'EXPENSE' ? `- ${item.total}` : `+ ${item.total}`,
-          start: item.date,
-          end: item.date,
-          category: "allday"
-        };
-      });
-      calendar.createEvents(events);
-    },
-    error: function(error) {
-      console.error('AJAX 오류:', error);
+    // 날짜 버튼 클릭 핸들러
+    function onDateButtonClick(action) {
+      calendar[action]();
+      updateCalendar();
     }
-  });
 
-  }
+    // 캘린더 업데이트 및 AJAX 요청
+    function updateCalendar() {
+      const yearMonth = getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month');
+      displayRenderRange();
+      fetchMonthlyEvents(yearMonth);
+      fetchMonthlySummary(yearMonth);
+    }
 
- const yearMonth=getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month')
+    // 달력 범위 표시 업데이트
+    const range = document.querySelector(".navbar--range");
+    function displayRenderRange() {
+      range.textContent = getNavbarRange(calendar.getDateRangeStart(), calendar.getDateRangeEnd(), 'month');
+    }
 
- ajaxMonthly(yearMonth)
+    // AJAX 요청으로 월별 이벤트 가져오기
+    function fetchMonthlyEvents(yearMonth) {
+      const url = `http://localhost:8080/transactions/monthly/${yearMonth}`;
 
+      $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
 
- //총 집계
- function ajaxTotalMonthly(yearMonth){
+          calendar.clear();
+          const events = data.map((item, index) => {
+            return {
+              id: `dailySummary${index + 1}`,
+              calendarId: item.status,
+              title: item.status === 'EXPENSE' ? `- ${item.total}` : `+ ${item.total}`,
+              start: item.date,
+              end: item.date,
+              category: "allday"
+            };
+          });
+          calendar.createEvents(events);
+        },
+        error: function(error) {
+          console.error('AJAX 오류:', error);
+        }
+      });
+    }
 
-const url = `http://localhost:8080/transactions/monthlySummary/${yearMonth}`;
+    // AJAX 요청으로 월별 집계 가져오기
+    function fetchMonthlySummary(yearMonth) {
+      const url = `http://localhost:8080/transactions/monthlySummary/${yearMonth}`;
+      const total = document.querySelector('#total');
 
-const total=document.querySelector('#total');
+      $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          total.innerHTML = `
+            <h2>총 지출: ${data.totalExpense}</h2>
+            <h2>총 수입: ${data.totalIncome}</h2>
+          `;
+        },
+        error: function(error) {
+          console.error('AJAX 오류:', error);
+        }
+      });
+    }
 
-$.ajax({
-  url: url,
-  method: 'GET',
-  dataType: 'json',
-  success: function(data) {
+    // 초기 설정 및 이벤트 리스너 설정
+    document.querySelector(".prev").addEventListener('click', () => onDateButtonClick('prev'));
+    document.querySelector(".next").addEventListener('click', () => onDateButtonClick('next'));
+    document.querySelector(".today").addEventListener('click', () => onDateButtonClick('today'));
 
-    total.innerHTML=`'<h2>총 지출: ${data.totalExpense}</h2>
-    '<h2>총 수입: ${data.totalIncome}</h2>`
-
-  },
-  error: function(error) {
-    console.error('AJAX 오류:', error);
-  }
-});
-
-}
-ajaxTotalMonthly(yearMonth)
-
-</script>
-
-
-
+    // 초기 화면 로드
+    updateCalendar();
+  </script>
 </body>
 </html>
