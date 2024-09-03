@@ -8,8 +8,6 @@
   <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
   <link rel="stylesheet" href="/css/toast/app.css" />
 
-<!--제이쿼리-->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
   
@@ -33,10 +31,13 @@
 
 
 
-  <!-- CDN과 브라우저 환경에서 namespace -->
+<!-- CDN과 브라우저 환경에서 namespace -->
 <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.ie11.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-<script src="../static/scripts/toast/utils.js"></script>
+<script src="/scripts/toast/utils.js"></script>
+<!--제이쿼리-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 <script>
 // import { fetchDailySummaries } from '../static/scripts/data.js'; 
@@ -104,10 +105,10 @@ $.ajax({
       return {
         id: `dailySummary${index + 1}`,
         calendarId: item.status,
-        title: item.total,
+        title: item.status === 'EXPENSE' ? `- ${item.total}` : `+ ${item.total}`,
         start: item.date,
         end: item.date,
-        category: "allDay"
+        category: "allday"
       };
     });
 
@@ -125,8 +126,49 @@ $.ajax({
 
 console.log("AJAX 요청 끝");
 
+console.log([
 
-calendar.createEvents();
+{
+  id: 'hi',
+  calendarId: 'EXPENSE',
+  title: ' - 2,000,000',
+  start: '2024-09-30',
+  end:'2024-09-30',
+  category:"allday"
+},
+{
+  id: 'event2',
+  calendarId: 'INCOME',
+  title: ' + 200,000',
+  start: '2024-09-21',
+  end: '2024-09-21',
+  category:"allday"
+
+},
+
+])
+
+calendar.createEvents([
+
+{
+  id: 'hi',
+  calendarId: 'EXPENSE',
+  title: ' - 2,000,000',
+  start: '2024-09-30',
+  end:'2024-09-30',
+  category:"allday"
+},
+{
+  id: 'event2',
+  calendarId: 'INCOME',
+  title: ' + 200,000',
+  start: '2024-09-21',
+  end: '2024-09-21',
+  category:"allday"
+
+},
+
+])
 
 //날짜 버튼
  const prev=document.querySelector(".prev").addEventListener('click',function(){
