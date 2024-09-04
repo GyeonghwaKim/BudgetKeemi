@@ -9,6 +9,6 @@ public class MainController {
 
     @GetMapping("/")
     public String main(){
-        return "cal";
+        return "budget";
     }
 }
