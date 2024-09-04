@@ -48,12 +48,14 @@
 
         <!-- Form Section -->
         <div class="form-container shadow-sm">
+
             <div class="mb-3">
                 <label for="category" class="form-label">카테고리</label>
                 <select class="form-select" id="category" required aria-label="select example">
                     <!-- 카테고리 옵션 추가-->
                 </select>
             </div>
+
             <a href="">카테고리 추가하기</a>
 
             <div class="mb-3">
@@ -76,11 +78,10 @@
 
         <hr>
 
-        <!-- Account Section -->
         <h4 class="mb-4">내 예산</h4>
-    <div class="account-card-container">
-        <!-- 예산 데이터 추가 -->
-    </div>
+        <div class="account-card-container">
+            <!-- 예산 데이터 추가 -->
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
@@ -89,7 +90,7 @@
     <script>
         $(document).ready(function(){
 
-          //select에 카테고리
+//카테고리 get
         $.ajax({
         url: 'http://localhost:8080/categories',
         method: 'GET',
@@ -112,6 +113,29 @@
       const amount = $("#amount").val();
       const startDate = $("#startDate").val();
       const endDate = $("#endDate").val();
+
+
+      // 입력값 검증
+      if (!category) {
+        alert("카테고리를 선택하세요.");
+        return;  // POST 요청을 중단
+      }
+
+      if (!amount || isNaN(amount) || amount <= 0) {
+        alert("유효한 금액을 입력하세요.");
+        return;  // POST 요청을 중단
+      }
+
+      if (!startDate) {
+        alert("시작 날짜를 선택하세요.");
+        return;  // POST 요청을 중단
+      }
+
+      if (!endDate) {
+        alert("종료 날짜를 선택하세요.");
+        return;  // POST 요청을 중단
+      }
+
 
       const budgetData = {
         categoryId: category,
@@ -137,31 +161,32 @@
         }
       });
     });
-
 //예산 내역 get
-$.ajax({
-      url: 'http://localhost:8080/budgets',
-      method: 'GET',
-      success: function(budgets) {
-        var budgetContainer = $('.account-card-container');
-        budgetContainer.empty();
+      $.ajax({
+            url: 'http://localhost:8080/budgets',
+            method: 'GET',
+            success: function(budgets) {
+              var budgetContainer = $('.account-card-container');
+              budgetContainer.empty();
 
-        budgets.forEach(function(budget) {
-          var budgetItem = `
-            <div class="account-card p-3 shadow-sm">
-              <h5>${budget.categoryName}</h5>
-              <h6><span>${budget.startDate}</span> ~ <span>${budget.endDate}</span></h6>
-              <span>${budget.amount.toLocaleString()} 원</span>
-            </div>
-          `;
-          // 만들어진 HTML을 budgetContainer에 추가
-          budgetContainer.append(budgetItem);
-        });
-      },
-      error: function(error) {
-        console.error("예산 데이터를 불러오는 중 오류 발생:", error);
-      }
-    });
+              budgets.reverse();
+
+              budgets.forEach(function(budget) {
+                var budgetItem = `
+                  <div class="account-card p-3 shadow-sm">
+                    <h5>${budget.categoryName}</h5>
+                    <h6><span>${budget.startDate}</span> ~ <span>${budget.endDate}</span></h6>
+                    <span>${budget.amount.toLocaleString()} 원</span>
+                  </div>
+                `;
+                // 만들어진 HTML을 budgetContainer에 추가
+                budgetContainer.append(budgetItem);
+              });
+            },
+            error: function(error) {
+              console.error("예산 데이터를 불러오는 중 오류 발생:", error);
+            }
+          });
 
       });
 

@@ -27,7 +27,7 @@ public class BudgetController {
     //예산  생성
     @PostMapping
     public ResponseEntity<?> addBudget(@RequestBody ReqBudget reqBudget){
-
+//TODO 입력값 검증 필요
         RespBudget respBudget=this.service.createBudget(reqBudget);
 
         return new ResponseEntity<>(respBudget, HttpStatus.CREATED);
