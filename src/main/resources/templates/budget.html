@@ -173,20 +173,45 @@
 
               budgets.forEach(function(budget) {
                 var budgetItem = `
-                  <div class="account-card p-3 shadow-sm">
-                    <h5>${budget.categoryName}</h5>
-                    <h6><span>${budget.startDate}</span> ~ <span>${budget.endDate}</span></h6>
-                    <span>${budget.amount.toLocaleString()} 원</span>
-                  </div>
+                 <div class="account-card p-3 shadow-sm" id="budget-${budget.id}">
+            <button class="btn btn-danger btn-sm float-end delete-btn" data-id="${budget.id}">삭제</button>
+            <h5>${budget.categoryName}</h5>
+            <h6><span>${budget.startDate}</span> ~ <span>${budget.endDate}</span></h6>
+            <span>${budget.amount.toLocaleString()} 원</span>
+          </div>
                 `;
                 // 만들어진 HTML을 budgetContainer에 추가
                 budgetContainer.append(budgetItem);
               });
+          // 삭제 버튼 클릭 이벤트 핸들러 추가
+              $('.delete-btn').click(function() {
+        var budgetId = $(this).data('id');
+        
+        if (confirm("이 예산을 삭제하시겠습니까?")) {
+          $.ajax({
+            url: 'http://localhost:8080/budgets/' + budgetId,
+            method: 'DELETE',
+            success: function(response) {
+              console.log('예산 삭제 성공:', response);
+              alert("예산이 성공적으로 삭제되었습니다!");
+
+              $('#budget-' + budgetId).remove();
+            },
+            error: function(xhr, status, error) {
+              console.error('예산 삭제 중 오류 발생:', error);
+              alert("예산 삭제 중 오류가 발생했습니다.");
+            }
+          });
+        }
+      });
             },
             error: function(error) {
               console.error("예산 데이터를 불러오는 중 오류 발생:", error);
             }
           });
+
+
+      
 
       });
 
