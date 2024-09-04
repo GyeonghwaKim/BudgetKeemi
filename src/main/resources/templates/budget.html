@@ -78,19 +78,9 @@
 
         <!-- Account Section -->
         <h4 class="mb-4">내 예산</h4>
-        <div class="account-card p-3 shadow-sm">
-          <h5>식비</h5>
-          <h6><span>2024.08.02</span> ~ <span>2024.09.01</span> </h6>
-          <span>150,000 원</span>
-        </div>
-        <div class="account-card p-3 shadow-sm">
-          <h5>옷</h5>
-          <span>50,000 원</span>
-        </div>
-        <div class="account-card p-3 shadow-sm">
-          <h5>자유 적금</h5>
-          <span>50,000 원</span>
-        </div>
+    <div class="account-card-container">
+        <!-- 예산 데이터 추가 -->
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
@@ -146,7 +136,31 @@
       });
     });
 
-    
+//예산 내역 get
+$.ajax({
+      url: 'http://localhost:8080/budgets',
+      method: 'GET',
+      success: function(budgets) {
+        var budgetContainer = $('.account-card-container');
+        budgetContainer.empty();
+
+        budgets.forEach(function(budget) {
+          var budgetItem = `
+            <div class="account-card p-3 shadow-sm">
+              <h5>${budget.categoryName}</h5>
+              <h6><span>${budget.startDate}</span> ~ <span>${budget.endDate}</span></h6>
+              <span>${budget.amount.toLocaleString()} 원</span>
+            </div>
+          `;
+          // 만들어진 HTML을 budgetContainer에 추가
+          budgetContainer.append(budgetItem);
+        });
+      },
+      error: function(error) {
+        console.error("예산 데이터를 불러오는 중 오류 발생:", error);
+      }
+    });
+
       });
 
 

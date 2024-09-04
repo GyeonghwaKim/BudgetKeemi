@@ -16,16 +16,18 @@ public class RespBudget {
 
     private LocalDate endDate;
 
-    private Long categoryId;
+    private String categoryName;
 
     @Builder
-    public RespBudget(Long id, int amount, LocalDate startDate, LocalDate endDate, Long categoryId) {
+    public RespBudget(Long id, int amount, LocalDate startDate, LocalDate endDate, String categoryName) {
         this.id = id;
         this.amount = amount;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.categoryId = categoryId;
+        this.categoryName = categoryName;
     }
+
+
 
     public static RespBudget toDto(Budget budget){
         return RespBudget.builder()
@@ -33,7 +35,7 @@ public class RespBudget {
                 .amount(budget.getAmount())
                 .startDate(budget.getStartDate())
                 .endDate(budget.getEndDate())
-                .categoryId(budget.getCategory().getId())
+                .categoryName(budget.getCategory().getName())
                 .build();
     }
 }
