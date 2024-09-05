@@ -102,6 +102,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+      function formatDateTime(dateTimeString) {
+          var date = new Date(dateTimeString);
+      
+          var year = date.getFullYear();
+          var month = String(date.getMonth() + 1).padStart(2, '0');
+          var day = String(date.getDate()).padStart(2, '0');
+      
+          var hours = String(date.getHours()).padStart(2, '0');
+          var minutes = String(date.getMinutes()).padStart(2, '0');
+          var seconds = String(date.getSeconds()).padStart(2, '0');
+      
+          // 'YYYY-MM-DD HH:mm:ss' 형식으로 변환
+          return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      }
+      
+      
 $(document).ready(function(){
   //카테고리 get
   $.ajax({
@@ -137,6 +153,41 @@ $(document).ready(function(){
     }
   });
 
+   //거래내역 get
+   $.ajax({
+            url: 'http://localhost:8080/transactions', // 실제 서버 URL로 변경 필요
+            method: 'GET',
+            success: function (transactions) {
+              var transactionContainer = $('.transaction-container'); // 거래 내역을 표시할 컨테이너 선택
+      
+              // 거래 내역 리스트 초기화
+              transactionContainer.empty();
+
+
+               // transactionDate 기준으로 내림차순 정렬
+      transactions.sort(function (a, b) {
+        return new Date(b.transacDate) - new Date(a.transacDate);
+      });
+      
+              transactions.forEach(function (transaction) {
+                var transactionCard = `
+                  <div class="account-card p-3 shadow-sm">
+                    <h5>${transaction.categoryName}</h5>
+                    <h6>${formatDateTime(transaction.transacDate)}</h6>
+                    <span class="${transaction.categoryStatus=="INCOME" ? 'income' : 'expense'}">
+                      ${transaction.categoryStatus=="INCOME" ? '+' : '-'} ${transaction.amount.toLocaleString()} 원
+                    </span>
+                    ${transaction.description ? `<p>${transaction.description}</p>` : ''}
+                  </div>
+                `;
+                transactionContainer.append(transactionCard);
+              });
+            },
+            error: function (error) {
+              console.error("거래 내역을 불러오는 중 오류 발생:", error);
+              alert("거래 내역을 불러오는 중 오류가 발생했습니다.");
+            }
+          });
  
 });
     </script>
