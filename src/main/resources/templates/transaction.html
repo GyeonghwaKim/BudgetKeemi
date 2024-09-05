@@ -67,9 +67,7 @@
             <div class="mb-3 mt-3">
                 <label for="account" class="form-label">계좌</label>
                 <select class="form-select" id="account" required aria-label="select example">
-                  <option value="1">농협</option>
-                  <option value="2">현금</option>
-                  <option value="3">신한 카드</option>
+                  
                 </select>
             </div>
 
@@ -95,22 +93,8 @@
 
         <!-- Account Section -->
         <h4 class="mb-4">내 거래 내역</h4>
-        <div class="account-card p-3 shadow-sm">
-          <h5>월급 - 농협</h5>
-          <h6>2024-09-04</h6>
-          <span class="income">+ 2,500,000 원</span>
-        </div>
-        <div class="account-card p-3 shadow-sm">
-          <h5>식비 - 현금</h5>
-          <h6>2024-09-03</h6>
-          <span>집 앞 김밥천국</span>
-          <p></p>
-          <span class="expense">- 50,000 원</span>
-        </div>
-        <div class="account-card p-3 shadow-sm">
-          <h5>자유 적금 - 농협</h5>
-          <h6>2024-09-01</h6>
-          <span class="expense">- 50,000 원</span>
+        <div class="transaction-container">
+
         </div>
     </div>
 
@@ -136,6 +120,24 @@ $(document).ready(function(){
           }
         });
 
+        //account type get
+        $.ajax({
+    url: 'http://localhost:8080/accounts',
+    method: 'GET',
+    success: function (accounts) {
+      var accountSelect = $('#account');
+      accountSelect.empty();
+
+      accounts.forEach(function (account) {
+        accountSelect.append(`<option value="${account.id}">${account.status} - ${account.name}</option>`);
+      });
+    },
+    error: function (error) {
+      console.error("계좌 유형 데이터를 불러오는 중 오류 발생:", error);
+    }
+  });
+
+ 
 });
     </script>
   </body>
