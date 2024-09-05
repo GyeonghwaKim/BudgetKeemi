@@ -1,6 +1,7 @@
 package com.example.budgeKeemi.service;
 
 import com.example.budgeKeemi.domain.Account;
+import com.example.budgeKeemi.domain.AccountType;
 import com.example.budgeKeemi.dto.ReqAccount;
 import com.example.budgeKeemi.dto.RespAccount;
 import com.example.budgeKeemi.repository.AccountRepository;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,5 +93,15 @@ public class AccountService {
         } else {
             return null;
         }
+    }
+
+    public List<String> getAccountType() {
+
+        List<String> typeList=new ArrayList<>();
+
+        for (AccountType value : AccountType.values()) {
+            typeList.add(value.name());
+        }
+        return typeList;
     }
 }

@@ -80,5 +80,11 @@ public class AccountController {
 
     }
 
+    @GetMapping("/accountType")
+    public ResponseEntity<?> getAccountType(){
+        List<String> typeList=accountService.getAccountType();
+
+        return ResponseEntity.ok(typeList);
+    }
 
 }

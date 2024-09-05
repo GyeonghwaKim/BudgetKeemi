@@ -81,8 +81,8 @@
 
 
     <script>
+      //날짜 포맷
       function formatDate(isoString) {
-        // 밀리초 이후 문자열을 잘라냅니다.
         const cleanIsoString = isoString.split('.')[0];
         const date = new Date(cleanIsoString);
     
@@ -95,9 +95,25 @@
     
       $(document).ready(function () {
 
+//account type
+        $.ajax({
+    url: 'http://localhost:8080/accounts/accountType',
+    method: 'GET',
+    success: function (accountTypes) {
+      var accountTypeSelect = $('#accountType');
+      accountTypeSelect.empty();
+
+      accountTypes.forEach(function (type) {
+        accountTypeSelect.append(`<option value="${type}">${type}</option>`);
+      });
+    },
+    error: function (error) {
+      console.error("계좌 유형 데이터를 불러오는 중 오류 발생:", error);
+    }
+  });
+
 //계좌 포스트
 $('#submintAccount').click(function () {
-      // 입력된 값을 가져옴
       var accountName = $('#accountName').val();
       var balance = $('#balance').val();
       var accountType = $('#accountType').val();
@@ -105,17 +121,17 @@ $('#submintAccount').click(function () {
        // 입력값 검증
        if (!accountName) {
         alert("계좌 이름을 선택하세요.");
-        return;  // POST 요청을 중단
+        return;  
       }
 
       if (!balance || isNaN(balance) || balance <= 0) {
         alert("유효한 금액을 입력하세요.");
-        return;  // POST 요청을 중단
+        return; 
       }
 
       if (!accountType) {
         alert("계좌 유형을 선택하세요.");
-        return;  // POST 요청을 중단
+        return;  
       }
 
       // 요청 데이터 생성
@@ -171,7 +187,7 @@ $('#submintAccount').click(function () {
           }
         });
     
-        // 이벤트 위임을 통해 동적 요소에 대한 삭제 버튼 클릭 이벤트 핸들러 추가
+       
         $('.account-card-container').on('click', '.delete-btn', function () {
           var accountId = $(this).data('id');
     
