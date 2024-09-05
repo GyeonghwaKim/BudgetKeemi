@@ -1,6 +1,5 @@
 package com.example.budgeKeemi.domain;
 
-import com.example.budgeKeemi.dto.ReqAccount;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,4 +38,7 @@ public class Account {
     }
 
 
+    public void updateBalence(int amount) {
+        this.balance=this.balance+amount;
+    }
 }

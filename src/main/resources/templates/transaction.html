@@ -135,8 +135,8 @@ $(document).ready(function(){
           }
         });
 
-        //account type get
-        $.ajax({
+  //account type get
+  $.ajax({
     url: 'http://localhost:8080/accounts',
     method: 'GET',
     success: function (accounts) {
@@ -152,8 +152,8 @@ $(document).ready(function(){
     }
   });
 
-   //거래내역 get
-   $.ajax({
+  //거래내역 get
+  $.ajax({
             url: 'http://localhost:8080/transactions', // 실제 서버 URL로 변경 필요
             method: 'GET',
             success: function (transactions) {
@@ -176,7 +176,7 @@ $(document).ready(function(){
                     <span class="${transaction.categoryStatus=="INCOME" ? 'income' : 'expense'}">
                       ${transaction.categoryStatus=="INCOME" ? '+' : '-'} ${transaction.amount.toLocaleString()} 원
                     </span>
-                    ${transaction.description ? `<p>${transaction.description}</p>` : ''}
+                    ${transaction.description ? `<p> - ${transaction.description}</p>` : ''}
                   </div>
                 `;
                 transactionContainer.append(transactionCard);
@@ -188,8 +188,8 @@ $(document).ready(function(){
             }
           });
 
-//거래내역 post
-          $('#submitTransac').click(function () {
+  //거래내역 post
+  $('#submitTransac').click(function () {
     // 입력된 값을 가져옴
     var category = $('#category').val();
     var account = $('#account').val();
@@ -215,21 +215,28 @@ $(document).ready(function(){
       description: description
     };
 
-    // 서버로 POST 요청 전송
+      // 서버로 POST 요청 전송
     $.ajax({
-      url: 'http://localhost:8080/transactions', 
-      method: 'POST',
-      contentType: 'application/json', 
-      data: JSON.stringify(transactionData),
-      success: function (response) {
-        alert("거래가 성공적으로 저장되었습니다.");
-        location.reload();
-      },
-      error: function (xhr, status, error) {
-        console.error('거래 저장 중 오류 발생:', error);
-        alert("거래 저장 중 오류가 발생했습니다.");
-      }
+    url: 'http://localhost:8080/transactions', 
+    method: 'POST',
+    contentType: 'application/json', 
+    data: JSON.stringify(transactionData),
+    success: function (response) {
+      alert("거래가 성공적으로 저장되었습니다.");
+      location.reload();
+    },
+    error: function (xhr, status, error) {
+      console.error('거래 저장 중 오류 발생:', error);
+      alert("거래 저장 중 오류가 발생했습니다.");
+    }
     });
+
+
+    
+
+
+
+
   });
  
 });
