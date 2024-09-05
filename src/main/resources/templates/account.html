@@ -60,10 +60,10 @@
                     <option value="CASH">현금</option>
                     <option value="BANK">은행</option>
                     <option value="CARD">카드</option>
-                    <option value="CARD">기타</option>
+                    <option value="ETC">기타</option>
                 </select>
             </div>
-            <button class="btn btn-outline-dark btn-custom">저장</button>
+            <button class="btn btn-outline-dark btn-custom" id="submintAccount">저장</button>
         </div>
 
         <hr>
@@ -94,6 +94,55 @@
       }
     
       $(document).ready(function () {
+
+//계좌 포스트
+$('#submintAccount').click(function () {
+      // 입력된 값을 가져옴
+      var accountName = $('#accountName').val();
+      var balance = $('#balance').val();
+      var accountType = $('#accountType').val();
+
+       // 입력값 검증
+       if (!accountName) {
+        alert("계좌 이름을 선택하세요.");
+        return;  // POST 요청을 중단
+      }
+
+      if (!balance || isNaN(balance) || balance <= 0) {
+        alert("유효한 금액을 입력하세요.");
+        return;  // POST 요청을 중단
+      }
+
+      if (!accountType) {
+        alert("계좌 유형을 선택하세요.");
+        return;  // POST 요청을 중단
+      }
+
+      // 요청 데이터 생성
+      var accountData = {
+        name: accountName,
+        balance: balance,
+        status: accountType
+      };
+
+      // 서버로 POST 요청
+      $.ajax({
+        url: 'http://localhost:8080/accounts',
+        method: 'POST',
+        contentType: 'application/json', 
+        data: JSON.stringify(accountData),
+        success: function (response) {
+          alert("계좌가 성공적으로 생성되었습니다.");
+          location.reload();
+        },
+        error: function (xhr, status, error) {
+          console.error('계좌 생성 중 오류 발생:', error);
+          alert("계좌 생성 중 오류가 발생했습니다.");
+        }
+      });
+    });
+
+
         // 계좌 데이터를 가져오는 AJAX 요청
         $.ajax({
           url: 'http://localhost:8080/accounts',
