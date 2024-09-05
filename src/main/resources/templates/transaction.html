@@ -51,7 +51,6 @@
 
     <div class="container">
         <h1>거래 내역</h1>
-
         <!-- Form Section -->
         <div class="form-container shadow-sm">
 
@@ -86,7 +85,7 @@
                 <textarea class="form-control form-textarea" id="description" placeholder="설명을 입력하세요"></textarea>
             </div>
 
-            <button type="button" class="btn btn-outline-dark btn-custom">저장</button>
+            <button id="submitTransac" type="button" class="btn btn-outline-dark btn-custom">저장</button>
         </div>
 
         <hr>
@@ -188,6 +187,50 @@ $(document).ready(function(){
               alert("거래 내역을 불러오는 중 오류가 발생했습니다.");
             }
           });
+
+//거래내역 post
+          $('#submitTransac').click(function () {
+    // 입력된 값을 가져옴
+    var category = $('#category').val();
+    var account = $('#account').val();
+    var amount = $('#amount').val();
+    var description = $('#description').val();
+    
+    // 유효성 검사
+    if (!category || !account || !amount) {
+      alert("카테고리, 계좌, 금액을 모두 입력해야 합니다.");
+      return;
+    }
+
+    if (isNaN(amount)) {
+      alert("금액은 숫자로 입력해야 합니다.");
+      return;
+    }
+
+    // 요청 데이터 생성
+    var transactionData = {
+      accountId: account,
+      categoryId: category,
+      amount: amount, 
+      description: description
+    };
+
+    // 서버로 POST 요청 전송
+    $.ajax({
+      url: 'http://localhost:8080/transactions', 
+      method: 'POST',
+      contentType: 'application/json', 
+      data: JSON.stringify(transactionData),
+      success: function (response) {
+        alert("거래가 성공적으로 저장되었습니다.");
+        location.reload();
+      },
+      error: function (xhr, status, error) {
+        console.error('거래 저장 중 오류 발생:', error);
+        alert("거래 저장 중 오류가 발생했습니다.");
+      }
+    });
+  });
  
 });
     </script>

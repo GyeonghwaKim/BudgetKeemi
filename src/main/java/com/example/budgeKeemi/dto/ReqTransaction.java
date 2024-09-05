@@ -11,7 +11,7 @@ public class ReqTransaction {
     private Long accountId;
     private Long categoryId;
     private int amount;
-    private LocalDateTime transacDate;
+    //private LocalDateTime transacDate;
     private String description;
 
 
