@@ -1,7 +1,6 @@
 package com.example.budgeKeemi.dto;
 
 import com.example.budgeKeemi.domain.Budget;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -9,7 +8,7 @@ import java.time.LocalDate;
 @Getter
 public class ReqBudget {
 
-    private int amount;
+    private int goalAmount;
 
     private LocalDate startDate;
 
@@ -19,7 +18,7 @@ public class ReqBudget {
 
     public static Budget toEntity(ReqBudget reqBudget) {
         return Budget.builder()
-                .amount(reqBudget.getAmount())
+                .goalAmount(reqBudget.getGoalAmount())
                 .startDate(reqBudget.getStartDate())
                 .endDate(reqBudget.getEndDate())
                 .build();

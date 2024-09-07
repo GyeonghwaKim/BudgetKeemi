@@ -2,13 +2,16 @@ package com.example.budgeKeemi.service;
 
 import com.example.budgeKeemi.domain.Budget;
 import com.example.budgeKeemi.domain.Category;
+import com.example.budgeKeemi.domain.Transaction;
 import com.example.budgeKeemi.dto.ReqBudget;
 import com.example.budgeKeemi.dto.RespBudget;
 import com.example.budgeKeemi.repository.BudgetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -17,12 +20,25 @@ public class BudgetService {
     private final BudgetRepository repository;
 
     private final CategoryService categoryService;
+    private final TransactionService transactionService;
 
     public List<RespBudget> getBudgets() {
 
         List<Budget> budgets = repository.findAll();
 
-        List<RespBudget> respBudgets = budgets.stream().map(budget -> RespBudget.toDto(budget)).toList();
+        Map<Long,Integer> useAmountMap=new HashMap<>();
+
+        for(Budget budget:budgets){
+            Long categoryId = budget.getCategory().getId();
+            List<Transaction> transactions = transactionService.getTransactionsByCategoryId(categoryId);
+            useAmountMap.put(categoryId,transactions.stream().mapToInt(Transaction::getAmount).sum());
+        }
+
+        List<RespBudget> respBudgets = budgets.stream().map(RespBudget::toDto).toList();
+
+        for(RespBudget respBudget:respBudgets){
+            respBudget.updateUseAmount(useAmountMap.get(respBudget.getCategoryId()));
+        }
 
         return respBudgets;
     }
@@ -57,7 +73,7 @@ public class BudgetService {
 
         if(_budget.isPresent()){
             Budget budget = _budget.get();
-            budget.updateAmount(reqBudget.getAmount());
+            budget.updateAmount(reqBudget.getGoalAmount());
             budget.updateEndDate(reqBudget.getEndDate());
 
             Budget updateBudget = repository.save(budget);

@@ -176,4 +176,9 @@ public class TransactionService {
 
         return dailySummaries;
     }
+
+    public List<Transaction> getTransactionsByCategoryId(Long categoryId) {
+        List<Transaction> transactions = repository.findByCategoryId(categoryId);
+        return transactions;
+    }
 }

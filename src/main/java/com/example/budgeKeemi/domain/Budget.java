@@ -17,7 +17,8 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int amount;
+    @Column(name = "goal_amount")
+    private int goalAmount;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -30,9 +31,9 @@ public class Budget {
     private Category category;
 
     @Builder
-    public Budget(Long id, int amount, LocalDate startDate, LocalDate endDate) {
+    public Budget(Long id, int goalAmount, LocalDate startDate, LocalDate endDate) {
         this.id = id;
-        this.amount = amount;
+        this.goalAmount = goalAmount;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -42,7 +43,7 @@ public class Budget {
     }
 
     public void updateAmount(int amount) {
-        this.amount = amount;
+        this.goalAmount = amount;
     }
 
     public void updateEndDate(LocalDate endDate) {

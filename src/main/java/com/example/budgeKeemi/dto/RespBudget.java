@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class RespBudget {
     private Long id;
 
-    private int amount;
+    private int goalAmount;
 
     private LocalDate startDate;
 
@@ -18,13 +18,18 @@ public class RespBudget {
 
     private String categoryName;
 
+    private Long categoryId;
+
+    private int useAmount;
+
     @Builder
-    public RespBudget(Long id, int amount, LocalDate startDate, LocalDate endDate, String categoryName) {
+    public RespBudget(Long id, int goalAmount, LocalDate startDate, LocalDate endDate, String categoryName, Long categoryId) {
         this.id = id;
-        this.amount = amount;
+        this.goalAmount = goalAmount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.categoryName = categoryName;
+        this.categoryId = categoryId;
     }
 
 
@@ -32,10 +37,15 @@ public class RespBudget {
     public static RespBudget toDto(Budget budget){
         return RespBudget.builder()
                 .id(budget.getId())
-                .amount(budget.getAmount())
+                .goalAmount(budget.getGoalAmount())
                 .startDate(budget.getStartDate())
                 .endDate(budget.getEndDate())
                 .categoryName(budget.getCategory().getName())
+                .categoryId(budget.getCategory().getId())
                 .build();
+    }
+
+    public void updateUseAmount(Integer integer) {
+        this.useAmount=integer;
     }
 }
