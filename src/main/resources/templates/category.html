@@ -61,10 +61,10 @@
 
         <hr>
 
-        <!-- Account Section -->
+        <!-- Category Section -->
         <h4 class="mb-4">내 카테고리</h4>
         <div class="category-card-container">
-            <!--계좌 데이터 추가-->
+            <!--카테고리 데이터 추가-->
         </div>
     </div>
 
@@ -106,8 +106,6 @@
     });
 
 
-
-
     $.ajax({
             url: '/categories/categoryStatus',
             method: 'GET',
@@ -142,7 +140,8 @@
             categories.forEach(function (category) {
     
               var categoryItem = `
-                <div class="category-card p-3 shadow-sm" id="budget-${category.id}">
+                <div class="category-card p-3 shadow-sm" id="category-${category.id}">
+                  <button class="btn btn-danger btn-sm float-end delete-btn" data-id="${category.id}">삭제</button>
                   <h5>${category.name}</h5>
                   <h6>${category.status}</h6>
                 </div>
@@ -154,6 +153,27 @@
             console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
           }
         });
+//카테고리 삭제
+        $('.category-card-container').on('click', '.delete-btn', function () {
+          var categoryId = $(this).data('id');
+    
+          if (confirm("이 예산을 삭제하시겠습니까?")) {
+            $.ajax({
+              url: 'http://localhost:8080/categories/' + categoryId,
+              method: 'DELETE',
+              success: function (response) {
+                console.log('카테고리 삭제 성공:', response);
+                alert("카테고리가 성공적으로 삭제되었습니다!");
+    
+                $('#category-' + categoryId).remove();
+              },
+              error: function (xhr, status, error) {
+                console.error('카테고리 삭제 중 오류 발생:', error);
+                alert("카테고리 삭제 중 오류가 발생했습니다.");
+              }
+            });
+          }
+        });   
 
   });
 </script>
