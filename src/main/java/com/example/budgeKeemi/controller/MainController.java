@@ -29,4 +29,9 @@ public class MainController {
     public String graphPage(){
         return "graph";
     }
+
+    @GetMapping("/calendarPage")
+    public String calendarPage(){
+        return "calendar";
+    }
 }
