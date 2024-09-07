@@ -34,4 +34,9 @@ public class MainController {
     public String calendarPage(){
         return "calendar";
     }
+
+    @GetMapping("/categoryPage")
+    public String categoryPage(){
+        return "category";
+    }
 }
