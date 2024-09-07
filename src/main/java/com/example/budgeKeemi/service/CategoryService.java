@@ -1,15 +1,16 @@
 package com.example.budgeKeemi.service;
 
 import com.example.budgeKeemi.domain.Category;
-import com.example.budgeKeemi.domain.Transaction;
+import com.example.budgeKeemi.domain.CategoryStatus;
 import com.example.budgeKeemi.dto.ReqCategory;
 import com.example.budgeKeemi.dto.RespCategory;
-import com.example.budgeKeemi.dto.RespTransaction;
+import com.example.budgeKeemi.dto.RespCategoryStatus;
 import com.example.budgeKeemi.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,4 +88,13 @@ public class CategoryService {
             return false;
         }
     }
+
+    public List<RespCategoryStatus> getCategoryStatus() {
+
+        List<RespCategoryStatus> categoryStatuses
+                = Arrays.stream(CategoryStatus.values()).map(
+                RespCategoryStatus::toDto).toList();
+            return categoryStatuses;
+        }
+
 }

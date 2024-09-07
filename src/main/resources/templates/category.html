@@ -18,12 +18,12 @@
         font-weight: bold;
         color: #343a40;
       }
-      .account-card {
+      .category-card {
         background-color: #fff;
         border-radius: 10px;
         margin-bottom: 1rem;
       }
-      .account-card h5 {
+      .category-card h5 {
         color: #007bff;
       }
       .form-container {
@@ -42,7 +42,7 @@
   <body>
 
     <div class="container">
-        <h1>계좌 관리</h1>
+        <h1>카테고리 관리</h1>
 
         <!-- Form Section -->
         <div class="form-container shadow-sm">
@@ -52,13 +52,11 @@
             </div>
           
             <div class="mb-3">
-                <label for="accountType" class="form-label">카테고리 유형</label>
-                <select class="form-select" id="accountType">
-                    <option value="INCOME">수입</option>
-                    <option value="EXPENSE">지출</option>
+                <label for="categoryType" class="form-label">카테고리 유형</label>
+                <select class="form-select" id="categoryType">
                 </select>
             </div>
-            <button class="btn btn-outline-dark btn-custom" id="submintCategory">저장</button>
+            <button class="btn btn-outline-dark btn-custom" id="submitCategory">저장</button>
         </div>
 
         <hr>
@@ -75,6 +73,59 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function () {
+
+    $('#submitCategory').on('click', function() {
+
+      var categoryName = $('#categoryName').val();
+      var categoryType = $('#categoryType').val();
+
+      if (!categoryName || !categoryType) {
+            alert('카테고리 이름과 유형을 입력하세요.');
+            return;
+        }
+
+      var data = {
+            name: categoryName,
+            status: categoryType
+        };
+        $.ajax({
+            url: '/categories', // POST 요청을 보낼 엔드포인트
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                alert('카테고리가 성공적으로 추가되었습니다.');
+                location.reload();
+            },
+            error: function(error) {
+                console.error('카테고리를 저장하는 중 오류 발생:', error);
+                alert('카테고리를 저장하는 중 오류가 발생했습니다.');
+            }
+        });
+
+    });
+
+
+
+
+    $.ajax({
+            url: '/categories/categoryStatus',
+            method: 'GET',
+            dataType: 'json',
+            success: function(categories) {
+                var categoryType = $('#categoryType');
+                categoryType.empty(); // 기존 옵션 제거
+
+                // 서버에서 가져온 카테고리 목록을 추가
+                categories.forEach(function(category) {
+                    const option = `<option value="${category.category}">${category.description}</option>`;
+                    categoryType.append(option);
+                });
+            },
+            error: function(error) {
+                console.error('카테고리 정보를 가져오는 중 오류 발생:', error);
+            }
+        });
 
 
 

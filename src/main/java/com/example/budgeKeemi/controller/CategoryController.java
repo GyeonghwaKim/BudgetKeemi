@@ -2,6 +2,7 @@ package com.example.budgeKeemi.controller;
 
 import com.example.budgeKeemi.dto.ReqCategory;
 import com.example.budgeKeemi.dto.RespCategory;
+import com.example.budgeKeemi.dto.RespCategoryStatus;
 import com.example.budgeKeemi.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,12 @@ public class CategoryController {
         return ResponseEntity.ok().build();
         //}
         //return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/categoryStatus")
+    public ResponseEntity<?> getCategoryStatus(){
+        List<RespCategoryStatus> categories= service.getCategoryStatus();
+        return ResponseEntity.ok(categories);
     }
 
 }
