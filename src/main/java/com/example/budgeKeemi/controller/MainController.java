@@ -11,4 +11,17 @@ public class MainController {
     public String main(){
         return "main";
     }
+
+    @GetMapping("/transactionPage")
+    public String transactionPage(){
+        return "transaction";
+    }
+    @GetMapping("/accountPage")
+    public String accountPage(){
+        return "account";
+    }
+    @GetMapping("/budgetPage")
+    public String budgetPage(){
+        return "budget";
+    }
 }

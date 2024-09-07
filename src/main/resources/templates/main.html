@@ -64,12 +64,13 @@
         <div class="account-container"></div>
 
         <!-- Buttons -->
-        <div class="btn-container d-flex justify-content-center flex-column align-items-center">
-            <button type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">거래 내역 보기</button>
-            <button type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">차트 모아 보기</button>
-            <button type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">예산 관리 하기</button>
-            <button type="button" class="btn btn-outline-dark btn-lg w-50">계좌 관리 하기</button>
-        </div>
+<div class="btn-container d-flex justify-content-center flex-column align-items-center">
+  <button id="viewTransaction" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">거래 내역 보기</button>
+  <button id="viewCharts" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">차트 모아 보기</button>
+  <button id="manageBudget" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">예산 관리 하기</button>
+  <button id="manageAccount" type="button" class="btn btn-outline-dark btn-lg w-50">계좌 관리 하기</button>
+</div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
@@ -152,8 +153,26 @@
           }
         });
 
+//버튼 클릭
+ // 거래 내역 보기 버튼 클릭
+ $('#viewTransaction').on('click', function() {
+        window.location.href = '/transactionPage'; // 거래 내역 페이지로 이동
+    });
 
+    // 차트 모아 보기 버튼 클릭 (현재 기능 미구현)
+    $('#viewCharts').on('click', function() {
+        alert('차트 모아 보기 기능은 아직 개발되지 않았습니다.');
+    });
 
+    // 예산 관리 하기 버튼 클릭
+    $('#manageBudget').on('click', function() {
+        window.location.href = '/budgetPage'; // 예산 관리 페이지로 이동
+    });
+
+    // 계좌 관리 하기 버튼 클릭
+    $('#manageAccount').on('click', function() {
+        window.location.href = '/accountPage'; // 계좌 관리 페이지로 이동
+    });
 });
 
 
