@@ -61,18 +61,7 @@
         <hr>
 
         <!-- Account Cards -->
-        <div class="account-card p-3 shadow-sm">
-          <h5>농협</h5>
-          <span>50,000 원</span>
-        </div>
-        <div class="account-card p-3 shadow-sm">
-          <h5>카드</h5>
-          <span>50,000 원</span>
-        </div>
-        <div class="account-card p-3 shadow-sm">
-          <h5>현금</h5>
-          <span>50,000 원</span>
-        </div>
+        <div class="account-container"></div>
 
         <!-- Buttons -->
         <div class="btn-container d-flex justify-content-center flex-column align-items-center">
@@ -88,6 +77,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
+
+   //날짜 포맷
+   function formatDate(isoString) {
+        const cleanIsoString = isoString.split('.')[0];
+        const date = new Date(cleanIsoString);
+    
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); 
+        const day = String(date.getDate()).padStart(2, '0');
+    
+        return `${year}-${month}-${day}`;
+      }
+
   $(document).ready(function () {
   $.ajax({
     url: 'http://localhost:8080/budgets', 
@@ -122,6 +124,36 @@
       alert("예산 데이터를 불러오는 중 오류가 발생했습니다.");
     }
   });
+
+ // 계좌 데이터를 가져오는 AJAX 요청
+ $.ajax({
+          url: 'http://localhost:8080/accounts',
+          method: 'GET',
+          success: function (accounts) {
+            var accountContainer = $('.account-container');
+            accountContainer.empty();
+    
+            accounts.forEach(function (account) {
+              const formattedDate = formatDate(account.createDate);
+    
+              var accountItem = `
+                <div class="account-card p-3 shadow-sm" id="budget-${account.id}">
+                  <h5>${account.name}</h5>
+                  <h6>${account.status}</h6>
+                  <h6>${formattedDate}</h6>            
+                  <span>${account.balance.toLocaleString()} 원</span>
+                </div>
+              `;
+              accountContainer.append(accountItem);
+            });
+          },
+          error: function (error) {
+            console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
+          }
+        });
+
+
+
 });
 
 
