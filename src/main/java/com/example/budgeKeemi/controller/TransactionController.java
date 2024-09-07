@@ -1,9 +1,6 @@
 package com.example.budgeKeemi.controller;
 
-import com.example.budgeKeemi.dto.DailySummary;
-import com.example.budgeKeemi.dto.MonthlySummary;
-import com.example.budgeKeemi.dto.ReqTransaction;
-import com.example.budgeKeemi.dto.RespTransaction;
+import com.example.budgeKeemi.dto.*;
 import com.example.budgeKeemi.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -83,6 +80,14 @@ public class TransactionController {
         List<DailySummary> dailySummaries=service.getDaySummary(yearMonth);
 
         return ResponseEntity.ok(dailySummaries);
+    }
+
+    @GetMapping("/graph")
+    public ResponseEntity<?> getGraphData(@RequestParam(name="startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String startDate,
+                                          @RequestParam(name="endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String endDate){
+        List<ExpenseGraph> expenseGraphDatas=service.getExpenseGraph(startDate,endDate);
+
+        return ResponseEntity.ok(expenseGraphDatas);
     }
 
 }

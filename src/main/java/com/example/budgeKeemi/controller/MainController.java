@@ -24,4 +24,9 @@ public class MainController {
     public String budgetPage(){
         return "budget";
     }
+
+    @GetMapping("/graphPage")
+    public String graphPage(){
+        return "graph";
+    }
 }

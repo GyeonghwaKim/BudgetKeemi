@@ -110,10 +110,7 @@ public class TransactionService {
     }
 
     public MonthlySummary getMonthlySummary(YearMonth yearMonth) {
-        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
-        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23,59,59);
-
-        List<Transaction> transactionList=repository.findByMonth(startDate,endDate);
+        List<Transaction> transactionList = getMonthlyTransactions(yearMonth);
 
         int totalIncome = transactionList
                 .stream()
@@ -137,11 +134,16 @@ public class TransactionService {
 
     }
 
-    public List<DailySummary> getDaySummary(YearMonth yearMonth) {
+    private List<Transaction> getMonthlyTransactions(YearMonth yearMonth) {
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
         LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23,59,59);
 
-        List<Transaction> transactionList=repository.findByMonth(startDate,endDate);
+        List<Transaction> transactionList=repository.findByDate(startDate,endDate);
+        return transactionList;
+    }
+
+    public List<DailySummary> getDaySummary(YearMonth yearMonth) {
+        List<Transaction> transactionList = getMonthlyTransactions(yearMonth);
 
         Map<LocalDate,Integer> incomeMap=new HashMap<>();
         Map<LocalDate,Integer> expenseMap=new HashMap<>();
@@ -180,5 +182,25 @@ public class TransactionService {
     public List<Transaction> getTransactionsByCategoryId(Long categoryId) {
         List<Transaction> transactions = repository.findByCategoryId(categoryId);
         return transactions;
+    }
+
+    public List<ExpenseGraph> getExpenseGraph(String startDate, String endDate) {
+        List<Transaction> transactions = repository.findByDate(LocalDateTime.parse(startDate+"T00:00:00"), LocalDateTime.parse(endDate+"T23:59:59"));
+
+        Map<String,Integer> expenseMap=new HashMap<>();
+        for (Transaction transaction : transactions) {
+
+            String key = transaction.getCategory().getName();
+            if(transaction.getCategory().getStatus()==CategoryStatus.EXPENSE) {
+                expenseMap.put(key, expenseMap.getOrDefault(key,0)+transaction.getAmount());
+            }
+
+        }
+        List<ExpenseGraph> expenseGraphs=new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : expenseMap.entrySet()) {
+            expenseGraphs.add(ExpenseGraph.toDto(entry.getKey(),entry.getValue()));
+        }
+
+        return expenseGraphs;
     }
 }
