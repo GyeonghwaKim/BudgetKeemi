@@ -25,14 +25,14 @@
         margin-bottom: 30px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
       }
-      .account-card {
+      .budget-card {
         background-color: #fff;
         border-radius: 10px;
         margin-bottom: 1rem;
         padding: 15px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
       }
-      .account-card h5 {
+      .budget-card h5 {
         color: #007bff;
       }
       .btn-custom {
@@ -79,9 +79,46 @@
         <hr>
 
         <h4 class="mb-4">내 예산</h4>
-        <div class="account-card-container">
+        <div class="budget-card-container">
             <!-- 예산 데이터 추가 -->
         </div>
+
+        <!-- 수정 폼 모달 -->
+<div class="modal fade" id="editBudgetModal" tabindex="-1" aria-labelledby="editBudgetModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editBudgetModalLabel">예산 수정</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editBudgetForm">
+          <input type="hidden" id="editBudgetId">
+          <div class="mb-3">
+            <label for="editCategory" class="form-label">카테고리</label>
+            <select class="form-select" id="editCategory" required aria-label="select example"></select>
+               <!-- 카테고리 옵션 추가 -->
+          </select>
+          </div>
+          <div class="mb-3">
+            <label for="editGoalAmount" class="form-label">목표 금액</label>
+            <input type="text" class="form-control" id="editGoalAmount" required>
+          </div>
+          <div class="mb-3">
+            <label for="editStartDate" class="form-label">시작 날짜</label>
+            <input type="date" class="form-control" id="editStartDate" required>
+          </div>
+          <div class="mb-3">
+            <label for="editEndDate" class="form-label">종료 날짜</label>
+            <input type="date" class="form-control" id="editEndDate" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="submitEditBudget">저장</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
@@ -166,15 +203,16 @@
             url: 'http://localhost:8080/budgets',
             method: 'GET',
             success: function(budgets) {
-              var budgetContainer = $('.account-card-container');
+              var budgetContainer = $('.budget-card-container');
               budgetContainer.empty();
 
               budgets.reverse();
 
               budgets.forEach(function(budget) {
                 var budgetItem = `
-                 <div class="account-card p-3 shadow-sm" id="budget-${budget.id}">
+                 <div class="budget-card p-3 shadow-sm" id="budget-${budget.id}">
             <button class="btn btn-danger btn-sm float-end delete-btn" data-id="${budget.id}">삭제</button>
+            <button class="btn btn-primary btn-sm float-end edit-btn" data-id="${budget.id}" data-category="${budget.categoryId}" data-goalAmount="${budget.goalAmount}" data-startDate="${budget.startDate}" data-endDate="${budget.endDate}">수정</button>
             <h5>${budget.categoryName}</h5>
             <h6><span>${budget.startDate}</span> ~ <span>${budget.endDate}</span></h6>
             <span>${budget.goalAmount.toLocaleString()} 원</span>
@@ -183,8 +221,16 @@
                 // 만들어진 HTML을 budgetContainer에 추가
                 budgetContainer.append(budgetItem);
               });
+            },
+            error: function(error) {
+              console.error("예산 데이터를 불러오는 중 오류 발생:", error);
+            }
+          });
+
+
+
           // 삭제 버튼 클릭 이벤트 핸들러 추가
-              $('.delete-btn').click(function() {
+          $('.budget-card-container').on('click','.delete-btn',function() {
         var budgetId = $(this).data('id');
         
         if (confirm("이 예산을 삭제하시겠습니까?")) {
@@ -204,14 +250,81 @@
           });
         }
       });
+
+       // 카테고리 get 요청 (수정 모달)
+  $.ajax({
+    url: 'http://localhost:8080/categories',
+    method: 'GET',
+    success: function(categories){
+      var editCategorySelect = $('#editCategory'); // 수정된 id
+      editCategorySelect.empty();
+      categories.forEach(function(category){
+        var option = $('<option></option>').val(category.id).text(category.status + ' - ' + category.name);
+        editCategorySelect.append(option);
+      });
+    },
+    error: function(error) {
+      console.error("카테고리 데이터를 불러오는 중 오류 발생:", error);
+    }
+  });
+
+      // 수정 버튼 이벤트
+      $('.budget-card-container').on('click','.edit-btn',function() {
+                    var budgetId = $(this).data('id');
+                    var categoryId = $(this).data('category');
+                    var goalAmount = $(this).data('goalamount');
+                    var startDate = $(this).data('startdate');
+                    var endDate = $(this).data('enddate');
+
+                    console.log(budgetId);
+                    console.log(goalAmount);
+
+
+                    // 폼에 기존 예산 데이터를 채움
+                    $('#editBudgetId').val(budgetId);
+                    $('#editGoalAmount').val(goalAmount);
+                    $('#editStartDate').val(startDate);
+                    $('#editEndDate').val(endDate);
+                    $('#editCategory').val(categoryId);
+
+                    // 수정 모달 표시
+                    $('#editBudgetModal').modal('show');
+                });
+
+      // 수정 폼 제출
+    $('#editBudgetForm').on('submit',function(event) {
+
+      event.preventDefault();
+        var budgetId = $('#editBudgetId').val();
+        var goalAmount = $('#editGoalAmount').val();
+        var startDate = $('#editStartDate').val();
+        var endDate = $('#editEndDate').val();
+        var categoryId = $('#editCategory').val();
+
+        // 수정된 데이터 전송
+        var updatedBudgetData = {
+            goalAmount: goalAmount,
+            startDate: startDate,
+            endDate: endDate,
+            categoryId: categoryId
+        };
+
+        $.ajax({
+            url: 'http://localhost:8080/budgets/' + budgetId,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(updatedBudgetData),
+            success: function(response) {
+                alert("예산이 성공적으로 수정되었습니다!");
+                $('#editBudgetModal').modal('hide');
+                location.reload();// 수정 후 목록 새로고침
             },
-            error: function(error) {
-              console.error("예산 데이터를 불러오는 중 오류 발생:", error);
+            error: function(xhr, status, error) {
+                console.error('예산 수정 중 오류 발생:', error);
+                alert("예산 수정 중 오류가 발생했습니다.");
             }
-          });
-
-
-      
+        });
+    });
 
       });
 

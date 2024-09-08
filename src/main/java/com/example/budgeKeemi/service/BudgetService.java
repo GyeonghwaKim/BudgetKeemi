@@ -73,8 +73,10 @@ public class BudgetService {
 
         if(_budget.isPresent()){
             Budget budget = _budget.get();
-            budget.updateAmount(reqBudget.getGoalAmount());
-            budget.updateEndDate(reqBudget.getEndDate());
+            budget.replaceCategory(categoryService.getCategoryById(reqBudget.getCategoryId()));
+            budget.replaceGoalAmount(reqBudget.getGoalAmount());
+            budget.replaceStartDate(reqBudget.getStartDate());
+            budget.replaceEndDate(reqBudget.getEndDate());
 
             Budget updateBudget = repository.save(budget);
 

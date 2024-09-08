@@ -42,11 +42,19 @@ public class Budget {
         this.category = category;
     }
 
-    public void updateAmount(int amount) {
-        this.goalAmount = amount;
+    public void replaceGoalAmount(int goalAmount) {
+        this.goalAmount = goalAmount;
     }
 
-    public void updateEndDate(LocalDate endDate) {
+    public void replaceEndDate(LocalDate endDate) {
         this.endDate=endDate;
+    }
+
+    public void replaceCategory(Category category) {
+        this.category=category;
+    }
+
+    public void replaceStartDate(LocalDate startDate) {
+        this.startDate=startDate;
     }
 }
