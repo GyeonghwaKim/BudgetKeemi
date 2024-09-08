@@ -5,6 +5,7 @@ import com.example.budgeKeemi.domain.Category;
 import com.example.budgeKeemi.domain.CategoryStatus;
 import com.example.budgeKeemi.domain.Transaction;
 import com.example.budgeKeemi.dto.*;
+import com.example.budgeKeemi.exception.excep.InsufficientBalanceException;
 import com.example.budgeKeemi.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class TransactionService {
             account.adjustBalance(reqTransaction.getAmount());
         }else{
             if(account.getBalance()<reqTransaction.getAmount()){
-                throw new IllegalArgumentException("잔액이 부족합니다.");
+                throw new InsufficientBalanceException("잔액이 부족합니다.");
             }
             account.adjustBalance(-reqTransaction.getAmount());
         }

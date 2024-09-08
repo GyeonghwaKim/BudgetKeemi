@@ -258,7 +258,13 @@ $(document).ready(function(){
         },
         error: function (xhr, status, error) {
             console.error('거래 저장 중 오류 발생:', error);
-            alert("거래 저장 중 오류가 발생했습니다.");
+
+            if(xhr.status === 400){
+              alert(xhr.responseText)
+            }else{
+              alert("거래 저장 중 오류가 발생했습니다.");
+            }
+
         }
     });
 });
