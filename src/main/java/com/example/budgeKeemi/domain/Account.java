@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Setter
+
 @Getter
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @Entity
@@ -37,8 +37,20 @@ public class Account {
         this.createDate = createDate;
     }
 
-
-    public void updateBalence(int amount) {
+    public void adjustBalance(int amount) {
         this.balance=this.balance+amount;
+    }
+
+    public void replaceName(String name) {
+        this.name=name;
+    }
+
+    public void replaceBalance(int balance) {
+        this.balance=balance;
+    }
+
+
+    public void replaceStatus(AccountType status) {
+        this.status=status;
     }
 }

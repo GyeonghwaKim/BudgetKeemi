@@ -59,7 +59,9 @@ public class AccountService {
 
         if (_account.isPresent()) {
             Account account = _account.get();
-            account.setName(reqAccount.getName());
+            account.replaceName(reqAccount.getName());
+            account.replaceBalance(reqAccount.getBalance());
+            account.replaceStatus(reqAccount.getStatus());
             Account updateAccount = repository.save(account);
 
             return RespAccount.toDto(updateAccount);

@@ -57,10 +57,6 @@
             <div class="mb-3">
                 <label for="accountType" class="form-label">계좌 유형</label>
                 <select class="form-select" id="accountType">
-                    <option value="CASH">현금</option>
-                    <option value="BANK">은행</option>
-                    <option value="CARD">카드</option>
-                    <option value="ETC">기타</option>
                 </select>
             </div>
             <button class="btn btn-outline-dark btn-custom" id="submintAccount">저장</button>
@@ -73,6 +69,42 @@
         <div class="account-card-container">
             <!--계좌 데이터 추가-->
         </div>
+<!-- 수정 폼 모달 -->
+<div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editAccountModalLabel">계좌 수정</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editAccountForm">
+          <input type="hidden" id="editAccountId">
+          <div class="mb-3">
+            <label for="editAccountName" class="form-label">계좌 이름</label>
+            <input type="text" class="form-control" id="editAccountName" required>
+          </div>
+          <div class="mb-3">
+            <label for="editBalance" class="form-label">현재 잔액</label>
+            <input type="text" class="form-control" id="editBalance" required>
+          </div>
+          <div class="mb-3">
+            <label for="editAccountType" class="form-label">계좌 유형</label>
+            <select class="form-select" id="editAccountType" required>
+              <option value="CASH">현금</option>
+              <option value="BANK">은행</option>
+              <option value="CARD">카드</option>
+              <option value="ETC">기타</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">저장</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+        
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
@@ -96,7 +128,7 @@
       $(document).ready(function () {
 
 //account type
-        $.ajax({
+ $.ajax({
     url: 'http://localhost:8080/accounts/accountType',
     method: 'GET',
     success: function (accountTypes) {
@@ -112,7 +144,7 @@
     }
   });
 
-//계좌 포스트
+//계좌 생성
 $('#submintAccount').click(function () {
       var accountName = $('#accountName').val();
       var balance = $('#balance').val();
@@ -141,7 +173,6 @@ $('#submintAccount').click(function () {
         status: accountType
       };
 
-      // 서버로 POST 요청
       $.ajax({
         url: 'http://localhost:8080/accounts',
         method: 'POST',
@@ -159,8 +190,8 @@ $('#submintAccount').click(function () {
     });
 
 
-        // 계좌 데이터를 가져오는 AJAX 요청
-        $.ajax({
+// 계좌 데이터를 가져오는 AJAX 요청
+$.ajax({
           url: 'http://localhost:8080/accounts',
           method: 'GET',
           success: function (accounts) {
@@ -173,6 +204,7 @@ $('#submintAccount').click(function () {
               var accountItem = `
                 <div class="account-card p-3 shadow-sm" id="budget-${account.id}">
                   <button class="btn btn-danger btn-sm float-end delete-btn" data-id="${account.id}">삭제</button>
+                  <button class="btn btn-primary btn-sm float-end edit-btn" data-id="${account.id}" data-name="${account.name}" data-balance="${account.balance}" data-type="${account.status}">수정</button>
                   <h5>${account.name}</h5>
                   <h6>${account.status}</h6>
                   <h6>${formattedDate}</h6>            
@@ -187,8 +219,8 @@ $('#submintAccount').click(function () {
           }
         });
     
-       
-        $('.account-card-container').on('click', '.delete-btn', function () {
+//삭제  
+$('.account-card-container').on('click', '.delete-btn', function () {
           var accountId = $(this).data('id');
     
           if (confirm("이 예산을 삭제하시겠습니까?")) {
@@ -208,6 +240,74 @@ $('#submintAccount').click(function () {
             });
           }
         });
+
+
+        // 계좌 수정 버튼 클릭 이벤트
+  $('.account-card-container').on('click', '.edit-btn', function () {
+    var accountId = $(this).data('id');
+    var accountName = $(this).data('name');
+    var accountBalance = $(this).data('balance');
+    var accountType = $(this).data('type');
+
+    // 수정할 계좌 정보를 폼에 채워넣기
+    $('#editAccountId').val(accountId);
+    $('#editAccountName').val(accountName);
+    $('#editBalance').val(accountBalance);
+    $('#editAccountType').val(accountType);
+
+    // 수정 폼 표시
+    $('#editAccountModal').modal('show');
+  });
+
+  // 계좌 수정 제출
+  $('#editAccountForm').on('submit',function (event) {
+    event.preventDefault();
+
+    var accountId = $('#editAccountId').val();
+    var accountName = $('#editAccountName').val();
+    var balance = $('#editBalance').val();
+    var accountType = $('#editAccountType').val();
+
+    // // 입력값 검증
+    // if (!accountName) {
+    //   alert("계좌 이름을 입력하세요.");
+    //   return;
+    // }
+
+    // if (!balance || isNaN(balance) || balance <= 0) {
+    //   alert("유효한 금액을 입력하세요.");
+    //   return;
+    // }
+
+    // if (!accountType) {
+    //   alert("계좌 유형을 선택하세요.");
+    //   return;
+    // }
+
+    // 수정된 데이터 전송
+    var accountData = {
+      name: accountName,
+      balance: balance,
+      status: accountType
+    };
+
+    // 서버로 PUT 요청
+    $.ajax({
+      url: 'http://localhost:8080/accounts/' + accountId,
+      method: 'PUT',
+      contentType: 'application/json',
+      data: JSON.stringify(accountData),
+      success: function (response) {
+        alert("계좌가 성공적으로 수정되었습니다.");
+        $('#editAccountModal').modal('hide');
+        location.reload(); // 수정 후 페이지 새로고침
+      },
+      error: function (xhr, status, error) {
+        console.error('계좌 수정 중 오류 발생:', error);
+        alert("계좌 수정 중 오류가 발생했습니다.");
+      }
+    });
+  });
       });
     </script>
     

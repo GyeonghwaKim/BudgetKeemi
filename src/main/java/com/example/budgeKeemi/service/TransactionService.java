@@ -34,12 +34,12 @@ public class TransactionService {
 
         //잔액 부족 시나리오
         if(category.getStatus()==CategoryStatus.INCOME){
-            account.updateBalence(reqTransaction.getAmount());
+            account.adjustBalance(reqTransaction.getAmount());
         }else{
             if(account.getBalance()<reqTransaction.getAmount()){
                 throw new IllegalArgumentException("잔액이 부족합니다.");
             }
-            account.updateBalence(-reqTransaction.getAmount());
+            account.adjustBalance(-reqTransaction.getAmount());
         }
 
         transaction.addAccount(account);
