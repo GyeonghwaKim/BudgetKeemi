@@ -11,7 +11,7 @@ public class ReqTransaction {
     private Long accountId;
     private Long categoryId;
     private int amount;
-    //private LocalDateTime transacDate;
+    private LocalDateTime transacDate;
     private String description;
 
 
@@ -19,7 +19,7 @@ public class ReqTransaction {
 
         return Transaction.builder()
                 .amount(reqTransaction.getAmount())
-                .transacDate(LocalDateTime.now())
+                .transacDate(reqTransaction.getTransacDate())
                 .description(reqTransaction.getDescription())
                 .build();
 
