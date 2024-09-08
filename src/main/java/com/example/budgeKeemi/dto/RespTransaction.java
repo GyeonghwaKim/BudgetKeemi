@@ -32,6 +32,7 @@ public class RespTransaction {
     public static RespTransaction toDto(Transaction transaction){
         return RespTransaction.builder()
                 .id(transaction.getId())
+                .accountId(transaction.getAccount().getId())
                 .categoryName(transaction.getCategory().getName())
                 .categoryStatus(transaction.getCategory().getStatus())
                 .amount(transaction.getAmount())
