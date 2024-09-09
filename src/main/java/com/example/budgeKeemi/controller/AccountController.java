@@ -47,11 +47,25 @@ public class AccountController {
 
     //계좌 생성
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody ReqAccount reqAccount){
+    public ResponseEntity<?> createAccount(@RequestBody ReqAccount reqAccount,Principal principal) {
 
-        RespAccount newAccount=accountService.createAccount(reqAccount);
+        RespAccount newAccount = new RespAccount();
 
-        return new ResponseEntity<>(newAccount, HttpStatus.CREATED);
+        if (principal instanceof OAuth2AuthenticationToken) {
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            OAuth2User oAuth2User = authToken.getPrincipal();
+
+            if (oAuth2User instanceof CustomOAuth2User) {
+                CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
+                String username = customOAuth2User.getUsername();
+
+                newAccount = accountService.createAccount(reqAccount,username);
+
+            }
+        }
+
+        return ResponseEntity.ok(newAccount);
+
     }
 
     //계좌 상세 조회

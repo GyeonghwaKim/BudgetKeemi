@@ -54,4 +54,8 @@ public class Account {
     public void replaceStatus(AccountType status) {
         this.status=status;
     }
+
+    public void updateMember(Member member) {
+        this.member=member;
+    }
 }

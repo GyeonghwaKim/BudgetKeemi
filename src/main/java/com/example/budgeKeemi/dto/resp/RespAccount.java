@@ -4,9 +4,11 @@ import com.example.budgeKeemi.domain.entity.Account;
 import com.example.budgeKeemi.domain.type.AccountType;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
 @Getter
 public class RespAccount {
 

@@ -25,9 +25,13 @@ public class AccountService {
     private final MemberService memberService;
 
     @Transactional
-    public RespAccount createAccount(ReqAccount reqAccount) {
+    public RespAccount createAccount(ReqAccount reqAccount,String username) {
+
+        Member member = memberService.getMemberByUsername(username);
 
         Account account = ReqAccount.toEntity(reqAccount);
+        account.updateMember(member);
+
         Account saveAccount = this.repository.save(account);
         RespAccount respAccount = RespAccount.toDto(saveAccount);
 
