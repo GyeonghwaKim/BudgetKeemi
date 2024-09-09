@@ -37,6 +37,9 @@
         width: 100%;
         margin-top: 10px;
       }
+      .del {
+        text-decoration: line-through;
+      }
     </style>
   </head>
   <body>
@@ -91,10 +94,6 @@
           <div class="mb-3">
             <label for="editAccountType" class="form-label">계좌 유형</label>
             <select class="form-select" id="editAccountType" required>
-              <option value="CASH">현금</option>
-              <option value="BANK">은행</option>
-              <option value="CARD">카드</option>
-              <option value="ETC">기타</option>
             </select>
           </div>
           <button type="submit" class="btn btn-primary">저장</button>
@@ -143,6 +142,23 @@
       console.error("계좌 유형 데이터를 불러오는 중 오류 발생:", error);
     }
   });
+//account type 수정 모달
+$.ajax({
+    url: 'http://localhost:8080/accounts/accountType',
+    method: 'GET',
+    success: function (accountTypes) {
+      var accountTypeSelect = $('#editAccountType');
+      accountTypeSelect.empty();
+
+      accountTypes.forEach(function (type) {
+        accountTypeSelect.append(`<option value="${type}">${type}</option>`);
+      });
+    },
+    error: function (error) {
+      console.error("계좌 유형 데이터를 불러오는 중 오류 발생:", error);
+    }
+  });
+
 
 //계좌 생성
 $('#submintAccount').click(function () {
@@ -192,33 +208,49 @@ $('#submintAccount').click(function () {
 
 // 계좌 데이터를 가져오는 AJAX 요청
 $.ajax({
-          url: 'http://localhost:8080/accounts',
-          method: 'GET',
-          success: function (accounts) {
-            var accountContainer = $('.account-card-container');
-            accountContainer.empty();
-    
-            accounts.forEach(function (account) {
-              const formattedDate = formatDate(account.createDate);
-    
-              var accountItem = `
-                <div class="account-card p-3 shadow-sm" id="budget-${account.id}">
-                  <button class="btn btn-danger btn-sm float-end delete-btn" data-id="${account.id}">삭제</button>
-                  <button class="btn btn-primary btn-sm float-end edit-btn" data-id="${account.id}" data-name="${account.name}" data-balance="${account.balance}" data-type="${account.status}">수정</button>
-                  <h5>${account.name}</h5>
-                  <h6>${account.status}</h6>
-                  <h6>${formattedDate}</h6>            
-                  <span>${account.balance.toLocaleString()} 원</span>
-                </div>
-              `;
-              accountContainer.append(accountItem);
-            });
-          },
-          error: function (error) {
-            console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
-          }
-        });
-    
+  url: 'http://localhost:8080/accounts',
+  method: 'GET',
+  success: function (accounts) {
+    var accountContainer = $('.account-card-container');
+    accountContainer.empty();
+
+    // 활성화된 계좌가 위로 오도록 정렬
+    accounts.sort(function (a, b) {
+      if (a.active === 'Y' && b.active === 'N') {
+        return -1; // a가 활성화된 경우 먼저 오도록 함
+      } else if (a.active === 'N' && b.active === 'Y') {
+        return 1; // b가 활성화된 경우 나중에 오도록 함
+      } else {
+        return 0; // 같은 활성화 상태일 경우 순서 변경 없음
+      }
+    });
+
+    // 계좌 데이터 렌더링
+    accounts.forEach(function (account) {
+      const formattedDate = formatDate(account.createDate);
+      
+      // 비활성화된 계좌는 버튼과 스타일을 비활성화
+      var isDisabled = account.active === 'N' ? 'disabled' : '';
+      var isDelete=account.active ==='N' ? 'del' : '';
+
+      var accountItem = `
+        <div class="account-card p-3 shadow-sm ${isDisabled}" id="budget-${account.id}">
+          <button class="btn btn-danger btn-sm float-end delete-btn" data-id="${account.id}" ${isDisabled}>삭제</button>
+          <button class="btn btn-primary btn-sm float-end edit-btn" data-id="${account.id}" data-name="${account.name}" data-balance="${account.balance}" data-type="${account.status}" ${isDisabled}>수정</button>
+          <h5 class="${isDelete}">${account.name}</h5>
+          <h6>${account.status}</h6>
+          <h6>${formattedDate}</h6>            
+          <span>${account.balance.toLocaleString()} 원</span>
+        </div>
+      `;
+      accountContainer.append(accountItem);
+    });
+  },
+  error: function (error) {
+    console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
+  }
+});
+
 //삭제  
 $('.account-card-container').on('click', '.delete-btn', function () {
           var accountId = $(this).data('id');

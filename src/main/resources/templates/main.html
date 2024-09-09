@@ -134,8 +134,12 @@
             var accountContainer = $('.account-container');
             accountContainer.empty();
     
-            accounts.forEach(function (account) {
+            accounts
+            .filter(account => account.active !=='N')
+            .forEach(function (account) {
               const formattedDate = formatDate(account.createDate);
+
+        
     
               var accountItem = `
                 <div class="account-card p-3 shadow-sm" id="budget-${account.id}">

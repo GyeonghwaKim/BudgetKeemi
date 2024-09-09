@@ -1,6 +1,7 @@
 package com.example.budgeKeemi.domain.entity;
 
 import com.example.budgeKeemi.domain.type.AccountType;
+import com.example.budgeKeemi.domain.type.AccountActive;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,10 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AccountActive active=AccountActive.Y;
 
 
     @Builder
@@ -57,5 +62,9 @@ public class Account {
 
     public void updateMember(Member member) {
         this.member=member;
+    }
+
+    public void changeActive(AccountActive value) {
+        this.active=value;
     }
 }

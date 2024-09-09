@@ -2,6 +2,7 @@ package com.example.budgeKeemi.service;
 
 import com.example.budgeKeemi.domain.entity.Account;
 import com.example.budgeKeemi.domain.entity.Member;
+import com.example.budgeKeemi.domain.type.AccountActive;
 import com.example.budgeKeemi.domain.type.AccountType;
 import com.example.budgeKeemi.dto.req.ReqAccount;
 import com.example.budgeKeemi.dto.resp.RespAccount;
@@ -106,7 +107,9 @@ public class AccountService {
             //소유자 검증
             validationAuthorization(account, username, "삭제 권한이 없습니다");
 
-            repository.delete(account);
+            account.changeActive(AccountActive.N);
+
+            repository.save(account);
 
             return  true;
         } else {
