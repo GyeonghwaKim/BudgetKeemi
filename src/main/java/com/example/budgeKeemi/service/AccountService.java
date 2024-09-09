@@ -1,9 +1,9 @@
 package com.example.budgeKeemi.service;
 
-import com.example.budgeKeemi.domain.Account;
-import com.example.budgeKeemi.domain.AccountType;
-import com.example.budgeKeemi.dto.ReqAccount;
-import com.example.budgeKeemi.dto.RespAccount;
+import com.example.budgeKeemi.domain.entity.Account;
+import com.example.budgeKeemi.domain.type.AccountType;
+import com.example.budgeKeemi.dto.req.ReqAccount;
+import com.example.budgeKeemi.dto.resp.RespAccount;
 import com.example.budgeKeemi.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

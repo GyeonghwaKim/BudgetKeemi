@@ -1,7 +1,7 @@
 package com.example.budgeKeemi.controller;
 
-import com.example.budgeKeemi.dto.ReqAccount;
-import com.example.budgeKeemi.dto.RespAccount;
+import com.example.budgeKeemi.dto.req.ReqAccount;
+import com.example.budgeKeemi.dto.resp.RespAccount;
 import com.example.budgeKeemi.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

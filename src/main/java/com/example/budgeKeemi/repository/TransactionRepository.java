@@ -1,6 +1,6 @@
 package com.example.budgeKeemi.repository;
 
-import com.example.budgeKeemi.domain.Transaction;
+import com.example.budgeKeemi.domain.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

@@ -1,7 +1,7 @@
 package com.example.budgeKeemi.controller;
 
-import com.example.budgeKeemi.domain.RespMember;
-import com.example.budgeKeemi.dto.JoinForm;
+import com.example.budgeKeemi.dto.resp.RespMember;
+import com.example.budgeKeemi.dto.req.JoinForm;
 import com.example.budgeKeemi.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

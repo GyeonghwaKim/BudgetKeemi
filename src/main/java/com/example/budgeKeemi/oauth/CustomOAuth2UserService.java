@@ -1,7 +1,7 @@
 package com.example.budgeKeemi.oauth;
 
-import com.example.budgeKeemi.domain.Member;
-import com.example.budgeKeemi.domain.MemberRole;
+import com.example.budgeKeemi.domain.entity.Member;
+import com.example.budgeKeemi.domain.type.MemberRole;
 import com.example.budgeKeemi.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

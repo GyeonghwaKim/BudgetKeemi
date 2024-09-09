@@ -1,6 +1,6 @@
-package com.example.budgeKeemi.dto;
+package com.example.budgeKeemi.dto.req;
 
-import com.example.budgeKeemi.domain.Budget;
+import com.example.budgeKeemi.domain.entity.Budget;
 import lombok.Getter;
 
 import java.time.LocalDate;

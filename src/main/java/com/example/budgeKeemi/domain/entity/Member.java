@@ -1,5 +1,6 @@
-package com.example.budgeKeemi.domain;
+package com.example.budgeKeemi.domain.entity;
 
+import com.example.budgeKeemi.domain.type.MemberRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

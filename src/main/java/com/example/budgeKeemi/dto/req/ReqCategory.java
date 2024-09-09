@@ -1,8 +1,7 @@
-package com.example.budgeKeemi.dto;
+package com.example.budgeKeemi.dto.req;
 
-import com.example.budgeKeemi.domain.Category;
-import com.example.budgeKeemi.domain.CategoryStatus;
-import lombok.Builder;
+import com.example.budgeKeemi.domain.entity.Category;
+import com.example.budgeKeemi.domain.type.CategoryStatus;
 import lombok.Getter;
 
 @Getter

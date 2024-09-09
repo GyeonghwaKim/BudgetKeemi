@@ -1,7 +1,7 @@
 package com.example.budgeKeemi.controller;
 
-import com.example.budgeKeemi.dto.ReqBudget;
-import com.example.budgeKeemi.dto.RespBudget;
+import com.example.budgeKeemi.dto.req.ReqBudget;
+import com.example.budgeKeemi.dto.resp.RespBudget;
 import com.example.budgeKeemi.service.BudgetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

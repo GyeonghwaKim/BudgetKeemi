@@ -1,6 +1,6 @@
 package com.example.budgeKeemi.oauth;
 
-import com.example.budgeKeemi.domain.MemberRole;
+import com.example.budgeKeemi.domain.type.MemberRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 

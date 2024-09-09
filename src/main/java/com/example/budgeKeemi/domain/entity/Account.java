@@ -1,5 +1,6 @@
-package com.example.budgeKeemi.domain;
+package com.example.budgeKeemi.domain.entity;
 
+import com.example.budgeKeemi.domain.type.AccountType;
 import jakarta.persistence.*;
 import lombok.*;
 

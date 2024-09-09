@@ -1,5 +1,6 @@
-package com.example.budgeKeemi.domain;
+package com.example.budgeKeemi.dto.resp;
 
+import com.example.budgeKeemi.domain.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 

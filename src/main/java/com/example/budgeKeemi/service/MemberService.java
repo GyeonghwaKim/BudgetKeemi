@@ -1,8 +1,8 @@
 package com.example.budgeKeemi.service;
 
-import com.example.budgeKeemi.dto.JoinForm;
-import com.example.budgeKeemi.domain.Member;
-import com.example.budgeKeemi.domain.RespMember;
+import com.example.budgeKeemi.dto.req.JoinForm;
+import com.example.budgeKeemi.domain.entity.Member;
+import com.example.budgeKeemi.dto.resp.RespMember;
 import com.example.budgeKeemi.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

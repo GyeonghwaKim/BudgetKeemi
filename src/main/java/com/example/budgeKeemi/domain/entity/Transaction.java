@@ -1,7 +1,5 @@
-package com.example.budgeKeemi.domain;
+package com.example.budgeKeemi.domain.entity;
 
-import com.example.budgeKeemi.dto.ReqTransaction;
-import com.example.budgeKeemi.dto.RespAccount;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

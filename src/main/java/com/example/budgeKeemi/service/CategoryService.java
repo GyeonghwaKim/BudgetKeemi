@@ -1,10 +1,10 @@
 package com.example.budgeKeemi.service;
 
-import com.example.budgeKeemi.domain.Category;
-import com.example.budgeKeemi.domain.CategoryStatus;
-import com.example.budgeKeemi.dto.ReqCategory;
-import com.example.budgeKeemi.dto.RespCategory;
-import com.example.budgeKeemi.dto.RespCategoryStatus;
+import com.example.budgeKeemi.domain.entity.Category;
+import com.example.budgeKeemi.domain.type.CategoryStatus;
+import com.example.budgeKeemi.dto.req.ReqCategory;
+import com.example.budgeKeemi.dto.resp.RespCategory;
+import com.example.budgeKeemi.dto.resp.RespCategoryStatus;
 import com.example.budgeKeemi.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

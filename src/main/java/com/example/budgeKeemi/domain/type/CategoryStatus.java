@@ -1,4 +1,4 @@
-package com.example.budgeKeemi.domain;
+package com.example.budgeKeemi.domain.type;
 
 public enum CategoryStatus {
     INCOME("수입"),EXPENSE("지출");

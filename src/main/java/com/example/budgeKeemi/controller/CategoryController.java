@@ -1,8 +1,8 @@
 package com.example.budgeKeemi.controller;
 
-import com.example.budgeKeemi.dto.ReqCategory;
-import com.example.budgeKeemi.dto.RespCategory;
-import com.example.budgeKeemi.dto.RespCategoryStatus;
+import com.example.budgeKeemi.dto.req.ReqCategory;
+import com.example.budgeKeemi.dto.resp.RespCategory;
+import com.example.budgeKeemi.dto.resp.RespCategoryStatus;
 import com.example.budgeKeemi.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

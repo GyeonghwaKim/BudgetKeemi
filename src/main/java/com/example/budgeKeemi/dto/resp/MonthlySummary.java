@@ -1,4 +1,4 @@
-package com.example.budgeKeemi.dto;
+package com.example.budgeKeemi.dto.resp;
 
 
 import lombok.Builder;

@@ -1,10 +1,10 @@
 package com.example.budgeKeemi.service;
 
-import com.example.budgeKeemi.domain.Budget;
-import com.example.budgeKeemi.domain.Category;
-import com.example.budgeKeemi.domain.Transaction;
-import com.example.budgeKeemi.dto.ReqBudget;
-import com.example.budgeKeemi.dto.RespBudget;
+import com.example.budgeKeemi.domain.entity.Budget;
+import com.example.budgeKeemi.domain.entity.Category;
+import com.example.budgeKeemi.domain.entity.Transaction;
+import com.example.budgeKeemi.dto.req.ReqBudget;
+import com.example.budgeKeemi.dto.resp.RespBudget;
 import com.example.budgeKeemi.repository.BudgetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
