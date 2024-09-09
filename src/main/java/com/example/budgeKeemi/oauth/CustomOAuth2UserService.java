@@ -38,18 +38,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        log.info("oauth username = {}",username);
         Optional<Member> _member = memberRepository.findByUsername(username);
-        MemberRole role;
+        MemberRole role = MemberRole.USER;
+        //String role = "ROLE_USER";
 
         if(_member.isPresent()){
             Member member = _member.get();
-            role = member.getRole();
+            member.updateUsername(username);
+            member.updateEmail(oAuth2Response.getEmail());
+
+            role=member.getRole();
+
+            memberRepository.save(member);
+
         }else{
 
-            role = MemberRole.USER;
             Member member = Member.builder()
                     .role(role)
-                    .username(oAuth2Response.getName())
+                    .username(username)
                     .email(oAuth2Response.getEmail())
                     .joinDate(LocalDateTime.now())
                     .build();

@@ -35,4 +35,12 @@ public class Member {
         this.role = role;
         this.joinDate = joinDate;
     }
+
+    public void updateUsername(String username) {
+        this.username=username;
+    }
+
+    public void updateEmail(String email) {
+        this.email=email;
+    }
 }

@@ -18,7 +18,34 @@ public class securityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
-//TODO: OAuth2 로그인을 위한 설정
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+
+        http
+                .csrf((csrf)->csrf.disable());
+
+        http
+                .formLogin((login) -> login.disable());
+
+        http
+                .httpBasic((basic) -> basic.disable());
+
+        http
+                .oauth2Login((oauth2) -> oauth2
+                        .loginPage("/login")
+                        .userInfoEndpoint((userInfoEndpointConfig)->userInfoEndpointConfig
+                                .userService(customOAuth2UserService)));
+
+        http
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/login/**").permitAll()
+                        .anyRequest().authenticated());
+
+
+        return http.build();
+    }
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web -> web.ignoring()
@@ -27,31 +54,6 @@ public class securityConfig {
                         .atCommonLocations()
                 );
     }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http
-                .csrf((csrf)->csrf.disable())
-
-                .oauth2Login(Customizer.withDefaults());
-//
-//                .formLogin((login) ->login.disable())
-//
-//                .authorizeHttpRequests((auth) -> auth
-//                        .requestMatchers("/","/oauth2/**","/login/**").permitAll()
-//                        .anyRequest().authenticated());
-//
-//        http
-//                .oauth2Login((oauth2)-> oauth2
-//                .loginPage("/login")
-//                .failureUrl("/login?error=true")
-//                .userInfoEndpoint((userInfoEndpointConfig ->
-//                        userInfoEndpointConfig.userService(customOAuth2UserService))));
-//
-
-        return http.build();
-    }
-
 
 
 

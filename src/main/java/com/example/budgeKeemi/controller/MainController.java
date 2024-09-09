@@ -12,6 +12,12 @@ public class MainController {
         return "main";
     }
 
+    @GetMapping("/login")
+    public String loginPage() {
+
+        return "login";
+    }
+
     @GetMapping("/transactionPage")
     public String transactionPage(){
         return "transaction";
