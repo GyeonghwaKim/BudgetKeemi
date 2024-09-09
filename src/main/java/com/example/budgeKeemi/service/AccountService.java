@@ -80,9 +80,7 @@ public class AccountService {
             Account account = _account.get();
 
             //소유자 검증
-            if(!account.getMember().getUsername().equals(username)){
-                throw new UnauthorizedException("수정 권한이 없습니다");
-            }
+            validationAuthorization(account, username, "수정 권한이 없습니다");
 
             account.replaceName(reqAccount.getName());
             account.replaceBalance(reqAccount.getBalance());
@@ -98,12 +96,16 @@ public class AccountService {
 
     }
 
-    public boolean deleteAccount(Long id) {
+    public boolean deleteAccount(Long id,String username) {
 
         Optional<Account> _account = repository.findById(id);
 
         if (_account.isPresent()) {
             Account account = _account.get();
+
+            //소유자 검증
+            validationAuthorization(account, username, "삭제 권한이 없습니다");
+
             repository.delete(account);
 
             return  true;
@@ -111,6 +113,12 @@ public class AccountService {
             return false;
         }
 
+    }
+
+    private static void validationAuthorization(Account account, String username, String message) {
+        if (!account.getMember().getUsername().equals(username)) {
+            throw new UnauthorizedException(message);
+        }
     }
 
     public Account getAccountById(Long id) {

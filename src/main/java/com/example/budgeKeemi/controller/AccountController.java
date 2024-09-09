@@ -96,9 +96,11 @@ public class AccountController {
 
     //계좌 삭제
     @DeleteMapping("/{accountId}")
-    public ResponseEntity<?> deleteAccount(@PathVariable(name = "accountId") Long id){
+    public ResponseEntity<?> deleteAccount(@PathVariable(name = "accountId") Long id,Principal principal){
 
-        boolean isDeleted=accountService.deleteAccount(id);
+        String username = getUsername(principal);
+
+        boolean isDeleted=accountService.deleteAccount(id,username);
 
         //if(isDeleted){
             return ResponseEntity.ok().build();
