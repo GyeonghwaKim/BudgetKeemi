@@ -5,7 +5,6 @@ import com.example.budgeKeemi.dto.resp.RespAccount;
 import com.example.budgeKeemi.oauth.CustomOAuth2User;
 import com.example.budgeKeemi.service.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RequestMapping("/accounts")
@@ -29,40 +27,37 @@ public class AccountController {
     public ResponseEntity<?> getAccounts(Principal principal){
 
         List<RespAccount> accounts=new ArrayList<>();
+        String username = getUsername(principal);
+
+        accounts=accountService.getAccountsByUsername(username);
+        return ResponseEntity.ok(accounts);
+    }
+
+    private static String getUsername(Principal principal) {
+
+        String username="";
+
         if(principal instanceof OAuth2AuthenticationToken){
             OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
             OAuth2User oAuth2User = authToken.getPrincipal();
 
             if(oAuth2User instanceof CustomOAuth2User){
                 CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
-                String username=customOAuth2User.getUsername();
-
-                accounts=accountService.getAccountsByUsername(username);
+                username=customOAuth2User.getUsername();
 
             }
         }
-        return ResponseEntity.ok(accounts);
+        return username;
+
     }
 
 
     //계좌 생성
     @PostMapping
     public ResponseEntity<?> createAccount(@RequestBody ReqAccount reqAccount,Principal principal) {
-
-        RespAccount newAccount = new RespAccount();
-
-        if (principal instanceof OAuth2AuthenticationToken) {
-            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
-            OAuth2User oAuth2User = authToken.getPrincipal();
-
-            if (oAuth2User instanceof CustomOAuth2User) {
-                CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
-                String username = customOAuth2User.getUsername();
-
-                newAccount = accountService.createAccount(reqAccount,username);
-
-            }
-        }
+        
+        String username = getUsername(principal);
+        RespAccount newAccount = accountService.createAccount(reqAccount,username);
 
         return ResponseEntity.ok(newAccount);
 
@@ -85,6 +80,10 @@ public class AccountController {
     @PutMapping("/{accountId}")
     public ResponseEntity<?> updateAccountDetails(@PathVariable(name = "accountId") Long id,
                                                   @RequestBody  ReqAccount reqAccount){
+
+
+
+
 
         RespAccount updateAccount=accountService.updateAccountDetails(id,reqAccount);
 
