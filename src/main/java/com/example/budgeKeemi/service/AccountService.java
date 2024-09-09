@@ -5,6 +5,7 @@ import com.example.budgeKeemi.domain.entity.Member;
 import com.example.budgeKeemi.domain.type.AccountType;
 import com.example.budgeKeemi.dto.req.ReqAccount;
 import com.example.budgeKeemi.dto.resp.RespAccount;
+import com.example.budgeKeemi.exception.excep.UnauthorizedException;
 import com.example.budgeKeemi.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,18 +71,26 @@ public class AccountService {
         }
     }
 
-    public RespAccount updateAccountDetails(Long id, ReqAccount reqAccount) {
+    public RespAccount updateAccountDetails(Long id, ReqAccount reqAccount,String username) {
 
         Optional<Account> _account = repository.findById(id);
 
         if (_account.isPresent()) {
+
             Account account = _account.get();
+
+            //소유자 검증
+            if(!account.getMember().getUsername().equals(username)){
+                throw new UnauthorizedException("수정 권한이 없습니다");
+            }
+
             account.replaceName(reqAccount.getName());
             account.replaceBalance(reqAccount.getBalance());
             account.replaceStatus(reqAccount.getStatus());
             Account updateAccount = repository.save(account);
 
             return RespAccount.toDto(updateAccount);
+
         } else {
             return null;
         }

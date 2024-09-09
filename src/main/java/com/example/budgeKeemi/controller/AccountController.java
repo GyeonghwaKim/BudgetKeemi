@@ -79,13 +79,11 @@ public class AccountController {
     //계좌 수정
     @PutMapping("/{accountId}")
     public ResponseEntity<?> updateAccountDetails(@PathVariable(name = "accountId") Long id,
-                                                  @RequestBody  ReqAccount reqAccount){
+                                                  @RequestBody  ReqAccount reqAccount,Principal principal){
 
+        String username = getUsername(principal);
 
-
-
-
-        RespAccount updateAccount=accountService.updateAccountDetails(id,reqAccount);
+        RespAccount updateAccount=accountService.updateAccountDetails(id,reqAccount,username);
 
 //        if(updateAccount==null){
 //
