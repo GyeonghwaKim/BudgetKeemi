@@ -33,4 +33,14 @@ public class MemberService {
             return null;
         }
     }
+
+    public Member getMemberByUsername(String username) {
+        Optional<Member> _member = repository.findByUsername(username);
+
+        if(_member.isPresent()){
+            return _member.get();
+        }else{
+            return null;
+        }
+    }
 }

@@ -1,11 +1,13 @@
 package com.example.budgeKeemi.service;
 
 import com.example.budgeKeemi.domain.entity.Account;
+import com.example.budgeKeemi.domain.entity.Member;
 import com.example.budgeKeemi.domain.type.AccountType;
 import com.example.budgeKeemi.dto.req.ReqAccount;
 import com.example.budgeKeemi.dto.resp.RespAccount;
 import com.example.budgeKeemi.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,12 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class AccountService {
 
     private final AccountRepository repository;
+
+    private final MemberService memberService;
 
     @Transactional
     public RespAccount createAccount(ReqAccount reqAccount) {
@@ -30,8 +34,17 @@ public class AccountService {
         return respAccount;
     }
 
-    public List<RespAccount> getAccounts() {
-        List<Account> accounts = repository.findAll();
+    public List<RespAccount> getAccountsByUsername(String username) {
+
+        Member member=memberService.getMemberByUsername(username);
+        log.info("username = {}",username);
+        log.info("member id = {}",member.getId());
+
+        List<Account> accounts = repository.findAllByMember(member);
+
+        log.info("accounts = {}",accounts.toString());
+        log.info("accounts size= {}",accounts.size());
+        log.info("accounts is Empty? {}",accounts.isEmpty());
 
         List<RespAccount> respAccounts = accounts
                 .stream()

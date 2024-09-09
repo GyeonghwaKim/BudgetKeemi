@@ -2,14 +2,20 @@ package com.example.budgeKeemi.controller;
 
 import com.example.budgeKeemi.dto.req.ReqAccount;
 import com.example.budgeKeemi.dto.resp.RespAccount;
+import com.example.budgeKeemi.oauth.CustomOAuth2User;
 import com.example.budgeKeemi.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RequestMapping("/accounts")
@@ -20,10 +26,21 @@ public class AccountController {
 
     //계좌 목록 조회
     @GetMapping
-    public ResponseEntity<?> getAccounts(){
+    public ResponseEntity<?> getAccounts(Principal principal){
 
-        List<RespAccount> accounts=accountService.getAccounts();
+        List<RespAccount> accounts=new ArrayList<>();
+        if(principal instanceof OAuth2AuthenticationToken){
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            OAuth2User oAuth2User = authToken.getPrincipal();
 
+            if(oAuth2User instanceof CustomOAuth2User){
+                CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
+                String username=customOAuth2User.getUsername();
+
+                accounts=accountService.getAccountsByUsername(username);
+
+            }
+        }
         return ResponseEntity.ok(accounts);
     }
 
