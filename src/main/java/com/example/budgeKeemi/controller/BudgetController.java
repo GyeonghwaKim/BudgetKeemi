@@ -51,8 +51,11 @@ public class BudgetController {
     //예산 내역 수정
     @PutMapping("/{budgetId}")
     public ResponseEntity<?> updateBudget(@PathVariable(name = "budgetId") Long id,
-                                               @RequestBody ReqBudget reqBudget){
-        RespBudget budget=service.updateBudget(id,reqBudget);
+                                               @RequestBody ReqBudget reqBudget,Principal principal){
+
+        String username = getUsername(principal);
+
+        RespBudget budget=service.updateBudget(id,reqBudget,username);
 
 //        if(budget==null){
 //            return ResponseEntity.notFound().build();

@@ -78,12 +78,17 @@ public class BudgetService {
         }
     }
 
-    public RespBudget updateBudget(Long id, ReqBudget reqBudget) {
+    public RespBudget updateBudget(Long id, ReqBudget reqBudget,String username) {
         Optional<Budget> _budget = repository.findById(id);
 
         if(_budget.isPresent()){
             Budget budget = _budget.get();
-            budget.replaceCategory(categoryService.getCategoryById(reqBudget.getCategoryId()));
+
+            Category category = categoryService.getCategoryById(reqBudget.getCategoryId());
+
+            validationAuthorization(username, category, "수정 권한이 없습니다");
+
+            budget.replaceCategory(category);
             budget.replaceGoalAmount(reqBudget.getGoalAmount());
             budget.replaceStartDate(reqBudget.getStartDate());
             budget.replaceEndDate(reqBudget.getEndDate());
