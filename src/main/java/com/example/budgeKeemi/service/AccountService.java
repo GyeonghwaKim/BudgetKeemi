@@ -72,7 +72,7 @@ public class AccountService {
         }
     }
 
-    public RespAccount updateAccountDetails(Long id, ReqAccount reqAccount,String username) {
+    public RespAccount updateAccount(Long id, ReqAccount reqAccount, String username) {
 
         Optional<Account> _account = repository.findById(id);
 
