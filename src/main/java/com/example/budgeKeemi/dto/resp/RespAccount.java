@@ -1,7 +1,7 @@
 package com.example.budgeKeemi.dto.resp;
 
 import com.example.budgeKeemi.domain.entity.Account;
-import com.example.budgeKeemi.domain.type.AccountActive;
+import com.example.budgeKeemi.domain.type.IsActive;
 import com.example.budgeKeemi.domain.type.AccountType;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,11 +18,11 @@ public class RespAccount {
     private AccountType status;
     private int balance;
     private LocalDateTime createDate;
-    private AccountActive active;
+    private IsActive active;
 
 
     @Builder
-    public RespAccount(Long id, String name, AccountType status, int balance, LocalDateTime createDate,AccountActive active) {
+    public RespAccount(Long id, String name, AccountType status, int balance, LocalDateTime createDate, IsActive active) {
         this.id = id;
         this.name = name;
         this.status = status;

@@ -1,7 +1,7 @@
 package com.example.budgeKeemi.domain.entity;
 
 import com.example.budgeKeemi.domain.type.AccountType;
-import com.example.budgeKeemi.domain.type.AccountActive;
+import com.example.budgeKeemi.domain.type.IsActive;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,7 +32,7 @@ public class Account {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private AccountActive active=AccountActive.Y;
+    private IsActive active= IsActive.Y;
 
 
     @Builder
@@ -64,7 +64,7 @@ public class Account {
         this.member=member;
     }
 
-    public void changeActive(AccountActive value) {
+    public void changeActive(IsActive value) {
         this.active=value;
     }
 }
