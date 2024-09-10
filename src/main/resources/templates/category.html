@@ -189,7 +189,7 @@
         $('.category-card-container').on('click', '.delete-btn', function () {
           var categoryId = $(this).data('id');
     
-          if (confirm("이 예산을 삭제하시겠습니까?")) {
+          if (confirm("이 카테고리를을 삭제하시겠습니까?")) {
             $.ajax({
               url: 'http://localhost:8080/categories/' + categoryId,
               method: 'DELETE',
@@ -201,7 +201,12 @@
               },
               error: function (xhr, status, error) {
                 console.error('카테고리 삭제 중 오류 발생:', error);
-                alert("카테고리 삭제 중 오류가 발생했습니다.");
+
+                if(xhr.status === 403){
+                  alert(xhr.responseText);
+                }else{
+                  alert("카테고리 삭제 중 오류가 발생했습니다.");
+                }
               }
             });
           }

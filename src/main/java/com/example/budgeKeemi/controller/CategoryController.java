@@ -70,10 +70,11 @@ public class CategoryController {
     }
 
     //카테고리 삭제
-    //TODO: 거래내역이 있을시 삭제 안됨 -> JdbcSQLIntegrityConstraintViolationException
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<?> deleteCategory(@PathVariable(name = "categoryId") Long id){
-        boolean isDeleted=service.deleteCategory(id);
+    public ResponseEntity<?> deleteCategory(@PathVariable(name = "categoryId") Long id,Principal principal){
+
+        String username = getUsername(principal);
+        boolean isDeleted=service.deleteCategory(id,username);
 
         //if(isDeleted){
         return ResponseEntity.ok().build();

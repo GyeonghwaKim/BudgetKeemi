@@ -5,6 +5,7 @@ import com.example.budgeKeemi.domain.entity.Category;
 import com.example.budgeKeemi.domain.entity.Transaction;
 import com.example.budgeKeemi.dto.req.ReqBudget;
 import com.example.budgeKeemi.dto.resp.RespBudget;
+import com.example.budgeKeemi.dto.resp.RespCategory;
 import com.example.budgeKeemi.repository.BudgetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,22 +23,29 @@ public class BudgetService {
     private final CategoryService categoryService;
     private final TransactionService transactionService;
 
-    public List<RespBudget> getBudgets() {
+    public List<RespBudget> getBudgetsByUsername(String username) {
 
-        List<Budget> budgets = repository.findAll();
+        List<Long> categoryIds =
+                categoryService.getCategoriesByUsername(username)
+                        .stream()
+                        .map(RespCategory::getId)
+                        .toList();
 
-        Map<Long,Integer> useAmountMap=new HashMap<>();
-
-        for(Budget budget:budgets){
-            Long categoryId = budget.getCategory().getId();
-            List<Transaction> transactions = transactionService.getTransactionsByCategoryId(categoryId);
-            useAmountMap.put(categoryId,transactions.stream().mapToInt(Transaction::getAmount).sum());
-        }
+        List<Budget> budgets = repository.findAllByCategoryIdIn(categoryIds);
+//사용량
+//        Map<Long,Integer> useAmountMap=new HashMap<>();
+//
+//        for(Budget budget:budgets){
+//            Long categoryId = budget.getCategory().getId();
+//            List<Transaction> transactions = transactionService.getTransactionsByCategoryId(categoryId);
+//            int sum = transactions.stream().mapToInt(Transaction::getAmount).sum();
+//            useAmountMap.put(categoryId, sum);
+//        }
 
         List<RespBudget> respBudgets = budgets.stream().map(RespBudget::toDto).toList();
 
         for(RespBudget respBudget:respBudgets){
-            respBudget.updateUseAmount(useAmountMap.get(respBudget.getCategoryId()));
+            respBudget.updateUseAmount(1);
         }
 
         return respBudgets;

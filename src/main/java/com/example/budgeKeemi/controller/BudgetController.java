@@ -2,13 +2,17 @@ package com.example.budgeKeemi.controller;
 
 import com.example.budgeKeemi.dto.req.ReqBudget;
 import com.example.budgeKeemi.dto.resp.RespBudget;
+import com.example.budgeKeemi.oauth.CustomOAuth2User;
 import com.example.budgeKeemi.service.BudgetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,15 +23,16 @@ public class BudgetController {
 
     //예산  목록 조회
     @GetMapping
-    public ResponseEntity<?> getBudgets(){
-        List<RespBudget> budgets= service.getBudgets();
+    public ResponseEntity<?> getBudgets(Principal principal){
+        String username = getUsername(principal);
+        List<RespBudget> budgets= service.getBudgetsByUsername(username);
         return ResponseEntity.ok(budgets);
     }
 
     //예산  생성
     @PostMapping
     public ResponseEntity<?> addBudget(@RequestBody ReqBudget reqBudget){
-//TODO 입력값 검증 필요
+
         RespBudget respBudget=this.service.createBudget(reqBudget);
 
         return new ResponseEntity<>(respBudget, HttpStatus.CREATED);
@@ -64,4 +69,21 @@ public class BudgetController {
         //return ResponseEntity.badRequest().build();
     }
 
+    private static String getUsername(Principal principal) {
+
+        String username="";
+
+        if(principal instanceof OAuth2AuthenticationToken){
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            OAuth2User oAuth2User = authToken.getPrincipal();
+
+            if(oAuth2User instanceof CustomOAuth2User){
+                CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
+                username=customOAuth2User.getUsername();
+
+            }
+        }
+        return username;
+
+    }
 }

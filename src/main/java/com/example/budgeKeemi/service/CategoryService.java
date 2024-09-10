@@ -3,6 +3,7 @@ package com.example.budgeKeemi.service;
 import com.example.budgeKeemi.domain.entity.Category;
 import com.example.budgeKeemi.domain.entity.Member;
 import com.example.budgeKeemi.domain.type.CategoryStatus;
+import com.example.budgeKeemi.domain.type.IsActive;
 import com.example.budgeKeemi.dto.req.ReqCategory;
 import com.example.budgeKeemi.dto.resp.RespCategory;
 import com.example.budgeKeemi.dto.resp.RespCategoryStatus;
@@ -25,12 +26,13 @@ public class CategoryService {
     private final CategoryRepository repository;
 
     private final MemberService memberService;
-//Todo: getCategoryByCategoryId() 로 이름 변겅
+
+    //Todo: getCategoryByCategoryId() 로 이름 변겅
     public Category getCategoryById(Long categoryId) {
         Optional<Category> _category = repository.findById(categoryId);
-        if(_category.isPresent()){
+        if (_category.isPresent()) {
             return _category.get();
-        }else {
+        } else {
             return null;
         }
     }
@@ -46,11 +48,11 @@ public class CategoryService {
         return respCategories;
     }
 
-    public RespCategory createCategory(ReqCategory reqCategory,String username) {
+    public RespCategory createCategory(ReqCategory reqCategory, String username) {
 
         Member member = memberService.getMemberByUsername(username);
 
-        Category category=ReqCategory.toEntity(reqCategory);
+        Category category = ReqCategory.toEntity(reqCategory);
         category.updateMember(member);
         Category saveCategory = this.repository.save(category);
 
@@ -62,20 +64,20 @@ public class CategoryService {
     public RespCategory getCategoryDetail(Long id) {
         Optional<Category> _category = repository.findById(id);
 
-        if(_category.isPresent()){
+        if (_category.isPresent()) {
             return RespCategory.toDto(_category.get());
-        }else{
+        } else {
             return null;
         }
     }
 
-    public RespCategory updateCategory(Long id, ReqCategory reqCategory,String username) {
-        
+    public RespCategory updateCategory(Long id, ReqCategory reqCategory, String username) {
+
         Optional<Category> _category = repository.findById(id);
 
-        if(_category.isPresent()){
+        if (_category.isPresent()) {
 
-            Category category=_category.get();
+            Category category = _category.get();
 
             validationAuthorization(username, category, "수정 권한이 없습니다");
 
@@ -85,26 +87,37 @@ public class CategoryService {
             Category updateCategory = repository.save(category);
 
             return RespCategory.toDto(updateCategory);
-        }else{
+        } else {
             return null;
         }
 
     }
 
     private static void validationAuthorization(String username, Category category, String message) {
-        if(!category.getMember().getUsername().equals(username)){
+        if (!category.getMember().getUsername().equals(username)) {
             throw new UnauthorizedException(message);
         }
     }
 
 
-    public boolean deleteCategory(Long id) {
+    public boolean deleteCategory(Long id, String username) {
+
         Optional<Category> _category = repository.findById(id);
 
-        if(_category.isPresent()){
-            repository.delete(_category.get());
-            return true;
-        }else{
+        if (_category.isPresent()) {
+
+            Category category = _category.get();
+            validationAuthorization(username, category, "삭제 권한이 없습니다");
+            if (category.getActive() == IsActive.Y) {
+                category.changeActive(IsActive.N);
+                repository.save(category);
+                return true;
+            } else {
+                return false;
+            }
+
+
+        } else {
             return false;
         }
     }
@@ -114,7 +127,7 @@ public class CategoryService {
         List<RespCategoryStatus> categoryStatuses
                 = Arrays.stream(CategoryStatus.values()).map(
                 RespCategoryStatus::toDto).toList();
-            return categoryStatuses;
-        }
+        return categoryStatuses;
+    }
 
 }

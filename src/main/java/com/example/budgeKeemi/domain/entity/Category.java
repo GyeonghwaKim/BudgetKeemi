@@ -2,6 +2,7 @@ package com.example.budgeKeemi.domain.entity;
 
 
 import com.example.budgeKeemi.domain.type.CategoryStatus;
+import com.example.budgeKeemi.domain.type.IsActive;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,6 +26,9 @@ public class Category {
     @JoinColumn(name="member_id")
     private Member member;
 
+    @Enumerated(EnumType.STRING)
+    private IsActive active=IsActive.Y;
+
     @Builder
     public Category(Long id, String name, CategoryStatus status) {
         this.id = id;
@@ -42,5 +46,9 @@ public class Category {
 
     public void updateMember(Member member) {
         this.member=member;
+    }
+
+    public void changeActive(IsActive value) {
+        this.active=value;
     }
 }
