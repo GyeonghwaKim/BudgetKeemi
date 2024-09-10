@@ -65,8 +65,9 @@ public class BudgetController {
 
     //예산 내역 삭제
     @DeleteMapping("/{budgetId}")
-    public ResponseEntity<?> deleteBudget(@PathVariable(name = "budgetId") Long id){
-        boolean isDeleted=service.deleteBudget(id);
+    public ResponseEntity<?> deleteBudget(@PathVariable(name = "budgetId") Long id,Principal principal){
+        String username = getUsername(principal);
+        boolean isDeleted=service.deleteBudget(id,username);
 
         //if(isDeleted){
         return ResponseEntity.ok().build();

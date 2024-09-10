@@ -102,11 +102,16 @@ public class BudgetService {
 
     }
 
-    public boolean deleteBudget(Long id) {
+    public boolean deleteBudget(Long id,String username) {
         Optional<Budget> _budget=repository.findById(id);
 
         if(_budget.isPresent()){
-            repository.delete(_budget.get());
+
+            Budget budget = _budget.get();
+            Category category = budget.getCategory();
+            validationAuthorization(username, category, "삭제 권한이 없습니다");
+
+            repository.delete(budget);
             return true;
         }else{
             return false;
