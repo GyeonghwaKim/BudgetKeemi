@@ -31,9 +31,11 @@ public class BudgetController {
 
     //예산  생성
     @PostMapping
-    public ResponseEntity<?> addBudget(@RequestBody ReqBudget reqBudget){
+    public ResponseEntity<?> addBudget(@RequestBody ReqBudget reqBudget,Principal principal){
 
-        RespBudget respBudget=this.service.createBudget(reqBudget);
+        String username = getUsername(principal);
+
+        RespBudget respBudget=this.service.createBudget(reqBudget,username);
 
         return new ResponseEntity<>(respBudget, HttpStatus.CREATED);
     }

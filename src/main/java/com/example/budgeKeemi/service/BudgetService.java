@@ -1,11 +1,13 @@
 package com.example.budgeKeemi.service;
 
+import com.example.budgeKeemi.domain.entity.Account;
 import com.example.budgeKeemi.domain.entity.Budget;
 import com.example.budgeKeemi.domain.entity.Category;
 import com.example.budgeKeemi.domain.entity.Transaction;
 import com.example.budgeKeemi.dto.req.ReqBudget;
 import com.example.budgeKeemi.dto.resp.RespBudget;
 import com.example.budgeKeemi.dto.resp.RespCategory;
+import com.example.budgeKeemi.exception.excep.UnauthorizedException;
 import com.example.budgeKeemi.repository.BudgetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,12 +53,12 @@ public class BudgetService {
         return respBudgets;
     }
 
-    public RespBudget createBudget(ReqBudget reqBudget) {
-
-        Budget budget=ReqBudget.toEntity(reqBudget);
-
+    public RespBudget createBudget(ReqBudget reqBudget,String username) {
         Category category = categoryService.getCategoryById(reqBudget.getCategoryId());
 
+        validationAuthorization(username, category, "작성 권한이 없습니다");
+
+        Budget budget=ReqBudget.toEntity(reqBudget);
         budget.addCategory(category);
 
         Budget saveBudget=repository.save(budget);
@@ -105,5 +107,11 @@ public class BudgetService {
             return false;
         }
 
+    }
+
+    private static void validationAuthorization(String username, Category category, String message) {
+        if(!category.getMember().getUsername().equals(username)){
+            throw new UnauthorizedException(message);
+        }
     }
 }
