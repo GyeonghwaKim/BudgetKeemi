@@ -5,14 +5,18 @@ import com.example.budgeKeemi.dto.resp.DailySummary;
 import com.example.budgeKeemi.dto.resp.ExpenseGraph;
 import com.example.budgeKeemi.dto.resp.MonthlySummary;
 import com.example.budgeKeemi.dto.resp.RespTransaction;
+import com.example.budgeKeemi.oauth.CustomOAuth2User;
 import com.example.budgeKeemi.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -25,9 +29,24 @@ public class TransactionController {
 
     //거래 목록 조회
     @GetMapping
-    public ResponseEntity<?> getTransactions(){
-        List<RespTransaction> transactions= service.getTransactions();
+    public ResponseEntity<?> getTransactions(Principal principal){
+
+        String username = getUsername(principal);
+        List<RespTransaction> transactions= service.getTransactionsByUsername(username);
         return ResponseEntity.ok(transactions);
+    }
+
+    private static String getUsername(Principal principal) {
+        String username="";
+        if(principal instanceof OAuth2AuthenticationToken){
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            OAuth2User oAuth2User = authToken.getPrincipal();
+            if(oAuth2User instanceof CustomOAuth2User){
+                CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
+                username= customOAuth2User.getUsername();
+            }
+        }
+        return username;
     }
 
     //거래 생성

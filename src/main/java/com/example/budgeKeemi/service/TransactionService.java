@@ -1,10 +1,8 @@
 package com.example.budgeKeemi.service;
 
+import com.example.budgeKeemi.domain.entity.Member;
 import com.example.budgeKeemi.dto.req.ReqTransaction;
-import com.example.budgeKeemi.dto.resp.DailySummary;
-import com.example.budgeKeemi.dto.resp.ExpenseGraph;
-import com.example.budgeKeemi.dto.resp.MonthlySummary;
-import com.example.budgeKeemi.dto.resp.RespTransaction;
+import com.example.budgeKeemi.dto.resp.*;
 import com.example.budgeKeemi.domain.entity.Account;
 import com.example.budgeKeemi.domain.entity.Category;
 import com.example.budgeKeemi.domain.type.CategoryStatus;
@@ -29,6 +27,7 @@ public class TransactionService {
 
     private final AccountService accountService;
     private final CategoryService categoryService;
+    private final MemberService memberService;
 
     public RespTransaction createTransaction(ReqTransaction reqTransaction) {
 
@@ -57,9 +56,20 @@ public class TransactionService {
         return respTransaction;
     }
 
-    public List<RespTransaction> getTransactions() {
-        List<Transaction> transactions = repository.findAll();
-        List<RespTransaction> respTransactions = transactions.stream().map(transaction -> RespTransaction.toDto(transaction)).toList();
+    public List<RespTransaction> getTransactionsByUsername(String username) {
+
+
+        List<Long> accountIds = accountService.getAccountsByUsername(username)
+                .stream()
+                .map(RespAccount::getId)
+                .toList();
+
+        List<Transaction> transactions=repository.findAllByAccountIdIn(accountIds);
+
+        List<RespTransaction> respTransactions = transactions
+                .stream()
+                .map(RespTransaction::toDto)
+                .toList();
         return respTransactions;
     }
 
