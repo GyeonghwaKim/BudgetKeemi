@@ -261,7 +261,10 @@ $(document).ready(function(){
 
             if(xhr.status === 400){
               alert(xhr.responseText)
-            }else{
+            }else if(xhr.status===403){
+              alert(xhr.responseText)
+            }
+            else{
               alert("거래 저장 중 오류가 발생했습니다.");
             }
 

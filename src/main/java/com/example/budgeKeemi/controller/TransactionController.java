@@ -36,24 +36,13 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
-    private static String getUsername(Principal principal) {
-        String username="";
-        if(principal instanceof OAuth2AuthenticationToken){
-            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
-            OAuth2User oAuth2User = authToken.getPrincipal();
-            if(oAuth2User instanceof CustomOAuth2User){
-                CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
-                username= customOAuth2User.getUsername();
-            }
-        }
-        return username;
-    }
+
 
     //거래 생성
     @PostMapping
-    public ResponseEntity<?> addTransaction(@RequestBody ReqTransaction reqTransaction){
-
-        RespTransaction respTransaction=this.service.createTransaction(reqTransaction);
+    public ResponseEntity<?> addTransaction(@RequestBody ReqTransaction reqTransaction,Principal principal){
+        String username = getUsername(principal);
+        RespTransaction respTransaction=this.service.createTransaction(reqTransaction,username);
 
         return new ResponseEntity<>(respTransaction, HttpStatus.CREATED);
     }
@@ -111,6 +100,19 @@ public class TransactionController {
         List<ExpenseGraph> expenseGraphDatas=service.getExpenseGraph(startDate,endDate);
 
         return ResponseEntity.ok(expenseGraphDatas);
+    }
+
+    private static String getUsername(Principal principal) {
+        String username="";
+        if(principal instanceof OAuth2AuthenticationToken){
+            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
+            OAuth2User oAuth2User = authToken.getPrincipal();
+            if(oAuth2User instanceof CustomOAuth2User){
+                CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
+                username= customOAuth2User.getUsername();
+            }
+        }
+        return username;
     }
 
 }

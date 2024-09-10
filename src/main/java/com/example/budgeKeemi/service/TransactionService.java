@@ -8,6 +8,7 @@ import com.example.budgeKeemi.domain.entity.Category;
 import com.example.budgeKeemi.domain.type.CategoryStatus;
 import com.example.budgeKeemi.domain.entity.Transaction;
 import com.example.budgeKeemi.exception.excep.InsufficientBalanceException;
+import com.example.budgeKeemi.exception.excep.UnauthorizedException;
 import com.example.budgeKeemi.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,12 +30,12 @@ public class TransactionService {
     private final CategoryService categoryService;
     private final MemberService memberService;
 
-    public RespTransaction createTransaction(ReqTransaction reqTransaction) {
-
-        Transaction transaction= ReqTransaction.toEntity(reqTransaction);
-
+    public RespTransaction createTransaction(ReqTransaction reqTransaction,String username) {
+        
         Account account=accountService.getAccountById(reqTransaction.getAccountId());
         Category category = categoryService.getCategoryById(reqTransaction.getCategoryId());
+
+        validationAuthorization(username, account, category,"작성 권한이 없습니다");
 
         //잔액 부족 시나리오
         if(category.getStatus()==CategoryStatus.INCOME){
@@ -46,6 +47,8 @@ public class TransactionService {
             account.adjustBalance(-reqTransaction.getAmount());
         }
 
+        Transaction transaction= ReqTransaction.toEntity(reqTransaction);
+
         transaction.addAccount(account);
         transaction.addCategory(category);
 
@@ -54,6 +57,12 @@ public class TransactionService {
         RespTransaction respTransaction = RespTransaction.toDto(saveTransaction);
 
         return respTransaction;
+    }
+
+    private static void validationAuthorization(String username, Account account, Category category,String message) {
+        if(!(account.getMember().getUsername().equals(username) && category.getMember().getUsername().equals(username))){
+            throw new UnauthorizedException(message);
+        }
     }
 
     public List<RespTransaction> getTransactionsByUsername(String username) {

@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e){
-        //로그인 했지만 권한이 없는 경우
+        //로그인 했지만 권한이 없는 경우 403
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }
