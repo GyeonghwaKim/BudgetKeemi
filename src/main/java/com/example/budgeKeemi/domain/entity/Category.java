@@ -39,4 +39,8 @@ public class Category {
     public void updateStatus(CategoryStatus status) {
         this.status=status;
     }
+
+    public void updateMember(Member member) {
+        this.member=member;
+    }
 }

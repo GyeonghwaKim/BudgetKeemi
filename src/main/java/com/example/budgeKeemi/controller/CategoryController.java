@@ -35,9 +35,11 @@ public class CategoryController {
 
     //카테고리 생성
     @PostMapping
-    public ResponseEntity<?> addCategories(@RequestBody ReqCategory reqCategory){
+    public ResponseEntity<?> addCategories(@RequestBody ReqCategory reqCategory,Principal principal){
 
-        RespCategory respCategory=this.service.createCategory(reqCategory);
+        String username = getUsername(principal);
+
+        RespCategory respCategory=this.service.createCategory(reqCategory,username);
 
         return new ResponseEntity<>(respCategory, HttpStatus.CREATED);
     }

@@ -45,9 +45,12 @@ public class CategoryService {
         return respCategories;
     }
 
-    public RespCategory createCategory(ReqCategory reqCategory) {
-        Category category=ReqCategory.toEntity(reqCategory);
+    public RespCategory createCategory(ReqCategory reqCategory,String username) {
 
+        Member member = memberService.getMemberByUsername(username);
+
+        Category category=ReqCategory.toEntity(reqCategory);
+        category.updateMember(member);
         Category saveCategory = this.repository.save(category);
 
         RespCategory respCategory = RespCategory.toDto(saveCategory);
