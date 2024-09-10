@@ -244,9 +244,16 @@
         $('#editCategoryModal').modal('hide');
         location.reload(); // 수정 후 카테고리 목록 다시 로드
       },
-      error: function (error) {
+      error: function (xhr,status,error) {
         console.error('카테고리 수정 중 오류 발생:', error);
-        alert('카테고리 수정 중 오류가 발생했습니다.');
+
+        if(xhr.status ===403){
+          alert(xhr.responseText);
+
+        }else{
+          alert('카테고리 수정 중 오류가 발생했습니다.');
+
+        }
       }
     });
   });

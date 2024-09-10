@@ -57,8 +57,11 @@ public class CategoryController {
     //카테고리 수정
     @PutMapping("/{categoryId}")
     public ResponseEntity<?> updateCategory(@PathVariable(name = "categoryId") Long id,
-                                               @RequestBody ReqCategory reqCategory){
-        RespCategory category=service.updateCategory(id, reqCategory);
+                                               @RequestBody ReqCategory reqCategory,Principal principal){
+
+        String username = getUsername(principal);
+
+        RespCategory category=service.updateCategory(id, reqCategory, username);
 
 //        if(category==null){
 //            return ResponseEntity.notFound().build();

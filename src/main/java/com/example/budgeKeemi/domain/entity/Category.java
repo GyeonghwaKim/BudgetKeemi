@@ -32,11 +32,11 @@ public class Category {
         this.status = status;
     }
 
-    public void updateName(String name) {
+    public void replaceName(String name) {
         this.name=name;
     }
 
-    public void updateStatus(CategoryStatus status) {
+    public void replaceName(CategoryStatus status) {
         this.status=status;
     }
 
