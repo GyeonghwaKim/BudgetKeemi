@@ -45,6 +45,10 @@
       .form-textarea {
         min-height: 100px;
       }
+
+      .del {
+        text-decoration: line-through;
+      }
     </style>
   </head>
   <body>
@@ -99,7 +103,7 @@
 
         <!-- Account Section -->
         <h4 class="mb-4">내 거래 내역</h4>
-        <div class="transaction-container">
+        <div class="transaction-card-container">
 
         </div>
     </div>
@@ -173,7 +177,7 @@ $(document).ready(function(){
             url: 'http://localhost:8080/transactions', // 실제 서버 URL로 변경 필요
             method: 'GET',
             success: function (transactions) {
-              var transactionContainer = $('.transaction-container'); // 거래 내역을 표시할 컨테이너 선택
+              var transactionContainer = $('.transaction-card-container'); // 거래 내역을 표시할 컨테이너 선택
       
               // 거래 내역 리스트 초기화
               transactionContainer.empty();
@@ -184,19 +188,31 @@ $(document).ready(function(){
         return new Date(b.transacDate) - new Date(a.transacDate);
       });
       
-              transactions.forEach(function (transaction) {
-                var transactionCard = `
-                  <div class="account-card p-3 shadow-sm">
-                    <h5>${transaction.categoryName}</h5>
-                    <h6>${formatDateTime(transaction.transacDate)}</h6>
-                    <span class="${transaction.categoryStatus=="INCOME" ? 'income' : 'expense'}">
-                      ${transaction.categoryStatus=="INCOME" ? '+' : '-'} ${transaction.amount.toLocaleString()} 원
-                    </span>
-                    ${transaction.description ? `<p> - ${transaction.description}</p>` : ''}
-                  </div>
-                `;
-                transactionContainer.append(transactionCard);
-              });
+      transactions.forEach(function (transaction) {
+
+        var isDisabled=transaction.active === 'N'? 'disabled' : '';
+
+var isCancel = transaction.active === 'N' ? 'del' : '';
+
+// 삭제 버튼을 추가할 조건: categoryStatus가 EXPENSE일 경우에만
+var deleteButton = transaction.categoryStatus === 'EXPENSE' 
+    ? `<button class="btn btn-danger btn-sm float-end delete-btn ${isDisabled}" data-id="${transaction.id}">취소</button>`
+    : '';
+
+var transactionCard = `
+  <div class="account-card p-3 shadow-sm ${isCancel}">
+    ${deleteButton}
+    <h5 class="${isCancel}">${transaction.categoryName}</h5>
+    <h6 class="${isCancel}">${formatDateTime(transaction.transacDate)}</h6>
+    <span class="${isCancel} ${transaction.categoryStatus == "INCOME" ? 'income' : 'expense'}">
+      ${transaction.categoryStatus == "INCOME" ? '+' : '-'} ${transaction.amount.toLocaleString()} 원
+    </span>
+    ${transaction.description ? `<p> - ${transaction.description}</p>` : ''}
+  </div>
+`;
+
+transactionContainer.append(transactionCard);
+});
             },
             error: function (error) {
               console.error("거래 내역을 불러오는 중 오류 발생:", error);
@@ -270,6 +286,35 @@ $(document).ready(function(){
 
         }
     });
+});
+
+//거래내역 삭제
+$('.transaction-card-container').on('click', '.delete-btn', function () {
+
+  var transactionId=$(this).data('id');
+
+  if(confirm("이 거래 내역을 취소하시겠습니까?")){
+    $.ajax({
+      url:'http://localhost:8080/transactions/'+transactionId,
+      method:'DELETE',
+      success: function(response){
+        console.log('거래 내역 취소 성공:', response);
+                alert("거래 내역이 성공적으로 취소되었습니다!");
+                location.reload();
+                
+      },
+      error: function(xhr,status,error){
+        console.error('거래 취소 중 오류 발생:', error);
+                if(xhr.status ===403){
+                  alert(xhr.responseText);
+                }else{
+                  alert("거래 취소 중 오류가 발생했습니다.");
+                }
+      }
+    })
+  }
+
+
 });
 
  

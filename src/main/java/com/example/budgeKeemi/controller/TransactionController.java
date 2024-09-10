@@ -46,6 +46,7 @@ public class TransactionController {
 
         return new ResponseEntity<>(respTransaction, HttpStatus.CREATED);
     }
+    //TODO: 상세조회와 수정은 없애도 될 것 같음
     //거래내역 상세조회
     @GetMapping("/{transactionId}")
     public ResponseEntity<?> getTransactionDetail(@PathVariable(name = "transactionId") Long id){
@@ -67,15 +68,16 @@ public class TransactionController {
         return ResponseEntity.ok(transaction);
     }
 
-    //거래내역 삭제
+    //거래내역 취소
     @DeleteMapping("/{transactionId}")
-    public ResponseEntity<?> deleteTransaction(@PathVariable(name = "transactionId") Long id){
-        boolean isDeleted=service.deleteTransaction(id);
+    public ResponseEntity<?> cancelTransaction(@PathVariable(name = "transactionId") Long id, Principal principal){
+        String username = getUsername(principal);
+        boolean isDeleted=service.cancelTransaction(id,username);
 
-        //if(isDeleted){
+        if(isDeleted){
             return ResponseEntity.ok().build();
-        //}
-        //return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
 

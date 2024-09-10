@@ -2,6 +2,7 @@ package com.example.budgeKeemi.dto.resp;
 
 import com.example.budgeKeemi.domain.type.CategoryStatus;
 import com.example.budgeKeemi.domain.entity.Transaction;
+import com.example.budgeKeemi.domain.type.IsActive;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,9 +18,10 @@ public class RespTransaction {
     private int amount;
     private LocalDateTime transacDate;
     private String description;
+    private IsActive active;
 
     @Builder
-    public RespTransaction(Long id, Long accountId, String categoryName, CategoryStatus categoryStatus, int amount, LocalDateTime transacDate, String description) {
+    public RespTransaction(Long id, Long accountId, String categoryName, CategoryStatus categoryStatus, int amount, LocalDateTime transacDate, String description,IsActive active) {
         this.id = id;
         this.accountId = accountId;
         this.categoryName = categoryName;
@@ -27,6 +29,7 @@ public class RespTransaction {
         this.amount = amount;
         this.transacDate = transacDate;
         this.description = description;
+        this.active=active;
     }
 
     public static RespTransaction toDto(Transaction transaction){
@@ -38,6 +41,7 @@ public class RespTransaction {
                 .amount(transaction.getAmount())
                 .transacDate(transaction.getTransacDate())
                 .description(transaction.getDescription())
+                .active(transaction.getActive())
                 .build();
     }
 

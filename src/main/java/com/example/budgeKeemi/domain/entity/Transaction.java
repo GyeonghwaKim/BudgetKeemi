@@ -1,5 +1,6 @@
 package com.example.budgeKeemi.domain.entity;
 
+import com.example.budgeKeemi.domain.type.IsActive;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,6 +34,11 @@ public class Transaction {
     @JoinColumn(name="category_id")
     private Category category;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private IsActive active= IsActive.Y;
+
+
     @Builder
     public Transaction(int amount, LocalDateTime transacDate, String description) {
         this.amount = amount;
@@ -55,5 +61,9 @@ public class Transaction {
 
     public void updateDescription(String description) {
         this.description=description;
+    }
+
+    public void changeActive(IsActive value) {
+        this.active=value;
     }
 }

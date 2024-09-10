@@ -1,6 +1,6 @@
 package com.example.budgeKeemi.service;
 
-import com.example.budgeKeemi.domain.entity.Member;
+import com.example.budgeKeemi.domain.type.IsActive;
 import com.example.budgeKeemi.dto.req.ReqTransaction;
 import com.example.budgeKeemi.dto.resp.*;
 import com.example.budgeKeemi.domain.entity.Account;
@@ -120,14 +120,26 @@ public class TransactionService {
 
     }
 
-    public boolean deleteTransaction(Long id) {
+    public boolean cancelTransaction(Long id, String username) {
         Optional<Transaction> _transaction = repository.findById(id);
 
         if(_transaction.isPresent()){
 
-            repository.delete(_transaction.get());
-            return true;
+            Transaction transaction = _transaction.get();
 
+            Account account = transaction.getAccount();
+            Category category = transaction.getCategory();
+
+            validationAuthorization(username, account, category,"취소 권한이 없습니다");
+
+            if(category.getStatus()==CategoryStatus.EXPENSE && transaction.getActive()== IsActive.Y){
+                transaction.changeActive(IsActive.N);
+                account.adjustBalance(transaction.getAmount());
+                repository.save(transaction);
+                return true;
+            }else{
+                return false;
+            }
         }else{
             return false;
         }
