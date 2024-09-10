@@ -1,6 +1,7 @@
 package com.example.budgeKeemi.service;
 
 import com.example.budgeKeemi.domain.entity.Category;
+import com.example.budgeKeemi.domain.entity.Member;
 import com.example.budgeKeemi.domain.type.CategoryStatus;
 import com.example.budgeKeemi.dto.req.ReqCategory;
 import com.example.budgeKeemi.dto.resp.RespCategory;
@@ -22,6 +23,8 @@ public class CategoryService {
 
     private final CategoryRepository repository;
 
+    private final MemberService memberService;
+//Todo: getCategoryByCategoryId() 로 이름 변겅
     public Category getCategoryById(Long categoryId) {
         Optional<Category> _category = repository.findById(categoryId);
         if(_category.isPresent()){
@@ -31,9 +34,14 @@ public class CategoryService {
         }
     }
 
-    public List<RespCategory> getCategories() {
-        List<Category> categories = repository.findAll();
-        List<RespCategory> respCategories = categories.stream().map(RespCategory::toDto).toList();
+    public List<RespCategory> getCategoriesByUsername(String username) {
+
+        Member member = memberService.getMemberByUsername(username);
+        List<Category> categories = repository.findAllByMember(member);
+        List<RespCategory> respCategories = categories
+                .stream()
+                .map(RespCategory::toDto)
+                .toList();
         return respCategories;
     }
 
