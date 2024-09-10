@@ -21,7 +21,7 @@ import java.util.List;
 public class BudgetController {
     private final BudgetService service;
 
-    //예산  목록 조회
+    //예산 목록 조회
     @GetMapping
     public ResponseEntity<?> getBudgets(Principal principal){
         String username = getUsername(principal);

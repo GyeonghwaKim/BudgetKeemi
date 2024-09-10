@@ -1,146 +1,160 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BudgetKeemi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-      h1 {
-        color: #343a40;
-        font-weight: bold;
-      }
-      h6 span {
-        font-weight: bold;
-        color: #0c9319;
-      }
-      .account-card {
-        width: 50%;
-        margin-bottom: 1rem;
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      .account-card h5 {
-        color: #007bff;
-      }
-      .btn-container {
-        text-align: center;
-        margin-top: 2rem;
-      }
-      .btn-lg {
-        margin-bottom: 1rem;
-      }
-      hr {
-        width: 50%;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 2rem;
-      }
 
-     
-.goal-amount {
-    font-weight: bold;
-    color: #0c9319; 
-}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BudgetKeemi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <style>
+    h1 {
+      color: #343a40;
+      font-weight: bold;
+    }
+
+    h6 span {
+      font-weight: bold;
+      color: #0c9319;
+    }
+
+    .account-card {
+      width: 50%;
+      margin-bottom: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .account-card h5 {
+      color: #007bff;
+    }
+
+    .btn-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .btn-lg {
+      margin-bottom: 1rem;
+    }
+
+    hr {
+      width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 2rem;
+    }
 
 
-.used-amount {
-    font-weight: bold;
-    color: #fd7e14; 
-}
-    </style>
-  </head>
-  <body>
-    <div class="container py-5">
-        <h1 class="text-center mb-4">BudgetKeemi</h1>
-        <div class="budget-container">
+    .goal-amount {
+      font-weight: bold;
+      color: #0c9319;
+    }
 
-        </div>
-        <hr>
 
-        <!-- Account Cards -->
-        <div class="account-container"></div>
+    .used-amount {
+      font-weight: bold;
+      color: #fd7e14;
+    }
+  </style>
+</head>
 
-        <!-- Buttons -->
-<div class="btn-container d-flex justify-content-center flex-column align-items-center">
-  <button id="viewTransaction" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">거래 내역 보기</button>
-  <button id="viewExpenseGraph" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">지출 그래프 보기</button>
-  <button id="manageBudget" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">예산 관리 하기</button>
-  <button id="manageAccount" type="button" class="btn btn-outline-dark btn-lg w-50">계좌 관리 하기</button>
-</div>
+<body>
+  <div class="container py-5">
+    <h1 class="text-center mb-4">BudgetKeemi</h1>
+    <div class="budget-container">
 
     </div>
+    <hr>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Account Cards -->
+    <div class="account-container"></div>
 
-<script>
+    <!-- Buttons -->
+    <div class="btn-container d-flex justify-content-center flex-column align-items-center">
+      <button id="viewTransaction" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">거래 내역 보기</button>
+      <button id="viewExpenseGraph" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">지출 그래프 보기</button>
+      <button id="manageBudget" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">예산 관리 하기</button>
+      <button id="manageAccount" type="button" class="btn btn-outline-dark btn-lg w-50">계좌 관리 하기</button>
+    </div>
 
-   //날짜 포맷
-   function formatDate(isoString) {
-        const cleanIsoString = isoString.split('.')[0];
-        const date = new Date(cleanIsoString);
-    
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); 
-        const day = String(date.getDate()).padStart(2, '0');
-    
-        return `${year}-${month}-${day}`;
-      }
-
-  $(document).ready(function () {
-  $.ajax({
-    url: 'http://localhost:8080/budgets', 
-    method: 'GET',
-    success: function (budgets) {
-      var budgetContainer = $('.budget-container'); 
-
-      
-      budgetContainer.empty();
-
-      budgets.forEach(function (budget) {
-        var startDate = new Date(budget.startDate).toISOString().split('T')[0].replace(/-/g, '.');
-        var endDate = new Date(budget.endDate).toISOString().split('T')[0].replace(/-/g, '.');
-
-        console.log(budget.goalAmount)
-  
-        var budgetCard = `
-  <div class="text-center mb-4">
-    <h4>나의 <span>${budget.categoryName}</span> 예산</h4>
-    <h6> 목표 예산 - <span class="goal-amount">${budget.goalAmount.toLocaleString()}</span>원</h6>
-    <h6> 현재 사용된 금액 - <span class="used-amount">${budget.useAmount.toLocaleString()}</span>원</h6>
-    <p>예산 기간: <span>${startDate} ~ ${endDate}</span></p>
   </div>
-`;
 
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+    integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+    crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-        budgetContainer.append(budgetCard);
-      });
-    },
-    error: function (error) {
-      console.error("예산 데이터를 불러오는 중 오류 발생:", error);
-      alert("예산 데이터를 불러오는 중 오류가 발생했습니다.");
+  <script>
+
+    //날짜 포맷
+    function formatDate(isoString) {
+      const cleanIsoString = isoString.split('.')[0];
+      const date = new Date(cleanIsoString);
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
     }
-  });
 
- // 계좌 데이터를 가져오는 AJAX 요청
- $.ajax({
-          url: 'http://localhost:8080/accounts',
-          method: 'GET',
-          success: function (accounts) {
-            var accountContainer = $('.account-container');
-            accountContainer.empty();
-    
-            accounts
-            .filter(account => account.active !=='N')
+    $(document).ready(function () {
+      $.ajax({
+        url: 'http://localhost:8080/budgets',
+        method: 'GET',
+        success: function (budgets) {
+          var budgetContainer = $('.budget-container');
+
+
+          budgetContainer.empty();
+
+          budgets.forEach(function (budget) {
+            var startDate = new Date(budget.startDate).toISOString().split('T')[0].replace(/-/g, '.');
+            var endDate = new Date(budget.endDate).toISOString().split('T')[0].replace(/-/g, '.');
+
+            console.log(budget.goalAmount)
+
+            var budgetCard = `
+
+            <div class="text-center mb-4">
+            <h4>나의 <span>${budget.categoryName}</span> 예산</h4>
+            <h6> 목표 예산 - <span class="goal-amount">${budget.goalAmount.toLocaleString()}</span>원</h6>
+            <h6> 현재 사용된 금액 - <span class="used-amount">${budget.useAmount.toLocaleString()}</span>원</h6>
+            <p>예산 기간: <span>${startDate} ~ ${endDate}</span></p>
+            </div>
+            `;
+
+
+            budgetContainer.append(budgetCard);
+          });
+        },
+        error: function (error) {
+          console.error("예산 데이터를 불러오는 중 오류 발생:", error);
+          alert("예산 데이터를 불러오는 중 오류가 발생했습니다.");
+        }
+      });
+
+      // 계좌 데이터를 가져오는 AJAX 요청
+      $.ajax({
+        url: 'http://localhost:8080/accounts/active',
+        method: 'GET',
+        success: function (accounts) {
+          var accountContainer = $('.account-container');
+          accountContainer.empty();
+
+          accounts
+            .filter(account => account.active !== 'N')
             .forEach(function (account) {
               const formattedDate = formatDate(account.createDate);
 
-        
-    
+
+
               var accountItem = `
                 <div class="account-card p-3 shadow-sm" id="budget-${account.id}">
                   <h5>${account.name}</h5>
@@ -151,35 +165,36 @@
               `;
               accountContainer.append(accountItem);
             });
-          },
-          error: function (error) {
-            console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
-          }
-        });
+        },
+        error: function (error) {
+          console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
+        }
+      });
 
-//버튼 클릭
- // 거래 내역 보기 버튼 클릭
- $('#viewTransaction').on('click', function() {
+      //버튼 클릭
+      // 거래 내역 보기 버튼 클릭
+      $('#viewTransaction').on('click', function () {
         window.location.href = '/transactionPage'; // 거래 내역 페이지로 이동
-    });
+      });
 
-    // 차트 모아 보기 버튼 클릭 (현재 기능 미구현)
-    $('#viewExpenseGraph').on('click', function() {
-      window.location.href = '/graphPage';
-    });
+      // 차트 모아 보기 버튼 클릭 (현재 기능 미구현)
+      $('#viewExpenseGraph').on('click', function () {
+        window.location.href = '/graphPage';
+      });
 
-    // 예산 관리 하기 버튼 클릭
-    $('#manageBudget').on('click', function() {
+      // 예산 관리 하기 버튼 클릭
+      $('#manageBudget').on('click', function () {
         window.location.href = '/budgetPage'; // 예산 관리 페이지로 이동
-    });
+      });
 
-    // 계좌 관리 하기 버튼 클릭
-    $('#manageAccount').on('click', function() {
+      // 계좌 관리 하기 버튼 클릭
+      $('#manageAccount').on('click', function () {
         window.location.href = '/accountPage'; // 계좌 관리 페이지로 이동
+      });
     });
-});
 
 
-</script>
-  </body>
+  </script>
+</body>
+
 </html>

@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>파이 그래프</title>
 
     <!-- 부트스트랩 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <!-- ToastUI Chart 스타일 -->
     <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css" />
-    
+
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    
+
     <!-- ToastUI Chart 스크립트 -->
     <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
-    
+
     <!-- 부트스트랩 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+
     <style>
         body {
             background-color: #f8f9fa;
@@ -35,103 +41,107 @@
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
+
         #chart {
             margin-top: 30px;
         }
+
         h1 {
-        text-align: center;
-        font-weight: bold;
-        color: #343a40;
-      }
+            text-align: center;
+            font-weight: bold;
+            color: #343a40;
+        }
     </style>
 </head>
+
 <body>
     <div class="container py-5">
-    <h1>지출 모아 보기</h1>
-  <!-- 날짜 선택과 확인 버튼 -->
-  <div class="date-selection text-center mb-4">
-    <div class="mb-3">
-      <label for="startDate">시작 날짜:</label>
-      <input type="date" id="startDate" class="form-control d-inline-block w-auto">
+        <h1>지출 모아 보기</h1>
+        <!-- 날짜 선택과 확인 버튼 -->
+        <div class="date-selection text-center mb-4">
+            <div class="mb-3">
+                <label for="startDate">시작 날짜:</label>
+                <input type="date" id="startDate" class="form-control d-inline-block w-auto">
+            </div>
+
+            <div class="mb-3">
+                <label for="endDate" style="margin-left: 10px;">마지막 날짜:</label>
+                <input type="date" id="endDate" class="form-control d-inline-block w-auto">
+            </div>
+
+            <button id="confirmDate" type="button" class="btn btn-outline-primary btn-lg">확인</button>
+
+            <div id="chart"></div>
+        </div>
     </div>
-    
-    <div class="mb-3">
-      <label for="endDate" style="margin-left: 10px;">마지막 날짜:</label>
-      <input type="date" id="endDate" class="form-control d-inline-block w-auto">
-    </div>
 
-    <button id="confirmDate" type="button" class="btn btn-outline-primary btn-lg">확인</button>
+    <!-- JavaScript -->
+    <script>
+        const Chart = toastui.Chart;
 
-    <div id="chart"></div>
-  </div>
-  </div>
+        $(document).ready(function () {
+            // 차트 엘리먼트
+            const $chart = $('#chart');
 
-  <!-- JavaScript -->
-  <script>
-      const Chart = toastui.Chart;
-      
-      $(document).ready(function() {
-          // 차트 엘리먼트
-          const $chart = $('#chart');
+            // 차트 생성 함수
+            function renderChart(data) {
+                const chartData = {
+                    categories: ['Transaction'],
+                    series: data.map(item => ({
+                        name: item.categoryName,
+                        data: item.amount
+                    }))
+                };
 
-          // 차트 생성 함수
-          function renderChart(data) {
-              const chartData = {
-                  categories: ['Transaction'],
-                  series: data.map(item => ({
-                      name: item.categoryName,
-                      data: item.amount
-                  }))
-              };
+                const options = {
+                    chart: { width: 800, height: 500 },
+                    series: {
+                        dataLabels: {
+                            visible: true,
+                            pieSeriesName: {
+                                visible: true,
+                                anchor: 'outer'
+                            }
+                        }
+                    }
+                };
 
-              const options = {
-                  chart: { width: 800, height: 500 },
-                  series: {
-                      dataLabels: {
-                          visible: true,
-                          pieSeriesName: {
-                              visible: true,
-                              anchor: 'outer'
-                          }
-                      }
-                  }
-              };
+                // 기존 차트 제거
+                $chart.empty();
 
-              // 기존 차트 제거
-              $chart.empty();
+                // 새 차트 생성
+                const chart = toastui.Chart.pieChart({
+                    el: $chart[0],
+                    data: chartData,
+                    options: options
+                });
+            }
 
-              // 새 차트 생성
-              const chart = toastui.Chart.pieChart({
-                  el: $chart[0],
-                  data: chartData,
-                  options: options
-              });
-          }
+            // 확인 버튼 클릭 이벤트
+            $('#confirmDate').on('click', function () {
+                const startDate = $('#startDate').val();
+                const endDate = $('#endDate').val();
 
-          // 확인 버튼 클릭 이벤트
-          $('#confirmDate').on('click', function() {
-              const startDate = $('#startDate').val();
-              const endDate = $('#endDate').val();
+                if (!startDate || !endDate) {
+                    alert('시작 날짜와 마지막 날짜를 입력해주세요.');
+                    return;
+                }
 
-              if (!startDate || !endDate) {
-                  alert('시작 날짜와 마지막 날짜를 입력해주세요.');
-                  return;
-              }
-
-              // AJAX로 서버에서 데이터 가져오기
-              $.ajax({
-                  url: `transactions/graph?startDate=${startDate}&endDate=${endDate}`,
-                  method: 'GET',
-                  success: function(response) {
-                      renderChart(response);
-                  },
-                  error: function(error) {
-                      console.error('데이터 가져오기 중 오류 발생:', error);
-                      alert('데이터를 가져오는 중 문제가 발생했습니다.');
-                  }
-              });
-          });
-      });
-  </script>
+                // AJAX로 서버에서 데이터 가져오기
+                $.ajax({
+                    url: `transactions/graph?startDate=${startDate}&endDate=${endDate}`,
+                    method: 'GET',
+                    success: function (response) {
+                        renderChart(response);
+                    },
+                    error: function (error) {
+                        console.error('데이터 가져오기 중 오류 발생:', error);
+                        alert('데이터를 가져오는 중 문제가 발생했습니다.');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
+
 </html>

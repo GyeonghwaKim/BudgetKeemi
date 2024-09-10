@@ -1,9 +1,7 @@
 package com.example.budgeKeemi.service;
 
-import com.example.budgeKeemi.domain.entity.Account;
 import com.example.budgeKeemi.domain.entity.Budget;
 import com.example.budgeKeemi.domain.entity.Category;
-import com.example.budgeKeemi.domain.entity.Transaction;
 import com.example.budgeKeemi.dto.req.ReqBudget;
 import com.example.budgeKeemi.dto.resp.RespBudget;
 import com.example.budgeKeemi.dto.resp.RespCategory;
@@ -12,9 +10,7 @@ import com.example.budgeKeemi.repository.BudgetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -28,13 +24,15 @@ public class BudgetService {
     public List<RespBudget> getBudgetsByUsername(String username) {
 
         List<Long> categoryIds =
-                categoryService.getCategoriesByUsername(username)
+                categoryService.getActiveCategoriesByUsername(username)
                         .stream()
                         .map(RespCategory::getId)
                         .toList();
 
         List<Budget> budgets = repository.findAllByCategoryIdIn(categoryIds);
-//사용량
+        
+//TODO: 사용량
+
 //        Map<Long,Integer> useAmountMap=new HashMap<>();
 //
 //        for(Budget budget:budgets){
@@ -54,7 +52,7 @@ public class BudgetService {
     }
 
     public RespBudget createBudget(ReqBudget reqBudget,String username) {
-        Category category = categoryService.getCategoryById(reqBudget.getCategoryId());
+        Category category = categoryService.getCategoryByCategoryId(reqBudget.getCategoryId());
 
         validationAuthorization(username, category, "작성 권한이 없습니다");
 
@@ -84,7 +82,7 @@ public class BudgetService {
         if(_budget.isPresent()){
             Budget budget = _budget.get();
 
-            Category category = categoryService.getCategoryById(reqBudget.getCategoryId());
+            Category category = categoryService.getCategoryByCategoryId(reqBudget.getCategoryId());
 
             validationAuthorization(username, category, "수정 권한이 없습니다");
 

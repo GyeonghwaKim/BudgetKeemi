@@ -27,8 +27,7 @@ public class CategoryService {
 
     private final MemberService memberService;
 
-    //Todo: getCategoryByCategoryId() 로 이름 변겅
-    public Category getCategoryById(Long categoryId) {
+    public Category getCategoryByCategoryId(Long categoryId) {
         Optional<Category> _category = repository.findById(categoryId);
         if (_category.isPresent()) {
             return _category.get();
@@ -37,16 +36,15 @@ public class CategoryService {
         }
     }
 
-    public List<RespCategory> getCategoriesByUsername(String username) {
+    //나의 활성화 카테고리 목록
+    public List<RespCategory> getActiveCategoriesByUsername(String username) {
 
         Member member = memberService.getMemberByUsername(username);
-        List<Category> categories = repository.findAllByMember(member);
-        List<RespCategory> respCategories = categories
-                .stream()
-                .map(RespCategory::toDto)
-                .toList();
+
+        List<RespCategory> respCategories = getRespCategories(member, IsActive.Y);
         return respCategories;
     }
+
 
     public RespCategory createCategory(ReqCategory reqCategory, String username) {
 
@@ -100,22 +98,23 @@ public class CategoryService {
     }
 
 
-    public boolean deleteCategory(Long id, String username) {
+    public boolean changeInactiveCategory(Long id, String username) {
 
         Optional<Category> _category = repository.findById(id);
 
         if (_category.isPresent()) {
-
             Category category = _category.get();
+
+            //소유자 검증
             validationAuthorization(username, category, "삭제 권한이 없습니다");
+
+            //활성화 카테고리인지?
             if (category.getActive() == IsActive.Y) {
                 category.changeActive(IsActive.N);
                 repository.save(category);
                 return true;
-            } else {
-                return false;
             }
-
+            return false;
 
         } else {
             return false;
@@ -130,4 +129,12 @@ public class CategoryService {
         return categoryStatuses;
     }
 
+    private List<RespCategory> getRespCategories(Member member, IsActive isActive) {
+        List<Category> categories = repository.findAllByMemberAndActive(member, isActive);
+        List<RespCategory> respCategories = categories
+                .stream()
+                .map(RespCategory::toDto)
+                .toList();
+        return respCategories;
+    }
 }

@@ -40,25 +40,28 @@ public class AccountService {
         return respAccount;
     }
 
-    public List<RespAccount> getAccountsByUsername(String username) {
+    //나의 활성화 계좌 목록
+    public List<RespAccount> getActiveAccountsByUsername(String username) {
 
-        Member member=memberService.getMemberByUsername(username);
-        log.info("username = {}",username);
-        log.info("member id = {}",member.getId());
-
-        List<Account> accounts = repository.findAllByMember(member);
-
-        log.info("accounts = {}",accounts.toString());
-        log.info("accounts size= {}",accounts.size());
-        log.info("accounts is Empty? {}",accounts.isEmpty());
-
-        List<RespAccount> respAccounts = accounts
-                .stream()
-                .map(RespAccount::toDto)
-                .toList();
-
+        List<RespAccount> respAccounts = getRespAccounts(username, IsActive.Y);
         return respAccounts;
     }
+
+
+    //나의 비활성화 계좌 목록
+    public List<RespAccount> getInactiveAccountsByUsername(String username) {
+
+        List<RespAccount> respAccounts = getRespAccounts(username, IsActive.N);
+        return respAccounts;
+    }
+
+    //나의 모든 계좌 목록
+    public List<RespAccount> getAccountsByUsername(String username) {
+
+        List<RespAccount> respAccounts = getRespAccounts(username);
+        return respAccounts;
+    }
+
 
     public RespAccount getAccountDetails(Long id) {
         Optional<Account> _account = repository.findById(id);
@@ -97,7 +100,7 @@ public class AccountService {
 
     }
 
-    public boolean deleteAccount(Long id,String username) {
+    public boolean changeInactiveAccount(Long id, String username) {
 
         Optional<Account> _account = repository.findById(id);
 
@@ -107,22 +110,20 @@ public class AccountService {
             //소유자 검증
             validationAuthorization(account, username, "삭제 권한이 없습니다");
 
-            account.changeActive(IsActive.N);
+            //활성화 계좌인지?
+            if(account.getActive()==IsActive.Y){
+                account.changeActive(IsActive.N);
+                repository.save(account);
+                return true;
+            }
 
-            repository.save(account);
-
-            return  true;
+            return  false;
         } else {
             return false;
         }
 
     }
 
-    private static void validationAuthorization(Account account, String username, String message) {
-        if (!account.getMember().getUsername().equals(username)) {
-            throw new UnauthorizedException(message);
-        }
-    }
 
     public Account getAccountById(Long id) {
         Optional<Account> _account = repository.findById(id);
@@ -142,5 +143,32 @@ public class AccountService {
             typeList.add(value.name());
         }
         return typeList;
+    }
+
+    private List<RespAccount> getRespAccounts(String username) {
+        Member member=memberService.getMemberByUsername(username);
+        List<Account> accounts = repository.findAllByMember(member);
+        List<RespAccount> respAccounts = accounts
+                .stream()
+                .map(RespAccount::toDto)
+                .toList();
+        return respAccounts;
+    }
+
+
+    private List<RespAccount> getRespAccounts(String username, IsActive isActive) {
+        Member member=memberService.getMemberByUsername(username);
+        List<Account> accounts = repository.findAllByMemberAndActive(member, isActive);
+        List<RespAccount> respAccounts = accounts
+                .stream()
+                .map(RespAccount::toDto)
+                .toList();
+        return respAccounts;
+    }
+
+    private static void validationAuthorization(Account account, String username, String message) {
+        if (!account.getMember().getUsername().equals(username)) {
+            throw new UnauthorizedException(message);
+        }
     }
 }

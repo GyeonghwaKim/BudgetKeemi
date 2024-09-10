@@ -1,356 +1,389 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BudgetKeemi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-      body {
-        background-color: #f8f9fa;
-      }
-      .container {
-        max-width: 500px;
-        margin-top: 50px;
-      }
-      h1 {
-        text-align: center;
-        font-weight: bold;
-        color: #343a40;
-      }
-      .account-card {
-        background-color: #fff;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-      }
-      .account-card h5 {
-        color: #007bff;
-      }
-      .form-container {
-        background-color: #fff;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-      }
-      .btn-custom {
-        width: 100%;
-        margin-top: 10px;
-      }
-      .del {
-        text-decoration: line-through;
-      }
-    </style>
-  </head>
-  <body>
 
-    <div class="container">
-        <h1>계좌 관리</h1>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BudgetKeemi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
 
-        <!-- Form Section -->
-        <div class="form-container shadow-sm">
-            <div class="mb-3">
-                <label for="accountName" class="form-label">계좌 이름</label>
-                <input type="text" class="form-control" id="accountName" placeholder="계좌 이름을 입력하세요">
-            </div>
-            <div class="mb-3">
-                <label for="balance" class="form-label">현재 잔액</label>
-                <input type="text" class="form-control" id="balance" placeholder="잔액을 입력하세요">
-            </div>
-            <div class="mb-3">
-                <label for="accountType" class="form-label">계좌 유형</label>
-                <select class="form-select" id="accountType">
+    .container {
+      max-width: 500px;
+      margin-top: 50px;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: bold;
+      color: #343a40;
+    }
+
+    .account-card {
+      background-color: #fff;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .account-card h5 {
+      color: #007bff;
+    }
+
+    .form-container {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-custom {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .del {
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>계좌 관리</h1>
+
+    <!-- Form Section -->
+    <div class="form-container shadow-sm">
+      <div class="mb-3">
+        <label for="accountName" class="form-label">계좌 이름</label>
+        <input type="text" class="form-control" id="accountName" placeholder="계좌 이름을 입력하세요">
+      </div>
+      <div class="mb-3">
+        <label for="balance" class="form-label">현재 잔액</label>
+        <input type="text" class="form-control" id="balance" placeholder="잔액을 입력하세요">
+      </div>
+      <div class="mb-3">
+        <label for="accountType" class="form-label">계좌 유형</label>
+        <select class="form-select" id="accountType">
+        </select>
+      </div>
+      <button class="btn btn-outline-dark btn-custom" id="submintAccount">저장</button>
+    </div>
+
+    <hr>
+
+    <!-- Account Section -->
+    <h4 class="mb-4">내 계좌</h4>
+    <div class="activeAccount-card-container">
+      <!--활성화 계좌 데이터 추가-->
+    </div>
+    <div class="inactiveAccount-card-container">
+      <!--비활성화 계좌 데이터 추가-->
+    </div>
+    
+    <!-- 수정 폼 모달 -->
+    <div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editAccountModalLabel">계좌 수정</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editAccountForm">
+              <input type="hidden" id="editAccountId">
+              <div class="mb-3">
+                <label for="editAccountName" class="form-label">계좌 이름</label>
+                <input type="text" class="form-control" id="editAccountName" required>
+              </div>
+              <div class="mb-3">
+                <label for="editBalance" class="form-label">현재 잔액</label>
+                <input type="text" class="form-control" id="editBalance" required>
+              </div>
+              <div class="mb-3">
+                <label for="editAccountType" class="form-label">계좌 유형</label>
+                <select class="form-select" id="editAccountType" required>
                 </select>
-            </div>
-            <button class="btn btn-outline-dark btn-custom" id="submintAccount">저장</button>
+              </div>
+              <button type="submit" class="btn btn-primary">저장</button>
+            </form>
+          </div>
         </div>
-
-        <hr>
-
-        <!-- Account Section -->
-        <h4 class="mb-4">내 계좌</h4>
-        <div class="account-card-container">
-            <!--계좌 데이터 추가-->
-        </div>
-<!-- 수정 폼 모달 -->
-<div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editAccountModalLabel">계좌 수정</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="editAccountForm">
-          <input type="hidden" id="editAccountId">
-          <div class="mb-3">
-            <label for="editAccountName" class="form-label">계좌 이름</label>
-            <input type="text" class="form-control" id="editAccountName" required>
-          </div>
-          <div class="mb-3">
-            <label for="editBalance" class="form-label">현재 잔액</label>
-            <input type="text" class="form-control" id="editBalance" required>
-          </div>
-          <div class="mb-3">
-            <label for="editAccountType" class="form-label">계좌 유형</label>
-            <select class="form-select" id="editAccountType" required>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-primary">저장</button>
-        </form>
       </div>
     </div>
+
+
   </div>
-</div>
 
-        
-    </div>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+    integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+    crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+  <script>
+    //날짜 포맷
+    function formatDate(isoString) {
+      const cleanIsoString = isoString.split('.')[0];
+      const date = new Date(cleanIsoString);
 
-    <script>
-      //날짜 포맷
-      function formatDate(isoString) {
-        const cleanIsoString = isoString.split('.')[0];
-        const date = new Date(cleanIsoString);
-    
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); 
-        const day = String(date.getDate()).padStart(2, '0');
-    
-        return `${year}-${month}-${day}`;
-      }
-    
-      $(document).ready(function () {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
 
-//account type
- $.ajax({
-    url: 'http://localhost:8080/accounts/accountType',
-    method: 'GET',
-    success: function (accountTypes) {
-      var accountTypeSelect = $('#accountType');
-      accountTypeSelect.empty();
-
-      accountTypes.forEach(function (type) {
-        accountTypeSelect.append(`<option value="${type}">${type}</option>`);
-      });
-    },
-    error: function (error) {
-      console.error("계좌 유형 데이터를 불러오는 중 오류 발생:", error);
+      return `${year}-${month}-${day}`;
     }
-  });
-//account type 수정 모달
-$.ajax({
-    url: 'http://localhost:8080/accounts/accountType',
-    method: 'GET',
-    success: function (accountTypes) {
-      var accountTypeSelect = $('#editAccountType');
-      accountTypeSelect.empty();
 
-      accountTypes.forEach(function (type) {
-        accountTypeSelect.append(`<option value="${type}">${type}</option>`);
-      });
-    },
-    error: function (error) {
-      console.error("계좌 유형 데이터를 불러오는 중 오류 발생:", error);
-    }
-  });
+    $(document).ready(function () {
 
-
-//계좌 생성
-$('#submintAccount').click(function () {
-      var accountName = $('#accountName').val();
-      var balance = $('#balance').val();
-      var accountType = $('#accountType').val();
-
-       // 입력값 검증
-       if (!accountName) {
-        alert("계좌 이름을 선택하세요.");
-        return;  
-      }
-
-      if (!balance || isNaN(balance) || balance <= 0) {
-        alert("유효한 금액을 입력하세요.");
-        return; 
-      }
-
-      if (!accountType) {
-        alert("계좌 유형을 선택하세요.");
-        return;  
-      }
-
-      // 요청 데이터 생성
-      var accountData = {
-        name: accountName,
-        balance: balance,
-        status: accountType
-      };
-
+      //account type
       $.ajax({
-        url: 'http://localhost:8080/accounts',
-        method: 'POST',
-        contentType: 'application/json', 
-        data: JSON.stringify(accountData),
-        success: function (response) {
-          alert("계좌가 성공적으로 생성되었습니다.");
-          location.reload();
+        url: 'http://localhost:8080/accounts/accountType',
+        method: 'GET',
+        success: function (accountTypes) {
+          var accountTypeSelect = $('#accountType');
+          accountTypeSelect.empty();
+
+          accountTypes.forEach(function (type) {
+            accountTypeSelect.append(`<option value="${type}">${type}</option>`);
+          });
         },
-        error: function (xhr, status, error) {
-          console.error('계좌 생성 중 오류 발생:', error);
-          alert("계좌 생성 중 오류가 발생했습니다.");
+        error: function (error) {
+          console.error("계좌 유형 데이터를 불러오는 중 오류 발생:", error);
         }
       });
-    });
+      //account type 수정 모달
+      $.ajax({
+        url: 'http://localhost:8080/accounts/accountType',
+        method: 'GET',
+        success: function (accountTypes) {
+          var accountTypeSelect = $('#editAccountType');
+          accountTypeSelect.empty();
+
+          accountTypes.forEach(function (type) {
+            accountTypeSelect.append(`<option value="${type}">${type}</option>`);
+          });
+        },
+        error: function (error) {
+          console.error("계좌 유형 데이터를 불러오는 중 오류 발생:", error);
+        }
+      });
 
 
-// 계좌 데이터를 가져오는 AJAX 요청
-$.ajax({
-  url: 'http://localhost:8080/accounts',
-  method: 'GET',
-  success: function (accounts) {
-    var accountContainer = $('.account-card-container');
-    accountContainer.empty();
+      //계좌 생성
+      $('#submintAccount').click(function () {
+        var accountName = $('#accountName').val();
+        var balance = $('#balance').val();
+        var accountType = $('#accountType').val();
 
-    // 활성화된 계좌가 위로 오도록 정렬
-    accounts.sort(function (a, b) {
-      if (a.active === 'Y' && b.active === 'N') {
-        return -1; // a가 활성화된 경우 먼저 오도록 함
-      } else if (a.active === 'N' && b.active === 'Y') {
-        return 1; // b가 활성화된 경우 나중에 오도록 함
-      } else {
-        return 0; // 같은 활성화 상태일 경우 순서 변경 없음
-      }
-    });
+        // 입력값 검증
+        if (!accountName) {
+          alert("계좌 이름을 선택하세요.");
+          return;
+        }
 
-    // 계좌 데이터 렌더링
-    accounts.forEach(function (account) {
-      const formattedDate = formatDate(account.createDate);
-      
-      // 비활성화된 계좌는 버튼과 스타일을 비활성화
-      var isDisabled = account.active === 'N' ? 'disabled' : '';
-      var isDelete=account.active ==='N' ? 'del' : '';
+        if (!balance || isNaN(balance) || balance <= 0) {
+          alert("유효한 금액을 입력하세요.");
+          return;
+        }
 
-      var accountItem = `
-        <div class="account-card p-3 shadow-sm ${isDisabled}" id="budget-${account.id}">
-          <button class="btn btn-danger btn-sm float-end delete-btn" data-id="${account.id}" ${isDisabled}>삭제</button>
-          <button class="btn btn-primary btn-sm float-end edit-btn" data-id="${account.id}" data-name="${account.name}" data-balance="${account.balance}" data-type="${account.status}" ${isDisabled}>수정</button>
-          <h5 class="${isDelete}">${account.name}</h5>
+        if (!accountType) {
+          alert("계좌 유형을 선택하세요.");
+          return;
+        }
+
+        // 요청 데이터 생성
+        var accountData = {
+          name: accountName,
+          balance: balance,
+          status: accountType
+        };
+
+        $.ajax({
+          url: 'http://localhost:8080/accounts',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(accountData),
+          success: function (response) {
+            alert("계좌가 성공적으로 생성되었습니다.");
+            location.reload();
+          },
+          error: function (xhr, status, error) {
+            console.error('계좌 생성 중 오류 발생:', error);
+            alert("계좌 생성 중 오류가 발생했습니다.");
+          }
+        });
+      });
+
+
+      // 활성화 계좌 데이터를 가져오는 AJAX 요청
+      $.ajax({
+        url: 'http://localhost:8080/accounts/active',
+        method: 'GET',
+        success: function (accounts) {
+          var accountContainer = $('.activeAccount-card-container');
+          accountContainer.empty();
+
+          // 계좌 데이터 렌더링
+          accounts.forEach(function (account) {
+            const formattedDate = formatDate(account.createDate);
+
+            var accountItem = `
+        <div class="account-card p-3 shadow-sm " id="account-${account.id}">
+          <button class="btn btn-danger btn-sm float-end delete-btn" data-id="${account.id}">삭제</button>
+          <button class="btn btn-primary btn-sm float-end edit-btn" data-id="${account.id}" data-name="${account.name}" data-balance="${account.balance}" data-type="${account.status}"}>수정</button>
+          <h5>${account.name}</h5>
           <h6>${account.status}</h6>
           <h6>${formattedDate}</h6>            
           <span>${account.balance.toLocaleString()} 원</span>
         </div>
       `;
-      accountContainer.append(accountItem);
-    });
-  },
-  error: function (error) {
-    console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
-  }
-});
+            accountContainer.append(accountItem);
+          });
+        },
+        error: function (error) {
+          console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
+        }
+      });
 
-//삭제  
-$('.account-card-container').on('click', '.delete-btn', function () {
-          var accountId = $(this).data('id');
-    
-          if (confirm("이 예산을 삭제하시겠습니까?")) {
-            $.ajax({
-              url: 'http://localhost:8080/accounts/' + accountId,
-              method: 'DELETE',
-              success: function (response) {
-                console.log('예산 삭제 성공:', response);
-                alert("예산이 성공적으로 삭제되었습니다!");
-    
-                $('#budget-' + accountId).remove();
-              },
-              error: function (xhr, status, error) {
-                console.error('예산 삭제 중 오류 발생:', error);
-                if(xhr.status ===403){
-                  alert(xhr.responseText);
-                }else{
-                  alert("예산 삭제 중 오류가 발생했습니다.");
-                }
+      // 비활성화 계좌 데이터를 가져오는 AJAX 요청
+      $.ajax({
+        url: 'http://localhost:8080/accounts/inactive',
+        method: 'GET',
+        success: function (accounts) {
+          var accountContainer = $('.inactiveAccount-card-container');
+          accountContainer.empty();
+
+          // 계좌 데이터 렌더링
+          accounts.forEach(function (account) {
+            const formattedDate = formatDate(account.createDate);
+            
+            var accountItem = `
+        <div class="account-card p-3 shadow-sm disabled" id="account-${account.id}">
+          <h5 class="del">${account.name}</h5>
+          <h6>${account.status}</h6>
+          <h6>${formattedDate}</h6>            
+          <span>${account.balance.toLocaleString()} 원</span>
+        </div>
+      `;
+            accountContainer.append(accountItem);
+          });
+        },
+        error: function (error) {
+          console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
+        }
+      });
+
+      //삭제  
+      $('.activeAccount-card-container').on('click', '.delete-btn', function () {
+        var accountId = $(this).data('id');
+
+        if (confirm("이 계좌을 삭제하시겠습니까?")) {
+          $.ajax({
+            url: 'http://localhost:8080/accounts/' + accountId,
+            method: 'DELETE',
+            success: function (response) {
+              console.log('계좌 삭제 성공:', response);
+              alert("계좌가 성공적으로 삭제되었습니다!");
+
+              $('#account-' + accountId).remove();
+            },
+            error: function (xhr, status, error) {
+              console.error('계좌 삭제 중 오류 발생:', error);
+              if (xhr.status === 403) {
+                alert(xhr.responseText);
+              } else {
+                alert("계좌 삭제 중 오류가 발생했습니다.");
               }
-            });
+            }
+          });
+        }
+      });
+
+
+      // 계좌 수정 버튼 클릭 이벤트
+      $('.activeAccount-card-container').on('click', '.edit-btn', function () {
+        var accountId = $(this).data('id');
+        var accountName = $(this).data('name');
+        var accountBalance = $(this).data('balance');
+        var accountType = $(this).data('type');
+
+        // 수정할 계좌 정보를 폼에 채워넣기
+        $('#editAccountId').val(accountId);
+        $('#editAccountName').val(accountName);
+        $('#editBalance').val(accountBalance);
+        $('#editAccountType').val(accountType);
+
+        // 수정 폼 표시
+        $('#editAccountModal').modal('show');
+      });
+
+      // 계좌 수정 제출
+      $('#editAccountForm').on('submit', function (event) {
+        event.preventDefault();
+
+        var accountId = $('#editAccountId').val();
+        var accountName = $('#editAccountName').val();
+        var balance = $('#editBalance').val();
+        var accountType = $('#editAccountType').val();
+
+        // // 입력값 검증
+        // if (!accountName) {
+        //   alert("계좌 이름을 입력하세요.");
+        //   return;
+        // }
+
+        // if (!balance || isNaN(balance) || balance <= 0) {
+        //   alert("유효한 금액을 입력하세요.");
+        //   return;
+        // }
+
+        // if (!accountType) {
+        //   alert("계좌 유형을 선택하세요.");
+        //   return;
+        // }
+
+        // 수정된 데이터 전송
+        var accountData = {
+          name: accountName,
+          balance: balance,
+          status: accountType
+        };
+
+        // 서버로 PUT 요청
+        $.ajax({
+          url: 'http://localhost:8080/accounts/' + accountId,
+          method: 'PUT',
+          contentType: 'application/json',
+          data: JSON.stringify(accountData),
+          success: function (response) {
+            alert("계좌가 성공적으로 수정되었습니다.");
+            $('#editAccountModal').modal('hide');
+            location.reload(); // 수정 후 페이지 새로고침
+          },
+          error: function (xhr, status, error) {
+            console.error('계좌 수정 중 오류 발생:', error);
+
+            if (xhr.status === 403) {
+              alert(xhr.responseText)
+            } else {
+              alert("계좌 수정 중 오류가 발생했습니다.");
+            }
           }
         });
-
-
-        // 계좌 수정 버튼 클릭 이벤트
-  $('.account-card-container').on('click', '.edit-btn', function () {
-    var accountId = $(this).data('id');
-    var accountName = $(this).data('name');
-    var accountBalance = $(this).data('balance');
-    var accountType = $(this).data('type');
-
-    // 수정할 계좌 정보를 폼에 채워넣기
-    $('#editAccountId').val(accountId);
-    $('#editAccountName').val(accountName);
-    $('#editBalance').val(accountBalance);
-    $('#editAccountType').val(accountType);
-
-    // 수정 폼 표시
-    $('#editAccountModal').modal('show');
-  });
-
-  // 계좌 수정 제출
-  $('#editAccountForm').on('submit',function (event) {
-    event.preventDefault();
-
-    var accountId = $('#editAccountId').val();
-    var accountName = $('#editAccountName').val();
-    var balance = $('#editBalance').val();
-    var accountType = $('#editAccountType').val();
-
-    // // 입력값 검증
-    // if (!accountName) {
-    //   alert("계좌 이름을 입력하세요.");
-    //   return;
-    // }
-
-    // if (!balance || isNaN(balance) || balance <= 0) {
-    //   alert("유효한 금액을 입력하세요.");
-    //   return;
-    // }
-
-    // if (!accountType) {
-    //   alert("계좌 유형을 선택하세요.");
-    //   return;
-    // }
-
-    // 수정된 데이터 전송
-    var accountData = {
-      name: accountName,
-      balance: balance,
-      status: accountType
-    };
-
-    // 서버로 PUT 요청
-    $.ajax({
-      url: 'http://localhost:8080/accounts/' + accountId,
-      method: 'PUT',
-      contentType: 'application/json',
-      data: JSON.stringify(accountData),
-      success: function (response) {
-        alert("계좌가 성공적으로 수정되었습니다.");
-        $('#editAccountModal').modal('hide');
-        location.reload(); // 수정 후 페이지 새로고침
-      },
-      error: function (xhr, status, error) {
-        console.error('계좌 수정 중 오류 발생:', error);
-
-        if(xhr.status===403){
-          alert(xhr.responseText)
-        }else{
-          alert("계좌 수정 중 오류가 발생했습니다.");
-        }
-      }
-    });
-  });
       });
-    </script>
-    
-  </body>
+    });
+  </script>
+
+</body>
+
 </html>

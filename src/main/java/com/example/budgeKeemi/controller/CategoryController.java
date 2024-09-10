@@ -25,11 +25,11 @@ public class CategoryController {
     private final CategoryService service;
 
 
-    //카테고리 목록 조회
-    @GetMapping
-    public ResponseEntity<?> getCategories(Principal principal){
+    //활성화 카테고리 목록 조회
+    @GetMapping("/active")
+    public ResponseEntity<?> getActiveCategories(Principal principal) {
         String username = getUsername(principal);
-        List<RespCategory> categories= service.getCategoriesByUsername(username);
+        List<RespCategory> categories = service.getActiveCategoriesByUsername(username);
         return ResponseEntity.ok(categories);
     }
 
@@ -46,14 +46,14 @@ public class CategoryController {
 
 
     //카테고리 상세조회
-    @GetMapping("/{categoryId}")
-    public ResponseEntity<?> getCategoryDetail(@PathVariable(name = "categoryId") Long id){
-
-        RespCategory respCategory=service.getCategoryDetail(id);
-
-        return ResponseEntity.ok(respCategory);
-
-    }
+//    @GetMapping("/{categoryId}")
+//    public ResponseEntity<?> getCategoryDetail(@PathVariable(name = "categoryId") Long id){
+//
+//        RespCategory respCategory=service.getCategoryDetail(id);
+//
+//        return ResponseEntity.ok(respCategory);
+//
+//    }
     //카테고리 수정
     @PutMapping("/{categoryId}")
     public ResponseEntity<?> updateCategory(@PathVariable(name = "categoryId") Long id,
@@ -74,12 +74,12 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable(name = "categoryId") Long id,Principal principal){
 
         String username = getUsername(principal);
-        boolean isDeleted=service.deleteCategory(id,username);
+        boolean isDeleted=service.changeInactiveCategory(id,username);
 
-        //if(isDeleted){
+        if(isDeleted){
         return ResponseEntity.ok().build();
-        //}
-        //return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/categoryStatus")

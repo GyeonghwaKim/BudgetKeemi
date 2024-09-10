@@ -33,7 +33,7 @@ public class TransactionService {
     public RespTransaction createTransaction(ReqTransaction reqTransaction,String username) {
         
         Account account=accountService.getAccountById(reqTransaction.getAccountId());
-        Category category = categoryService.getCategoryById(reqTransaction.getCategoryId());
+        Category category = categoryService.getCategoryByCategoryId(reqTransaction.getCategoryId());
 
         validationAuthorization(username, account, category,"작성 권한이 없습니다");
 
@@ -67,13 +67,12 @@ public class TransactionService {
 
     public List<RespTransaction> getTransactionsByUsername(String username) {
 
-
         List<Long> accountIds = accountService.getAccountsByUsername(username)
                 .stream()
                 .map(RespAccount::getId)
                 .toList();
 
-        List<Transaction> transactions=repository.findAllByAccountIdIn(accountIds);
+        List<Transaction> transactions=repository.findAllByAccountIdInOrderByTransacDateDesc(accountIds);
 
         List<RespTransaction> respTransactions = transactions
                 .stream()
@@ -82,16 +81,6 @@ public class TransactionService {
         return respTransactions;
     }
 
-    public RespTransaction getTransactionDetail(Long id) {
-
-        Optional<Transaction> _transaction = repository.findById(id);
-
-        if(_transaction.isPresent()){
-            return RespTransaction.toDto(_transaction.get());
-        }else{
-            return null;
-        }
-    }
 
     public RespTransaction updateTransaction(Long id, ReqTransaction reqTransaction) {
 
@@ -124,22 +113,22 @@ public class TransactionService {
         Optional<Transaction> _transaction = repository.findById(id);
 
         if(_transaction.isPresent()){
-
             Transaction transaction = _transaction.get();
 
             Account account = transaction.getAccount();
             Category category = transaction.getCategory();
-
+            //소유자 검증
             validationAuthorization(username, account, category,"취소 권한이 없습니다");
-
+            //지출 및 활성화 거래내역 취소
             if(category.getStatus()==CategoryStatus.EXPENSE && transaction.getActive()== IsActive.Y){
                 transaction.changeActive(IsActive.N);
+                //잔액 복구
                 account.adjustBalance(transaction.getAmount());
                 repository.save(transaction);
                 return true;
-            }else{
-                return false;
             }
+
+            return false;
         }else{
             return false;
         }

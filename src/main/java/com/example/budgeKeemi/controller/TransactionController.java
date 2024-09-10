@@ -46,27 +46,27 @@ public class TransactionController {
 
         return new ResponseEntity<>(respTransaction, HttpStatus.CREATED);
     }
-    //TODO: 상세조회와 수정은 없애도 될 것 같음
+
     //거래내역 상세조회
-    @GetMapping("/{transactionId}")
-    public ResponseEntity<?> getTransactionDetail(@PathVariable(name = "transactionId") Long id){
-
-        RespTransaction respTransaction=service.getTransactionDetail(id);
-
-        return ResponseEntity.ok(respTransaction);
-
-    }
+//    @GetMapping("/{transactionId}")
+//    public ResponseEntity<?> getTransactionDetail(@PathVariable(name = "transactionId") Long id){
+//
+//        RespTransaction respTransaction=service.getTransactionDetail(id);
+//
+//        return ResponseEntity.ok(respTransaction);
+//
+//    }
     //거래내역 수정
-    @PutMapping("/{transactionId}")
-    public ResponseEntity<?> updateTransaction(@PathVariable(name = "transactionId") Long id,
-                                               @RequestBody ReqTransaction reqTransaction){
-        RespTransaction transaction=service.updateTransaction(id,reqTransaction);
-
+//    @PutMapping("/{transactionId}")
+//    public ResponseEntity<?> updateTransaction(@PathVariable(name = "transactionId") Long id,
+//                                               @RequestBody ReqTransaction reqTransaction){
+//        RespTransaction transaction=service.updateTransaction(id,reqTransaction);
+//
 //        if(transaction==null){
 //            return ResponseEntity.notFound().build();
 //        }
-        return ResponseEntity.ok(transaction);
-    }
+//        return ResponseEntity.ok(transaction);
+//    }
 
     //거래내역 취소
     @DeleteMapping("/{transactionId}")

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -22,15 +21,91 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    //계좌 목록 조회
-    @GetMapping
-    public ResponseEntity<?> getAccounts(Principal principal){
+    //활성화 계좌 목록 조회
+    @GetMapping("/active")
+    public ResponseEntity<?> getActiveAccounts(Principal principal){
 
-        List<RespAccount> accounts=new ArrayList<>();
+
         String username = getUsername(principal);
 
-        accounts=accountService.getAccountsByUsername(username);
+        List<RespAccount> accounts=accountService.getActiveAccountsByUsername(username);
         return ResponseEntity.ok(accounts);
+    }
+    //비활성화 계좌 목록 조회
+    @GetMapping("/inactive")
+    public ResponseEntity<?> getInactiveAccounts(Principal principal){
+
+        String username = getUsername(principal);
+
+        List<RespAccount> accounts=accountService.getInactiveAccountsByUsername(username);
+        return ResponseEntity.ok(accounts);
+    }
+
+
+
+    //계좌 생성
+    @PostMapping
+    public ResponseEntity<?> createAccount(@RequestBody ReqAccount reqAccount,Principal principal) {
+        
+        String username = getUsername(principal);
+        RespAccount newAccount = accountService.createAccount(reqAccount,username);
+
+        return ResponseEntity.ok(newAccount);
+
+    }
+
+//    //계좌 상세 조회
+//    @GetMapping("/{accountId}")
+//    public ResponseEntity<?> getAccountDetails(@PathVariable(name = "accountId") Long id){
+//
+//        RespAccount account = accountService.getAccountDetails(id);
+//
+////        if (account == null) {
+////            return ResponseEntity.notFound().build();
+////        }
+//
+//        return ResponseEntity.ok(account);
+//    }
+
+    //계좌 수정 없애면 안됨!!
+    @PutMapping("/{accountId}")
+    public ResponseEntity<?> updateAccountDetails(@PathVariable(name = "accountId") Long id,
+                                                  @RequestBody  ReqAccount reqAccount,Principal principal){
+
+        String username = getUsername(principal);
+
+        RespAccount updateAccount=accountService.updateAccount(id,reqAccount,username);
+
+//        if(updateAccount==null){
+//
+//            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+//            return ResponseEntity.notFound().build();
+//        }
+
+        return ResponseEntity.ok(updateAccount);
+    }
+
+    //계좌 비활성화
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<?> inactiveAccount(@PathVariable(name = "accountId") Long id,Principal principal){
+
+        String username = getUsername(principal);
+
+        boolean isDeleted=accountService.changeInactiveAccount(id,username);
+
+        if(isDeleted){
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+
+    @GetMapping("/accountType")
+    public ResponseEntity<?> getAccountType(){
+        List<String> typeList=accountService.getAccountType();
+
+        return ResponseEntity.ok(typeList);
     }
 
     private static String getUsername(Principal principal) {
@@ -51,70 +126,5 @@ public class AccountController {
 
     }
 
-
-    //계좌 생성
-    @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody ReqAccount reqAccount,Principal principal) {
-        
-        String username = getUsername(principal);
-        RespAccount newAccount = accountService.createAccount(reqAccount,username);
-
-        return ResponseEntity.ok(newAccount);
-
-    }
-
-    //계좌 상세 조회
-    @GetMapping("/{accountId}")
-    public ResponseEntity<?> getAccountDetails(@PathVariable(name = "accountId") Long id){
-
-        RespAccount account = accountService.getAccountDetails(id);
-
-//        if (account == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-
-        return ResponseEntity.ok(account);
-    }
-
-    //계좌 수정
-    @PutMapping("/{accountId}")
-    public ResponseEntity<?> updateAccountDetails(@PathVariable(name = "accountId") Long id,
-                                                  @RequestBody  ReqAccount reqAccount,Principal principal){
-
-        String username = getUsername(principal);
-
-        RespAccount updateAccount=accountService.updateAccount(id,reqAccount,username);
-
-//        if(updateAccount==null){
-//
-//            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
-//            return ResponseEntity.notFound().build();
-//        }
-
-        return ResponseEntity.ok(updateAccount);
-    }
-
-    //계좌 삭제
-    @DeleteMapping("/{accountId}")
-    public ResponseEntity<?> deleteAccount(@PathVariable(name = "accountId") Long id,Principal principal){
-
-        String username = getUsername(principal);
-
-        boolean isDeleted=accountService.deleteAccount(id,username);
-
-        //if(isDeleted){
-            return ResponseEntity.ok().build();
-        //}else{
-        //    return ResponseEntity.notFound().build();
-        //}
-
-    }
-
-    @GetMapping("/accountType")
-    public ResponseEntity<?> getAccountType(){
-        List<String> typeList=accountService.getAccountType();
-
-        return ResponseEntity.ok(typeList);
-    }
 
 }
