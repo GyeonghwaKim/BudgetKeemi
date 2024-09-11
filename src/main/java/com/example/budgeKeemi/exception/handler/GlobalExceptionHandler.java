@@ -1,5 +1,6 @@
 package com.example.budgeKeemi.exception.handler;
 
+import com.example.budgeKeemi.exception.excep.DuplicateCategoryBudgetException;
 import com.example.budgeKeemi.exception.excep.InsufficientBalanceException;
 import com.example.budgeKeemi.exception.excep.UnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -21,4 +22,11 @@ public class GlobalExceptionHandler {
         //로그인 했지만 권한이 없는 경우 403
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
+
+    @ExceptionHandler(DuplicateCategoryBudgetException.class)
+    public ResponseEntity<String> handleDuplicateCategoryBudgetException(DuplicateCategoryBudgetException e){
+        //Bad Request 400
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
 }

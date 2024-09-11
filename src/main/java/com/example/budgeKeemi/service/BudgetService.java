@@ -6,6 +6,7 @@ import com.example.budgeKeemi.domain.entity.Transaction;
 import com.example.budgeKeemi.dto.req.ReqBudget;
 import com.example.budgeKeemi.dto.resp.RespBudget;
 import com.example.budgeKeemi.dto.resp.RespCategory;
+import com.example.budgeKeemi.exception.excep.DuplicateCategoryBudgetException;
 import com.example.budgeKeemi.exception.excep.UnauthorizedException;
 import com.example.budgeKeemi.repository.BudgetRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +33,13 @@ public class BudgetService {
 
         //사용자의 카테고리 아이디 리스트로 예산 리스트 조회
         List<Budget> budgets = repository.findAllByCategoryIdIn(categoryIds);
-        
+
         Map<Long, Integer> useAmountMap = getUseAmountMap(budgets);
 
         return budgets.stream()
                 .map(budget -> {
                     RespBudget respBudget = RespBudget.toDto(budget);
-                    respBudget.updateUseAmount(useAmountMap.getOrDefault(respBudget.getCategoryId(),0));
+                    respBudget.updateUseAmount(useAmountMap.getOrDefault(respBudget.getCategoryId(), 0));
                     return respBudget;
                 })
                 .toList();
@@ -46,28 +47,30 @@ public class BudgetService {
     }
 
 
-
-
-    public RespBudget createBudget(ReqBudget reqBudget,String username) {
+    public RespBudget createBudget(ReqBudget reqBudget, String username) {
 
         Category category = categoryService.getCategoryByCategoryId(reqBudget.getCategoryId());
 
         //소유자 검증
         validationAuthorization(username, category, "작성 권한이 없습니다");
 
-        Budget budget=ReqBudget.toEntity(reqBudget);
+        //해당 카테고리가 이미 예산을 가지고 있는지 검증
+        validationExistingCategory(category);
+
+        Budget budget = ReqBudget.toEntity(reqBudget);
         budget.addCategory(category);
 
-        Budget saveBudget=repository.save(budget);
+        Budget saveBudget = repository.save(budget);
 
         return RespBudget.toDto(saveBudget);
     }
 
-    public RespBudget updateBudget(Long id, ReqBudget reqBudget,String username) {
+
+    public RespBudget updateBudget(Long id, ReqBudget reqBudget, String username) {
 
         Optional<Budget> _budget = repository.findById(id);
 
-        if(_budget.isPresent()){
+        if (_budget.isPresent()) {
             Budget budget = _budget.get();
 
             Category category = categoryService.getCategoryByCategoryId(reqBudget.getCategoryId());
@@ -83,16 +86,16 @@ public class BudgetService {
             Budget updateBudget = repository.save(budget);
 
             return RespBudget.toDto(updateBudget);
-        }else{
+        } else {
             return null;
         }
 
     }
 
-    public boolean deleteBudget(Long id,String username) {
-        Optional<Budget> _budget=repository.findById(id);
+    public boolean deleteBudget(Long id, String username) {
+        Optional<Budget> _budget = repository.findById(id);
 
-        if(_budget.isPresent()){
+        if (_budget.isPresent()) {
 
             Budget budget = _budget.get();
             Category category = budget.getCategory();
@@ -102,7 +105,7 @@ public class BudgetService {
 
             repository.delete(budget);
             return true;
-        }else{
+        } else {
             return false;
         }
 
@@ -116,16 +119,16 @@ public class BudgetService {
     }
 
     private static void validationAuthorization(String username, Category category, String message) {
-        if(!category.getMember().getUsername().equals(username)){
+        if (!category.getMember().getUsername().equals(username)) {
             throw new UnauthorizedException(message);
         }
     }
 
     private Map<Long, Integer> getUseAmountMap(List<Budget> budgets) {
 
-        Map<Long,Integer> useAmountMap=new HashMap<>();
+        Map<Long, Integer> useAmountMap = new HashMap<>();
 
-        for(Budget budget: budgets){
+        for (Budget budget : budgets) {
             Long categoryId = budget.getCategory().getId();
             LocalDate startDate = budget.getStartDate();
             LocalDate endDate = budget.getEndDate();
@@ -142,5 +145,13 @@ public class BudgetService {
         List<Transaction> transactions = transactionService.getTransactionsByCategoryIdAndDate(categoryId, startDate, endDate);
 
         return transactions.stream().mapToInt(Transaction::getAmount).sum();
+    }
+
+    private void validationExistingCategory(Category category) {
+        Optional<Budget> existingBudget=repository.findByCategoryId(category.getId());
+
+        if(existingBudget.isPresent()){
+            throw new DuplicateCategoryBudgetException("한 카테고리에는 하나의 예산만 생성할 수 있습니다");
+        }
     }
 }
