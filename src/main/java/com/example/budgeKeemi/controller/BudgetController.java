@@ -40,14 +40,14 @@ public class BudgetController {
         return new ResponseEntity<>(respBudget, HttpStatus.CREATED);
     }
     //예산 내역 상세조회
-    @GetMapping("/{budgetId}")
-    public ResponseEntity<?> getBudgetDetail(@PathVariable(name = "budgetId") Long id){
-
-        RespBudget respBudget=service.getBudgetDetail(id);
-
-        return ResponseEntity.ok(respBudget);
-
-    }
+//    @GetMapping("/{budgetId}")
+//    public ResponseEntity<?> getBudgetDetail(@PathVariable(name = "budgetId") Long id){
+//
+//        RespBudget respBudget=service.getBudgetDetail(id);
+//
+//        return ResponseEntity.ok(respBudget);
+//
+//    }
     //예산 내역 수정
     @PutMapping("/{budgetId}")
     public ResponseEntity<?> updateBudget(@PathVariable(name = "budgetId") Long id,
