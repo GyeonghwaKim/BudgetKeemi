@@ -24,8 +24,11 @@ public class BudgetController {
     //예산 목록 조회
     @GetMapping
     public ResponseEntity<?> getBudgets(Principal principal){
+
         String username = getUsername(principal);
+
         List<RespBudget> budgets= service.getBudgetsByUsername(username);
+
         return ResponseEntity.ok(budgets);
     }
 
@@ -39,15 +42,7 @@ public class BudgetController {
 
         return new ResponseEntity<>(respBudget, HttpStatus.CREATED);
     }
-    //예산 내역 상세조회
-//    @GetMapping("/{budgetId}")
-//    public ResponseEntity<?> getBudgetDetail(@PathVariable(name = "budgetId") Long id){
-//
-//        RespBudget respBudget=service.getBudgetDetail(id);
-//
-//        return ResponseEntity.ok(respBudget);
-//
-//    }
+
     //예산 내역 수정
     @PutMapping("/{budgetId}")
     public ResponseEntity<?> updateBudget(@PathVariable(name = "budgetId") Long id,
@@ -57,22 +52,24 @@ public class BudgetController {
 
         RespBudget budget=service.updateBudget(id,reqBudget,username);
 
-//        if(budget==null){
-//            return ResponseEntity.notFound().build();
-//        }
+        if(budget==null){
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(budget);
     }
 
     //예산 내역 삭제
     @DeleteMapping("/{budgetId}")
     public ResponseEntity<?> deleteBudget(@PathVariable(name = "budgetId") Long id,Principal principal){
+
         String username = getUsername(principal);
+
         boolean isDeleted=service.deleteBudget(id,username);
 
-        //if(isDeleted){
+        if(isDeleted){
         return ResponseEntity.ok().build();
-        //}
-        //return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     private static String getUsername(Principal principal) {

@@ -249,4 +249,10 @@ public class TransactionService {
             account.adjustBalance(-transactionAmount);
         }
     }
+
+    public List<Transaction> getTransactionsByCategoryIdAndDate(Long categoryId, LocalDate startDate, LocalDate endDate) {
+
+        return repository.findByDateANDCategoryId(categoryId, startDate.atStartOfDay(),
+                endDate.atTime(23,59,59));
+    }
 }

@@ -26,7 +26,7 @@ public class Budget {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
