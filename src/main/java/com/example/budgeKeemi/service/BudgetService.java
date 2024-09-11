@@ -33,9 +33,9 @@ public class BudgetService {
         //사용자의 카테고리 아이디 리스트로 예산 리스트 조회
         List<Budget> budgets = repository.findAllByCategoryIdIn(categoryIds);
         
-//TODO: 사용량
         Map<Long, Integer> useAmountMap = getUseAmountMap(budgets);
-        List<RespBudget> respBudgets = budgets.stream()
+
+        return budgets.stream()
                 .map(budget -> {
                     RespBudget respBudget = RespBudget.toDto(budget);
                     respBudget.updateUseAmount(useAmountMap.getOrDefault(respBudget.getCategoryId(),0));
@@ -43,7 +43,6 @@ public class BudgetService {
                 })
                 .toList();
 
-        return respBudgets;
     }
 
 
@@ -53,6 +52,7 @@ public class BudgetService {
 
         Category category = categoryService.getCategoryByCategoryId(reqBudget.getCategoryId());
 
+        //소유자 검증
         validationAuthorization(username, category, "작성 권한이 없습니다");
 
         Budget budget=ReqBudget.toEntity(reqBudget);
@@ -124,7 +124,7 @@ public class BudgetService {
     private Map<Long, Integer> getUseAmountMap(List<Budget> budgets) {
 
         Map<Long,Integer> useAmountMap=new HashMap<>();
-//스트림?
+
         for(Budget budget: budgets){
             Long categoryId = budget.getCategory().getId();
             LocalDate startDate = budget.getStartDate();
