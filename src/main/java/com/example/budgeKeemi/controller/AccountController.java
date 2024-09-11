@@ -23,102 +23,86 @@ public class AccountController {
 
     //활성화 계좌 목록 조회
     @GetMapping("/active")
-    public ResponseEntity<?> getActiveAccounts(Principal principal){
-
+    public ResponseEntity<?> getActiveAccounts(Principal principal) {
 
         String username = getUsername(principal);
 
-        List<RespAccount> accounts=accountService.getActiveAccountsByUsername(username);
+        List<RespAccount> accounts = accountService.getActiveAccountsByUsername(username);
         return ResponseEntity.ok(accounts);
     }
+
     //비활성화 계좌 목록 조회
     @GetMapping("/inactive")
-    public ResponseEntity<?> getInactiveAccounts(Principal principal){
+    public ResponseEntity<?> getInactiveAccounts(Principal principal) {
 
         String username = getUsername(principal);
 
-        List<RespAccount> accounts=accountService.getInactiveAccountsByUsername(username);
+        List<RespAccount> accounts = accountService.getInactiveAccountsByUsername(username);
         return ResponseEntity.ok(accounts);
     }
-
-
 
     //계좌 생성
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody ReqAccount reqAccount,Principal principal) {
-        
+    public ResponseEntity<?> createAccount(@RequestBody ReqAccount reqAccount, Principal principal) {
+
         String username = getUsername(principal);
-        RespAccount newAccount = accountService.createAccount(reqAccount,username);
+        RespAccount newAccount = accountService.createAccount(reqAccount, username);
 
         return ResponseEntity.ok(newAccount);
 
     }
 
-//    //계좌 상세 조회
-//    @GetMapping("/{accountId}")
-//    public ResponseEntity<?> getAccountDetails(@PathVariable(name = "accountId") Long id){
-//
-//        RespAccount account = accountService.getAccountDetails(id);
-//
-////        if (account == null) {
-////            return ResponseEntity.notFound().build();
-////        }
-//
-//        return ResponseEntity.ok(account);
-//    }
-
-    //계좌 수정 없애면 안됨!!
+    //계좌 수정
     @PutMapping("/{accountId}")
     public ResponseEntity<?> updateAccountDetails(@PathVariable(name = "accountId") Long id,
-                                                  @RequestBody  ReqAccount reqAccount,Principal principal){
+                                                  @RequestBody ReqAccount reqAccount, Principal principal) {
 
         String username = getUsername(principal);
 
-        RespAccount updateAccount=accountService.updateAccount(id,reqAccount,username);
+        RespAccount updateAccount = accountService.updateAccount(id, reqAccount, username);
 
-//        if(updateAccount==null){
-//
-//            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
-//            return ResponseEntity.notFound().build();
-//        }
+        if(updateAccount==null){
+            return ResponseEntity.notFound().build();
+        }
 
         return ResponseEntity.ok(updateAccount);
     }
 
     //계좌 비활성화
     @DeleteMapping("/{accountId}")
-    public ResponseEntity<?> inactiveAccount(@PathVariable(name = "accountId") Long id,Principal principal){
+    public ResponseEntity<?> disableAccount(@PathVariable(name = "accountId") Long id, Principal principal) {
 
         String username = getUsername(principal);
 
-        boolean isDeleted=accountService.changeInactiveAccount(id,username);
+        boolean isDeleted = accountService.disableAccount(id, username);
 
-        if(isDeleted){
+        if (isDeleted) {
             return ResponseEntity.ok().build();
-        }else{
+        } else {
             return ResponseEntity.badRequest().build();
         }
 
     }
 
+    //계좌 타입 조회
     @GetMapping("/accountType")
-    public ResponseEntity<?> getAccountType(){
-        List<String> typeList=accountService.getAccountType();
+    public ResponseEntity<?> getAccountType() {
+        List<String> typeList = accountService.getAccountType();
 
         return ResponseEntity.ok(typeList);
     }
 
     private static String getUsername(Principal principal) {
 
-        String username="";
+        String username = "";
 
-        if(principal instanceof OAuth2AuthenticationToken){
+        if (principal instanceof OAuth2AuthenticationToken) {
             OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
             OAuth2User oAuth2User = authToken.getPrincipal();
 
-            if(oAuth2User instanceof CustomOAuth2User){
+            if (oAuth2User instanceof CustomOAuth2User) {
                 CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
-                username=customOAuth2User.getUsername();
+                username = customOAuth2User.getUsername();
 
             }
         }

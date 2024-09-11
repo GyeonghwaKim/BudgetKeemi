@@ -11,9 +11,9 @@ import com.example.budgeKeemi.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,53 +26,34 @@ public class AccountService {
 
     private final MemberService memberService;
 
-    @Transactional
+    //계좌 생성
     public RespAccount createAccount(ReqAccount reqAccount,String username) {
 
-        Member member = memberService.getMemberByUsername(username);
-
         Account account = ReqAccount.toEntity(reqAccount);
+
+        Member member = memberService.getMemberByUsername(username);
         account.updateMember(member);
 
         Account saveAccount = this.repository.save(account);
-        RespAccount respAccount = RespAccount.toDto(saveAccount);
-
-        return respAccount;
+        return RespAccount.toDto(saveAccount);
     }
 
     //나의 활성화 계좌 목록
     public List<RespAccount> getActiveAccountsByUsername(String username) {
 
-        List<RespAccount> respAccounts = getRespAccounts(username, IsActive.Y);
-        return respAccounts;
+        return getRespAccounts(username, IsActive.Y);
     }
-
 
     //나의 비활성화 계좌 목록
     public List<RespAccount> getInactiveAccountsByUsername(String username) {
 
-        List<RespAccount> respAccounts = getRespAccounts(username, IsActive.N);
-        return respAccounts;
+        return getRespAccounts(username, IsActive.N);
     }
 
     //나의 모든 계좌 목록
     public List<RespAccount> getAccountsByUsername(String username) {
 
-        List<RespAccount> respAccounts = getRespAccounts(username);
-        return respAccounts;
-    }
-
-
-    public RespAccount getAccountDetails(Long id) {
-        Optional<Account> _account = repository.findById(id);
-
-        if (_account.isPresent()) {
-            Account account = _account.get();
-
-            return RespAccount.toDto(account);
-        } else {
-            return null;
-        }
+        return getRespAccounts(username);
     }
 
     public RespAccount updateAccount(Long id, ReqAccount reqAccount, String username) {
@@ -89,6 +70,7 @@ public class AccountService {
             account.replaceName(reqAccount.getName());
             account.replaceBalance(reqAccount.getBalance());
             account.replaceStatus(reqAccount.getStatus());
+
             Account updateAccount = repository.save(account);
 
             return RespAccount.toDto(updateAccount);
@@ -97,16 +79,14 @@ public class AccountService {
             return null;
         }
 
-
     }
 
-    public boolean changeInactiveAccount(Long id, String username) {
+    public boolean disableAccount(Long id, String username) {
 
         Optional<Account> _account = repository.findById(id);
 
         if (_account.isPresent()) {
             Account account = _account.get();
-
             //소유자 검증
             validationAuthorization(account, username, "삭제 권한이 없습니다");
 
@@ -116,14 +96,12 @@ public class AccountService {
                 repository.save(account);
                 return true;
             }
-
             return  false;
         } else {
             return false;
         }
 
     }
-
 
     public Account getAccountById(Long id) {
         Optional<Account> _account = repository.findById(id);
@@ -137,36 +115,36 @@ public class AccountService {
 
     public List<String> getAccountType() {
 
-        List<String> typeList=new ArrayList<>();
-
-        for (AccountType value : AccountType.values()) {
-            typeList.add(value.name());
-        }
-        return typeList;
+        return Arrays.stream(AccountType.values())
+                .map(AccountType::name)
+                .toList();
     }
 
     private List<RespAccount> getRespAccounts(String username) {
+
         Member member=memberService.getMemberByUsername(username);
+
         List<Account> accounts = repository.findAllByMember(member);
-        List<RespAccount> respAccounts = accounts
-                .stream()
+
+        return accounts.stream()
                 .map(RespAccount::toDto)
                 .toList();
-        return respAccounts;
     }
 
 
     private List<RespAccount> getRespAccounts(String username, IsActive isActive) {
+
         Member member=memberService.getMemberByUsername(username);
+
         List<Account> accounts = repository.findAllByMemberAndActive(member, isActive);
-        List<RespAccount> respAccounts = accounts
-                .stream()
+
+        return accounts.stream()
                 .map(RespAccount::toDto)
                 .toList();
-        return respAccounts;
     }
 
     private static void validationAuthorization(Account account, String username, String message) {
+
         if (!account.getMember().getUsername().equals(username)) {
             throw new UnauthorizedException(message);
         }
