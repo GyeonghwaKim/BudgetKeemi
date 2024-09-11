@@ -178,9 +178,11 @@ public class TransactionService {
         return transactionList;
     }
 
-    public List<DailySummary> getDaySummary(YearMonth yearMonth) {
-        List<Transaction> transactionList =new ArrayList<>();
-                //getMonthlyTransactions(yearMonth);
+    //캘린더에 쓰일 한달 거래 내역 리스트
+    public List<DailySummary> getDaySummary(YearMonth yearMonth, String username) {
+
+        List<Long> accountIds = getAccountIds(username);
+        List<Transaction> transactionList =getMonthlyTransactions(yearMonth,accountIds);
 
         Map<LocalDate,Integer> incomeMap=new HashMap<>();
         Map<LocalDate,Integer> expenseMap=new HashMap<>();

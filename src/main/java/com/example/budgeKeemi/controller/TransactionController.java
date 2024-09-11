@@ -92,8 +92,9 @@ public class TransactionController {
 
     //한달 거래 내역 리스트
     @GetMapping("/monthly/{yearMonth}")
-    public ResponseEntity<?> getDaySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth){
-        List<DailySummary> dailySummaries=service.getDaySummary(yearMonth);
+    public ResponseEntity<?> getDaySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,Principal principal){
+        String username = getUsername(principal);
+        List<DailySummary> dailySummaries=service.getDaySummary(yearMonth,username);
 
         return ResponseEntity.ok(dailySummaries);
     }
