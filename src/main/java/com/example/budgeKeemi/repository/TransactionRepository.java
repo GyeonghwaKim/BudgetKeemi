@@ -11,8 +11,8 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction,Long> {
 
-    @Query("SELECT t FROM Transaction t WHERE t.transacDate BETWEEN :startDate AND :endDate")
-    List<Transaction> findByDate(LocalDateTime startDate, LocalDateTime endDate);
+    @Query("SELECT t FROM Transaction t WHERE t.transacDate BETWEEN :startDate AND :endDate AND t.account.id IN :accountIds")
+    List<Transaction> findByDateAndAccountId(LocalDateTime startDate, LocalDateTime endDate, List<Long> accountIds);
 
     List<Transaction> findByCategoryId(Long categoryId);
 

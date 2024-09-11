@@ -83,8 +83,10 @@ public class TransactionController {
 
     //한달 거래내역 총 합계 출력
     @GetMapping("/monthlySummary/{yearMonth}")
-    public ResponseEntity<?> getMonthlySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth){
-        MonthlySummary monthlySummary=service.getMonthlySummary(yearMonth);
+    public ResponseEntity<?> getMonthlySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,Principal principal){
+
+        String username = getUsername(principal);
+        MonthlySummary monthlySummary=service.getMonthlySummary(yearMonth,username);
         return ResponseEntity.ok(monthlySummary);
     }
 
@@ -96,6 +98,7 @@ public class TransactionController {
         return ResponseEntity.ok(dailySummaries);
     }
 
+    //지출 그래프 데이터
     @GetMapping("/graph")
     public ResponseEntity<?> getGraphData(@RequestParam(name="startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String startDate,
                                           @RequestParam(name="endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String endDate){

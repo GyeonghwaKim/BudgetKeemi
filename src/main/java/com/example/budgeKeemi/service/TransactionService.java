@@ -28,7 +28,6 @@ public class TransactionService {
 
     private final AccountService accountService;
     private final CategoryService categoryService;
-    private final MemberService memberService;
 
     public RespTransaction createTransaction(ReqTransaction reqTransaction,String username) {
         
@@ -67,10 +66,7 @@ public class TransactionService {
 
     public List<RespTransaction> getTransactionsByUsername(String username) {
 
-        List<Long> accountIds = accountService.getAccountsByUsername(username)
-                .stream()
-                .map(RespAccount::getId)
-                .toList();
+        List<Long> accountIds = getAccountIds(username);
 
         List<Transaction> transactions=repository.findAllByAccountIdInOrderByTransacDateDesc(accountIds);
 
@@ -79,6 +75,14 @@ public class TransactionService {
                 .map(RespTransaction::toDto)
                 .toList();
         return respTransactions;
+    }
+
+    private List<Long> getAccountIds(String username) {
+        List<Long> accountIds = accountService.getAccountsByUsername(username)
+                .stream()
+                .map(RespAccount::getId)
+                .toList();
+        return accountIds;
     }
 
 
@@ -134,9 +138,14 @@ public class TransactionService {
         }
     }
 
-    public MonthlySummary getMonthlySummary(YearMonth yearMonth) {
-        List<Transaction> transactionList = getMonthlyTransactions(yearMonth);
+    //한달 거래내역 총 합계 출력
+    public MonthlySummary getMonthlySummary(YearMonth yearMonth,String username) {
 
+        List<Long> accountIds = getAccountIds(username);
+
+        List<Transaction> transactionList = getMonthlyTransactions(yearMonth,accountIds);
+
+        //TODO 수입, 지출 메서드로 분리하자
         int totalIncome = transactionList
                 .stream()
                 .filter(transaction -> transaction.getCategory().getStatus()== CategoryStatus.INCOME)
@@ -159,16 +168,19 @@ public class TransactionService {
 
     }
 
-    private List<Transaction> getMonthlyTransactions(YearMonth yearMonth) {
+    private List<Transaction> getMonthlyTransactions(YearMonth yearMonth,List<Long> accountIds) {
+
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
         LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23,59,59);
 
-        List<Transaction> transactionList=repository.findByDate(startDate,endDate);
+        List<Transaction> transactionList=repository.findByDateAndAccountId(startDate,endDate,accountIds);
+
         return transactionList;
     }
 
     public List<DailySummary> getDaySummary(YearMonth yearMonth) {
-        List<Transaction> transactionList = getMonthlyTransactions(yearMonth);
+        List<Transaction> transactionList =new ArrayList<>();
+                //getMonthlyTransactions(yearMonth);
 
         Map<LocalDate,Integer> incomeMap=new HashMap<>();
         Map<LocalDate,Integer> expenseMap=new HashMap<>();
@@ -210,7 +222,8 @@ public class TransactionService {
     }
 
     public List<ExpenseGraph> getExpenseGraph(String startDate, String endDate) {
-        List<Transaction> transactions = repository.findByDate(LocalDateTime.parse(startDate+"T00:00:00"), LocalDateTime.parse(endDate+"T23:59:59"));
+        List<Transaction> transactions =new ArrayList<>();
+                //repository.findByDateAndAccountId(LocalDateTime.parse(startDate+"T00:00:00"), LocalDateTime.parse(endDate+"T23:59:59"));
 
         Map<String,Integer> expenseMap=new HashMap<>();
         for (Transaction transaction : transactions) {
