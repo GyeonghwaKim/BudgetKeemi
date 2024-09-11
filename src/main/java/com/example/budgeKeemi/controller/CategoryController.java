@@ -24,12 +24,14 @@ public class CategoryController {
 
     private final CategoryService service;
 
-
     //활성화 카테고리 목록 조회
     @GetMapping("/active")
     public ResponseEntity<?> getActiveCategories(Principal principal) {
+
         String username = getUsername(principal);
+
         List<RespCategory> categories = service.getActiveCategoriesByUsername(username);
+
         return ResponseEntity.ok(categories);
     }
 
@@ -44,16 +46,6 @@ public class CategoryController {
         return new ResponseEntity<>(respCategory, HttpStatus.CREATED);
     }
 
-
-    //카테고리 상세조회
-//    @GetMapping("/{categoryId}")
-//    public ResponseEntity<?> getCategoryDetail(@PathVariable(name = "categoryId") Long id){
-//
-//        RespCategory respCategory=service.getCategoryDetail(id);
-//
-//        return ResponseEntity.ok(respCategory);
-//
-//    }
     //카테고리 수정
     @PutMapping("/{categoryId}")
     public ResponseEntity<?> updateCategory(@PathVariable(name = "categoryId") Long id,
@@ -63,9 +55,9 @@ public class CategoryController {
 
         RespCategory category=service.updateCategory(id, reqCategory, username);
 
-//        if(category==null){
-//            return ResponseEntity.notFound().build();
-//        }
+        if(category==null){
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(category);
     }
 
@@ -84,7 +76,9 @@ public class CategoryController {
 
     @GetMapping("/categoryStatus")
     public ResponseEntity<?> getCategoryStatus(){
+
         List<RespCategoryStatus> categories= service.getCategoryStatus();
+
         return ResponseEntity.ok(categories);
     }
 

@@ -27,47 +27,27 @@ public class CategoryService {
 
     private final MemberService memberService;
 
-    public Category getCategoryByCategoryId(Long categoryId) {
-        Optional<Category> _category = repository.findById(categoryId);
-        if (_category.isPresent()) {
-            return _category.get();
-        } else {
-            return null;
-        }
-    }
-
     //나의 활성화 카테고리 목록
     public List<RespCategory> getActiveCategoriesByUsername(String username) {
 
         Member member = memberService.getMemberByUsername(username);
 
-        List<RespCategory> respCategories = getRespCategories(member, IsActive.Y);
-        return respCategories;
+        return getRespCategories(member, IsActive.Y);
     }
 
 
     public RespCategory createCategory(ReqCategory reqCategory, String username) {
 
-        Member member = memberService.getMemberByUsername(username);
-
         Category category = ReqCategory.toEntity(reqCategory);
+
+        Member member = memberService.getMemberByUsername(username);
         category.updateMember(member);
+
         Category saveCategory = this.repository.save(category);
 
-        RespCategory respCategory = RespCategory.toDto(saveCategory);
-
-        return respCategory;
+        return RespCategory.toDto(saveCategory);
     }
 
-    public RespCategory getCategoryDetail(Long id) {
-        Optional<Category> _category = repository.findById(id);
-
-        if (_category.isPresent()) {
-            return RespCategory.toDto(_category.get());
-        } else {
-            return null;
-        }
-    }
 
     public RespCategory updateCategory(Long id, ReqCategory reqCategory, String username) {
 
@@ -77,6 +57,7 @@ public class CategoryService {
 
             Category category = _category.get();
 
+            //소유자 검증
             validationAuthorization(username, category, "수정 권한이 없습니다");
 
             category.replaceName(reqCategory.getName());
@@ -90,13 +71,6 @@ public class CategoryService {
         }
 
     }
-
-    private static void validationAuthorization(String username, Category category, String message) {
-        if (!category.getMember().getUsername().equals(username)) {
-            throw new UnauthorizedException(message);
-        }
-    }
-
 
     public boolean changeInactiveCategory(Long id, String username) {
 
@@ -121,20 +95,39 @@ public class CategoryService {
         }
     }
 
+    //categoryStatus 목록 조회
     public List<RespCategoryStatus> getCategoryStatus() {
 
-        List<RespCategoryStatus> categoryStatuses
-                = Arrays.stream(CategoryStatus.values()).map(
+        return Arrays.stream(CategoryStatus.values()).map(
                 RespCategoryStatus::toDto).toList();
-        return categoryStatuses;
+    }
+
+    // id로 카테고리 조회
+    public Category getCategoryByCategoryId(Long categoryId) {
+
+        Optional<Category> _category = repository.findById(categoryId);
+
+        if (_category.isPresent()) {
+            return _category.get();
+        } else {
+            return null;
+        }
+    }
+
+    private static void validationAuthorization(String username, Category category, String message) {
+
+        if (!category.getMember().getUsername().equals(username)) {
+            throw new UnauthorizedException(message);
+        }
     }
 
     private List<RespCategory> getRespCategories(Member member, IsActive isActive) {
+
         List<Category> categories = repository.findAllByMemberAndActive(member, isActive);
-        List<RespCategory> respCategories = categories
+
+        return categories
                 .stream()
                 .map(RespCategory::toDto)
                 .toList();
-        return respCategories;
     }
 }
