@@ -29,52 +29,135 @@ public class TransactionService {
     private final AccountService accountService;
     private final CategoryService categoryService;
 
-    public RespTransaction createTransaction(ReqTransaction reqTransaction,String username) {
-        
-        Account account=accountService.getAccountById(reqTransaction.getAccountId());
-        Category category = categoryService.getCategoryByCategoryId(reqTransaction.getCategoryId());
+    public RespTransaction createTransaction(ReqTransaction reqTransaction, String username) {
 
-        validationAuthorization(username, account, category,"작성 권한이 없습니다");
+        Account account = accountService.getAccountById(reqTransaction.getAccountId());
+        Category category = categoryService.getCategoryByCategoryId(reqTransaction.getCategoryId());
+        //소유자 검증
+        validationAuthorization(username, account, category, "작성 권한이 없습니다");
 
         //잔액 부족 시나리오
-        if(category.getStatus()==CategoryStatus.INCOME){
-            account.adjustBalance(reqTransaction.getAmount());
-        }else{
-            if(account.getBalance()<reqTransaction.getAmount()){
-                throw new InsufficientBalanceException("잔액이 부족합니다.");
-            }
-            account.adjustBalance(-reqTransaction.getAmount());
-        }
+        InsufficientBalance(reqTransaction, category, account);
 
-        Transaction transaction= ReqTransaction.toEntity(reqTransaction);
-
+        Transaction transaction = ReqTransaction.toEntity(reqTransaction);
         transaction.addAccount(account);
         transaction.addCategory(category);
 
         Transaction saveTransaction = this.repository.save(transaction);
 
-        RespTransaction respTransaction = RespTransaction.toDto(saveTransaction);
-
-        return respTransaction;
+        return RespTransaction.toDto(saveTransaction);
     }
 
-    private static void validationAuthorization(String username, Account account, Category category,String message) {
-        if(!(account.getMember().getUsername().equals(username) && category.getMember().getUsername().equals(username))){
-            throw new UnauthorizedException(message);
-        }
-    }
+
+
 
     public List<RespTransaction> getTransactionsByUsername(String username) {
 
         List<Long> accountIds = getAccountIds(username);
 
-        List<Transaction> transactions=repository.findAllByAccountIdInOrderByTransacDateDesc(accountIds);
+        List<Transaction> transactions = repository.findAllByAccountIdInOrderByTransacDateDesc(accountIds);
 
-        List<RespTransaction> respTransactions = transactions
-                .stream()
+        return transactions.stream()
                 .map(RespTransaction::toDto)
                 .toList();
-        return respTransactions;
+    }
+
+
+    public boolean cancelTransaction(Long id, String username) {
+
+        Optional<Transaction> _transaction = repository.findById(id);
+
+        if (_transaction.isPresent()) {
+            Transaction transaction = _transaction.get();
+
+            Account account = transaction.getAccount();
+            Category category = transaction.getCategory();
+            //소유자 검증
+            validationAuthorization(username, account, category, "취소 권한이 없습니다");
+
+            //지출 및 활성화 거래내역 취소
+            if (category.getStatus() == CategoryStatus.EXPENSE && transaction.getActive() == IsActive.Y) {
+                //거래내역 비활성화
+                transaction.changeActive(IsActive.N);
+                //잔액 복구
+                account.adjustBalance(transaction.getAmount());
+
+                repository.save(transaction);
+                return true;
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    //월별 거래내역 총 합계
+    public MonthlySummary getMonthlySummary(YearMonth yearMonth, String username) {
+
+        List<Transaction> transactionList = getMonthlyTransactions(yearMonth, username);
+
+        //월 별 총 수입
+        int totalIncome = transactionList
+                .stream()
+                .filter(transaction -> transaction.getCategory().getStatus() == CategoryStatus.INCOME)
+                .mapToInt(Transaction::getAmount)
+                .sum();
+
+        //월 별 총 지출
+        int totalExpense = transactionList
+                .stream()
+                .filter(transaction -> transaction.getCategory().getStatus() == CategoryStatus.EXPENSE)
+                .mapToInt(Transaction::getAmount)
+                .sum();
+
+        return MonthlySummary.builder()
+                .yearMonth(yearMonth)
+                .totalIncome(totalIncome)
+                .totalExpense(totalExpense)
+                .build();
+    }
+
+
+    //월별 하루 거래내역 리스트
+    public List<DailySummary> getDaySummary(YearMonth yearMonth, String username) {
+
+        CategoryStatus income = CategoryStatus.INCOME;
+        CategoryStatus expense = CategoryStatus.EXPENSE;
+
+        List<Transaction> transactions = getMonthlyTransactions(yearMonth, username);
+
+        //거래내역 당일 수입, 지출 분류
+        Map<LocalDate, Integer> incomeMap = classifyTransactionByLocalDate(transactions, income);
+        Map<LocalDate, Integer> expenseMap = classifyTransactionByLocalDate(transactions, expense);
+
+
+        //분류된 당일 수입, 지출 합계
+        List<DailySummary> dailySummaries = new ArrayList<>();
+        makeDailySummary(incomeMap, income, dailySummaries);
+        makeDailySummary(expenseMap, expense, dailySummaries);
+
+        return dailySummaries;
+    }
+
+//지출 그래프
+    public List<ExpenseGraph> getExpenseGraph(String startDate, String endDate, String username) {
+
+
+        List<Transaction> transactions = getTransactionsByPeriod(startDate, endDate, username);
+
+        Map<String, Integer> expenseMap = classifyTransactionByCategoryName(transactions, CategoryStatus.EXPENSE);
+
+        return expenseMap.entrySet().stream()
+                        .map(e -> ExpenseGraph.toDto(e.getKey(), e.getValue()))
+                        .toList();
+    }
+
+
+
+    private static void validationAuthorization(String username, Account account, Category category, String message) {
+        if (!(account.getMember().getUsername().equals(username) && category.getMember().getUsername().equals(username))) {
+            throw new UnauthorizedException(message);
+        }
     }
 
     private List<Long> getAccountIds(String username) {
@@ -86,163 +169,84 @@ public class TransactionService {
     }
 
 
-    public RespTransaction updateTransaction(Long id, ReqTransaction reqTransaction) {
-
-        Optional<Transaction> _transaction = repository.findById(id);
-
-        if(_transaction.isPresent()){
-            Transaction transaction = _transaction.get();
-
-            log.info("amount = {}", reqTransaction.getAmount());
-            log.info("desc = {}", reqTransaction.getDescription());
-
-            transaction.updateAmount(reqTransaction.getAmount());
-            transaction.updateDescription(reqTransaction.getDescription());
-
-            Transaction updateTransaction = repository.save(transaction);
-
-            int amount = updateTransaction.getAmount();
-            String description = updateTransaction.getDescription();
-            log.info("update amount = {}",amount);
-            log.info("update description = {}",description);
-
-            return RespTransaction.toDto(updateTransaction);
-        }else{
-            return null;
-        }
-
-    }
-
-    public boolean cancelTransaction(Long id, String username) {
-        Optional<Transaction> _transaction = repository.findById(id);
-
-        if(_transaction.isPresent()){
-            Transaction transaction = _transaction.get();
-
-            Account account = transaction.getAccount();
-            Category category = transaction.getCategory();
-            //소유자 검증
-            validationAuthorization(username, account, category,"취소 권한이 없습니다");
-            //지출 및 활성화 거래내역 취소
-            if(category.getStatus()==CategoryStatus.EXPENSE && transaction.getActive()== IsActive.Y){
-                transaction.changeActive(IsActive.N);
-                //잔액 복구
-                account.adjustBalance(transaction.getAmount());
-                repository.save(transaction);
-                return true;
-            }
-
-            return false;
-        }else{
-            return false;
-        }
-    }
-
-    //한달 거래내역 총 합계 출력
-    public MonthlySummary getMonthlySummary(YearMonth yearMonth,String username) {
+    private List<Transaction> getMonthlyTransactions(YearMonth yearMonth, String username) {
 
         List<Long> accountIds = getAccountIds(username);
-
-        List<Transaction> transactionList = getMonthlyTransactions(yearMonth,accountIds);
-
-        //TODO 수입, 지출 메서드로 분리하자
-        int totalIncome = transactionList
-                .stream()
-                .filter(transaction -> transaction.getCategory().getStatus()== CategoryStatus.INCOME)
-                .mapToInt(Transaction::getAmount)
-                .sum();
-
-        int totalExpense = transactionList
-                .stream()
-                .filter(transaction -> transaction.getCategory().getStatus()== CategoryStatus.EXPENSE)
-                .mapToInt(Transaction::getAmount)
-                .sum();
-
-        MonthlySummary monthlySummary = MonthlySummary.builder()
-                .yearMonth(yearMonth)
-                .totalIncome(totalIncome)
-                .totalExpense(totalExpense)
-                .build();
-
-        return monthlySummary;
-
-    }
-
-    private List<Transaction> getMonthlyTransactions(YearMonth yearMonth,List<Long> accountIds) {
 
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
-        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23,59,59);
+        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
 
-        List<Transaction> transactionList=repository.findByDateAndAccountId(startDate,endDate,accountIds);
+        List<Transaction> transactions = repository.findByDateAndAccountIdIn(startDate, endDate, accountIds);
 
-        return transactionList;
-    }
-
-    //캘린더에 쓰일 한달 거래 내역 리스트
-    public List<DailySummary> getDaySummary(YearMonth yearMonth, String username) {
-
-        List<Long> accountIds = getAccountIds(username);
-        List<Transaction> transactionList =getMonthlyTransactions(yearMonth,accountIds);
-
-        Map<LocalDate,Integer> incomeMap=new HashMap<>();
-        Map<LocalDate,Integer> expenseMap=new HashMap<>();
-
-        //지출, 수입 분류
-        for (Transaction transaction : transactionList) {
-            LocalDate key = transaction.getTransacDate().toLocalDate();
-            if(transaction.getCategory().getStatus()==CategoryStatus.INCOME) {
-                incomeMap.put(key, incomeMap.getOrDefault(key,0)+transaction.getAmount());
-            }else{
-                expenseMap.put(key, expenseMap.getOrDefault(key,0)+transaction.getAmount());
-            }
-        }
-
-        List<DailySummary> dailySummaries=new ArrayList<>();
-//수입
-        for (Map.Entry<LocalDate, Integer> localDateIntegerEntry : incomeMap.entrySet()) {
-            dailySummaries.add(DailySummary.builder()
-                    .date(localDateIntegerEntry.getKey())
-                    .status(CategoryStatus.INCOME)
-                    .total(localDateIntegerEntry.getValue())
-                    .build());
-        }
-//지출
-        for (Map.Entry<LocalDate,Integer> localDateIntegerEntry : expenseMap.entrySet()) {
-            dailySummaries.add(DailySummary.builder()
-                    .date(localDateIntegerEntry.getKey())
-                    .status(CategoryStatus.EXPENSE)
-                    .total(localDateIntegerEntry.getValue())
-                    .build());
-        }
-
-        return dailySummaries;
-    }
-
-    public List<Transaction> getTransactionsByCategoryId(Long categoryId) {
-        List<Transaction> transactions = repository.findByCategoryId(categoryId);
         return transactions;
     }
-//월별 지출 그래프
-    public List<ExpenseGraph> getExpenseGraph(String startDate, String endDate,String username) {
+
+    private List<Transaction> getTransactionsByPeriod(String startDate, String endDate, String username) {
 
         List<Long> accountIds = getAccountIds(username);
 
-        List<Transaction> transactions =repository.findByDateAndAccountId(LocalDateTime.parse(startDate+"T00:00:00"), LocalDateTime.parse(endDate+"T23:59:59"), accountIds);
+        LocalDateTime startDateTime = LocalDateTime.parse(startDate + "T00:00:00");
+        LocalDateTime endDateTime = LocalDateTime.parse(endDate + "T23:59:59");
 
-        Map<String,Integer> expenseMap=new HashMap<>();
+        List<Transaction> transactions = repository.findByDateAndAccountIdIn(startDateTime, endDateTime, accountIds);
+        return transactions;
+    }
+
+    private void makeDailySummary(Map<LocalDate, Integer> map, CategoryStatus value, List<DailySummary> dailySummaries) {
+        for (Map.Entry<LocalDate, Integer> e : map.entrySet()) {
+            dailySummaries.add(DailySummary.builder()
+                    .date(e.getKey())
+                    .status(value)
+                    .total(e.getValue())
+                    .build());
+        }
+    }
+
+    private Map<LocalDate, Integer> classifyTransactionByLocalDate(List<Transaction> transactions, CategoryStatus status) {
+
+        Map<LocalDate, Integer> map = new HashMap<>();
+
         for (Transaction transaction : transactions) {
+            LocalDate key = transaction.getTransacDate().toLocalDate();
+            int amount = transaction.getAmount();
+            CategoryStatus categoryStatus = transaction.getCategory().getStatus();
 
-            String key = transaction.getCategory().getName();
-            if(transaction.getCategory().getStatus()==CategoryStatus.EXPENSE) {
-                expenseMap.put(key, expenseMap.getOrDefault(key,0)+transaction.getAmount());
+            if (status == categoryStatus &&( status ==CategoryStatus.INCOME || transaction.getActive() ==IsActive.Y)) {
+                map.put(key, map.getOrDefault(key, 0) + amount);
             }
 
         }
-        List<ExpenseGraph> expenseGraphs=new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : expenseMap.entrySet()) {
-            expenseGraphs.add(ExpenseGraph.toDto(entry.getKey(),entry.getValue()));
-        }
+        return map;
+    }
 
-        return expenseGraphs;
+    private Map<String, Integer> classifyTransactionByCategoryName(List<Transaction> transactions, CategoryStatus status) {
+
+        Map<String, Integer> map = new HashMap<>();
+
+        for (Transaction transaction : transactions) {
+            String key = transaction.getCategory().getName();
+            int amount = transaction.getAmount();
+            CategoryStatus categoryStatus = transaction.getCategory().getStatus();
+
+            if (status == categoryStatus &&( status ==CategoryStatus.INCOME || transaction.getActive() ==IsActive.Y)) {
+                map.put(key, map.getOrDefault(key, 0) + amount);
+            }
+
+        }
+        return map;
+    }
+
+    private static void InsufficientBalance(ReqTransaction reqTransaction, Category category, Account account) {
+        boolean isIncome = category.getStatus() == CategoryStatus.INCOME;
+        int transactionAmount = reqTransaction.getAmount();
+
+        if (isIncome) {
+            account.adjustBalance(transactionAmount);
+        } else {
+            if (account.getBalance() < transactionAmount) {
+                throw new InsufficientBalanceException("잔액이 부족합니다.");
+            }
+            account.adjustBalance(-transactionAmount);
+        }
     }
 }

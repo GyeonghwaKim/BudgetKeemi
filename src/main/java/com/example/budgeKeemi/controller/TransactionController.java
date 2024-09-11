@@ -29,96 +29,75 @@ public class TransactionController {
 
     //거래 목록 조회
     @GetMapping
-    public ResponseEntity<?> getTransactions(Principal principal){
+    public ResponseEntity<?> getTransactions(Principal principal) {
 
         String username = getUsername(principal);
-        List<RespTransaction> transactions= service.getTransactionsByUsername(username);
+        List<RespTransaction> transactions = service.getTransactionsByUsername(username);
         return ResponseEntity.ok(transactions);
     }
 
 
-
     //거래 생성
     @PostMapping
-    public ResponseEntity<?> addTransaction(@RequestBody ReqTransaction reqTransaction,Principal principal){
+    public ResponseEntity<?> addTransaction(@RequestBody ReqTransaction reqTransaction, Principal principal) {
         String username = getUsername(principal);
-        RespTransaction respTransaction=this.service.createTransaction(reqTransaction,username);
+        RespTransaction respTransaction = this.service.createTransaction(reqTransaction, username);
 
         return new ResponseEntity<>(respTransaction, HttpStatus.CREATED);
     }
 
-    //거래내역 상세조회
-//    @GetMapping("/{transactionId}")
-//    public ResponseEntity<?> getTransactionDetail(@PathVariable(name = "transactionId") Long id){
-//
-//        RespTransaction respTransaction=service.getTransactionDetail(id);
-//
-//        return ResponseEntity.ok(respTransaction);
-//
-//    }
-    //거래내역 수정
-//    @PutMapping("/{transactionId}")
-//    public ResponseEntity<?> updateTransaction(@PathVariable(name = "transactionId") Long id,
-//                                               @RequestBody ReqTransaction reqTransaction){
-//        RespTransaction transaction=service.updateTransaction(id,reqTransaction);
-//
-//        if(transaction==null){
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(transaction);
-//    }
 
     //거래내역 취소
     @DeleteMapping("/{transactionId}")
-    public ResponseEntity<?> cancelTransaction(@PathVariable(name = "transactionId") Long id, Principal principal){
+    public ResponseEntity<?> cancelTransaction(@PathVariable(name = "transactionId") Long id, Principal principal) {
         String username = getUsername(principal);
-        boolean isDeleted=service.cancelTransaction(id,username);
+        boolean isDeleted = service.cancelTransaction(id, username);
 
-        if(isDeleted){
+        if (isDeleted) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
     }
 
 
-    //한달 거래내역 총 합계 출력
+    //월별 거래내역 총 합계 출력
     @GetMapping("/monthlySummary/{yearMonth}")
-    public ResponseEntity<?> getMonthlySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,Principal principal){
+    public ResponseEntity<?> getMonthlySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth, Principal principal) {
 
         String username = getUsername(principal);
-        MonthlySummary monthlySummary=service.getMonthlySummary(yearMonth,username);
+        MonthlySummary monthlySummary = service.getMonthlySummary(yearMonth, username);
         return ResponseEntity.ok(monthlySummary);
     }
 
-    //한달 거래 내역 리스트
+    //월별 거래 내역 일일 단위 출력
     @GetMapping("/monthly/{yearMonth}")
-    public ResponseEntity<?> getDaySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,Principal principal){
+    public ResponseEntity<?> getDaySummary(@PathVariable(name = "yearMonth") @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth, Principal principal) {
         String username = getUsername(principal);
-        List<DailySummary> dailySummaries=service.getDaySummary(yearMonth,username);
+        List<DailySummary> dailySummaries = service.getDaySummary(yearMonth, username);
 
         return ResponseEntity.ok(dailySummaries);
     }
 
     //지출 그래프 데이터
     @GetMapping("/graph")
-    public ResponseEntity<?> getGraphData(@RequestParam(name="startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String startDate,
-                                          @RequestParam(name="endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String endDate,
-                                          Principal principal){
+    public ResponseEntity<?> getGraphData(@RequestParam(name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String startDate,
+                                          @RequestParam(name = "endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String endDate,
+                                          Principal principal) {
 
         String username = getUsername(principal);
-        List<ExpenseGraph> expenseGraphDatas=service.getExpenseGraph(startDate,endDate,username);
+        List<ExpenseGraph> expenseGraphDatas = service.getExpenseGraph(startDate, endDate, username);
 
         return ResponseEntity.ok(expenseGraphDatas);
     }
 
     private static String getUsername(Principal principal) {
-        String username="";
-        if(principal instanceof OAuth2AuthenticationToken){
+        String username = "";
+        if (principal instanceof OAuth2AuthenticationToken) {
             OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) principal;
             OAuth2User oAuth2User = authToken.getPrincipal();
-            if(oAuth2User instanceof CustomOAuth2User){
+            if (oAuth2User instanceof CustomOAuth2User) {
                 CustomOAuth2User customOAuth2User = (CustomOAuth2User) oAuth2User;
-                username= customOAuth2User.getUsername();
+                username = customOAuth2User.getUsername();
             }
         }
         return username;
