@@ -222,10 +222,12 @@ public class TransactionService {
         List<Transaction> transactions = repository.findByCategoryId(categoryId);
         return transactions;
     }
+//월별 지출 그래프
+    public List<ExpenseGraph> getExpenseGraph(String startDate, String endDate,String username) {
 
-    public List<ExpenseGraph> getExpenseGraph(String startDate, String endDate) {
-        List<Transaction> transactions =new ArrayList<>();
-                //repository.findByDateAndAccountId(LocalDateTime.parse(startDate+"T00:00:00"), LocalDateTime.parse(endDate+"T23:59:59"));
+        List<Long> accountIds = getAccountIds(username);
+
+        List<Transaction> transactions =repository.findByDateAndAccountId(LocalDateTime.parse(startDate+"T00:00:00"), LocalDateTime.parse(endDate+"T23:59:59"), accountIds);
 
         Map<String,Integer> expenseMap=new HashMap<>();
         for (Transaction transaction : transactions) {

@@ -102,8 +102,11 @@ public class TransactionController {
     //지출 그래프 데이터
     @GetMapping("/graph")
     public ResponseEntity<?> getGraphData(@RequestParam(name="startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String startDate,
-                                          @RequestParam(name="endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String endDate){
-        List<ExpenseGraph> expenseGraphDatas=service.getExpenseGraph(startDate,endDate);
+                                          @RequestParam(name="endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") String endDate,
+                                          Principal principal){
+
+        String username = getUsername(principal);
+        List<ExpenseGraph> expenseGraphDatas=service.getExpenseGraph(startDate,endDate,username);
 
         return ResponseEntity.ok(expenseGraphDatas);
     }
