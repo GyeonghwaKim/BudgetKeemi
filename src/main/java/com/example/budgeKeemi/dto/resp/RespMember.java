@@ -12,13 +12,15 @@ public class RespMember {
     private String username;
     private String email;
     private LocalDateTime joinDate;
+    private String profileImge;
 
     @Builder
-    public RespMember(Long id, String username, String email, LocalDateTime joinDate) {
+    public RespMember(Long id, String username, String email, LocalDateTime joinDate,String profileImge) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.joinDate = joinDate;
+        this.profileImge = profileImge;
     }
 
     public static RespMember toDto(Member savedMember) {
@@ -27,6 +29,7 @@ public class RespMember {
                 .username(savedMember.getUsername())
                 .email(savedMember.getEmail())
                 .joinDate(savedMember.getJoinDate())
+                .profileImge(savedMember.getProfileImg().getStoredFileName())
                 .build();
     }
 }

@@ -47,26 +47,27 @@
       margin-bottom: 2rem;
     }
 
-
     .goal-amount {
       font-weight: bold;
       color: #0c9319;
     }
 
-
     .used-amount {
       font-weight: bold;
       color: #fd7e14;
     }
+
   </style>
 </head>
 
 <body>
-  <div class="container py-5">
+  <!-- 상단 바에 설정 버튼 추가 -->
+  <div>
     <h1 class="text-center mb-4">BudgetKeemi</h1>
-    <div class="budget-container">
+  </div>
 
-    </div>
+  <div class="container py-5">
+    <div class="budget-container"></div>
     <hr>
 
     <!-- Account Cards -->
@@ -77,7 +78,8 @@
       <button id="viewTransaction" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">거래 내역 보기</button>
       <button id="viewExpenseGraph" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">지출 그래프 보기</button>
       <button id="manageBudget" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">예산 관리 하기</button>
-      <button id="manageAccount" type="button" class="btn btn-outline-dark btn-lg w-50">계좌 관리 하기</button>
+      <button id="manageAccount" type="button" class="btn btn-outline-dark btn-lg w-50 mb-2">계좌 관리 하기</button>
+      <button id="settingsButton" class="btn btn-outline-dark btn-lg w-50">⚙ 설정</button>
     </div>
 
   </div>
@@ -91,7 +93,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
   <script>
-
     //날짜 포맷
     function formatDate(isoString) {
       const cleanIsoString = isoString.split('.')[0];
@@ -110,8 +111,6 @@
         method: 'GET',
         success: function (budgets) {
           var budgetContainer = $('.budget-container');
-
-
           budgetContainer.empty();
 
           budgets.forEach(function (budget) {
@@ -129,7 +128,6 @@
             <p>예산 기간: <span>${startDate} ~ ${endDate}</span></p>
             </div>
             `;
-
 
             budgetContainer.append(budgetCard);
           });
@@ -153,8 +151,6 @@
             .forEach(function (account) {
               const formattedDate = formatDate(account.createDate);
 
-
-
               var accountItem = `
                 <div class="account-card p-3 shadow-sm" id="budget-${account.id}">
                   <h5>${account.name}</h5>
@@ -169,6 +165,11 @@
         error: function (error) {
           console.error("계좌 데이터를 불러오는 중 오류 발생:", error);
         }
+      });
+
+      // 설정 버튼 클릭
+      $('#settingsButton').on('click', function () {
+        window.location.href = '/profile'; // 설정 페이지로 이동
       });
 
       //버튼 클릭
@@ -192,8 +193,6 @@
         window.location.href = '/accountPage'; // 계좌 관리 페이지로 이동
       });
     });
-
-
   </script>
 </body>
 

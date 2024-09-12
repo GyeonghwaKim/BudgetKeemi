@@ -45,4 +45,9 @@ public class MainController {
     public String categoryPage(){
         return "category";
     }
+
+    @GetMapping("/profile")
+    public String profile(){
+        return "profile";
+    }
 }

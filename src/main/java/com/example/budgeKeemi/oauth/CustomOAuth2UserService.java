@@ -1,8 +1,11 @@
 package com.example.budgeKeemi.oauth;
 
 import com.example.budgeKeemi.domain.entity.Member;
+import com.example.budgeKeemi.domain.entity.ProfileImg;
 import com.example.budgeKeemi.domain.type.MemberRole;
 import com.example.budgeKeemi.repository.MemberRepository;
+import com.example.budgeKeemi.repository.ProfileImgRepository;
+import com.example.budgeKeemi.service.ProfileImgService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -20,6 +23,8 @@ import java.util.Optional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
+
+    private final ProfileImgService profileImgService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -54,12 +59,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         }else{
 
+            ProfileImg profileImg = profileImgService.defaultProfile();
+
             Member member = Member.builder()
                     .role(role)
                     .username(username)
                     .email(oAuth2Response.getEmail())
                     .joinDate(LocalDateTime.now())
+                    .profileImg(profileImg)
                     .build();
+
 
             memberRepository.save(member);
 

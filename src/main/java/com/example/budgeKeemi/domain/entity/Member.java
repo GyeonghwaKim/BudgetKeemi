@@ -28,12 +28,17 @@ public class Member {
     @Column(name = "join_date")
     private LocalDateTime joinDate;
 
+    @OneToOne
+    @JoinColumn(name = "profile_img_id")
+    private ProfileImg profileImg;
+
     @Builder
-    public Member(String username, String email, MemberRole role, LocalDateTime joinDate) {
+    public Member(String username, String email, MemberRole role, LocalDateTime joinDate,ProfileImg profileImg) {
         this.username = username;
         this.email = email;
         this.role = role;
         this.joinDate = joinDate;
+        this.profileImg=profileImg;
     }
 
     public void updateUsername(String username) {
@@ -42,5 +47,9 @@ public class Member {
 
     public void updateEmail(String email) {
         this.email=email;
+    }
+
+    public void updateProfileImge(ProfileImg profileImg) {
+        this.profileImg=profileImg;
     }
 }
