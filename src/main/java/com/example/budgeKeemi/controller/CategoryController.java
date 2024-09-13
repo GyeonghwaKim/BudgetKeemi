@@ -5,6 +5,7 @@ import com.example.budgeKeemi.dto.resp.RespCategory;
 import com.example.budgeKeemi.dto.resp.RespCategoryStatus;
 import com.example.budgeKeemi.oauth.CustomOAuth2User;
 import com.example.budgeKeemi.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class CategoryController {
 
     //카테고리 생성
     @PostMapping
-    public ResponseEntity<?> addCategories(@RequestBody ReqCategory reqCategory,Principal principal){
+    public ResponseEntity<?> addCategories(@Valid @RequestBody ReqCategory reqCategory, Principal principal){
 
         String username = getUsername(principal);
 
@@ -49,7 +50,7 @@ public class CategoryController {
     //카테고리 수정
     @PutMapping("/{categoryId}")
     public ResponseEntity<?> updateCategory(@PathVariable(name = "categoryId") Long id,
-                                               @RequestBody ReqCategory reqCategory,Principal principal){
+                                            @Valid @RequestBody ReqCategory reqCategory,Principal principal){
 
         String username = getUsername(principal);
 

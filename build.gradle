@@ -37,6 +37,9 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+	//validation
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.3.3'
+
 }
 
 tasks.named('test') {

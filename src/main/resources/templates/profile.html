@@ -91,6 +91,8 @@
           var profileImg = $('#profileImg')[0].files[0];
           formData.append('profileImg', profileImg);
 
+          //입력값 검증
+
           $.ajax({
             url: 'http://localhost:8080/members/profileImg',
             method: 'PUT',

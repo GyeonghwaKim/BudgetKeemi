@@ -4,6 +4,7 @@ import com.example.budgeKeemi.dto.req.ReqBudget;
 import com.example.budgeKeemi.dto.resp.RespBudget;
 import com.example.budgeKeemi.oauth.CustomOAuth2User;
 import com.example.budgeKeemi.service.BudgetService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class BudgetController {
 
     //예산  생성
     @PostMapping
-    public ResponseEntity<?> addBudget(@RequestBody ReqBudget reqBudget,Principal principal){
+    public ResponseEntity<?> addBudget(@Valid  @RequestBody ReqBudget reqBudget, Principal principal){
 
         String username = getUsername(principal);
 
@@ -46,7 +47,7 @@ public class BudgetController {
     //예산 내역 수정
     @PutMapping("/{budgetId}")
     public ResponseEntity<?> updateBudget(@PathVariable(name = "budgetId") Long id,
-                                               @RequestBody ReqBudget reqBudget,Principal principal){
+                                          @Valid @RequestBody ReqBudget reqBudget,Principal principal){
 
         String username = getUsername(principal);
 

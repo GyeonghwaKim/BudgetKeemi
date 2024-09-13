@@ -4,6 +4,7 @@ import com.example.budgeKeemi.dto.req.ReqAccount;
 import com.example.budgeKeemi.dto.resp.RespAccount;
 import com.example.budgeKeemi.oauth.CustomOAuth2User;
 import com.example.budgeKeemi.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -43,7 +44,7 @@ public class AccountController {
 
     //계좌 생성
     @PostMapping
-    public ResponseEntity<?> createAccount(@RequestBody ReqAccount reqAccount, Principal principal) {
+    public ResponseEntity<?> createAccount(@Valid @RequestBody ReqAccount reqAccount, Principal principal) {
 
         String username = getUsername(principal);
         RespAccount newAccount = accountService.createAccount(reqAccount, username);
@@ -55,7 +56,7 @@ public class AccountController {
     //계좌 수정
     @PutMapping("/{accountId}")
     public ResponseEntity<?> updateAccountDetails(@PathVariable(name = "accountId") Long id,
-                                                  @RequestBody ReqAccount reqAccount, Principal principal) {
+                                                  @Valid @RequestBody ReqAccount reqAccount, Principal principal) {
 
         String username = getUsername(principal);
 

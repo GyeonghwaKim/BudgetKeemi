@@ -124,10 +124,11 @@
         var categoryName = $('#categoryName').val();
         var categoryType = $('#categoryType').val();
 
-        if (!categoryName || !categoryType) {
-          alert('카테고리 이름과 유형을 입력하세요.');
-          return;
-        }
+        //입력값 검증
+        // if (!categoryName || !categoryType) {
+        //   alert('카테고리 이름과 유형을 입력하세요.');
+        //   return;
+        // }
 
         var data = {
           name: categoryName,
@@ -249,6 +250,8 @@
         var categoryId = $('#editCategoryId').val();
         var updatedName = $('#editCategoryName').val();
         var updatedStatus = $('#editCategoryStatus').val();
+
+        //입력값 검증
 
         $.ajax({
           url: 'http://localhost:8080/categories/' + categoryId,

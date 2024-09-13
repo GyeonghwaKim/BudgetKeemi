@@ -7,6 +7,7 @@ import com.example.budgeKeemi.dto.resp.MonthlySummary;
 import com.example.budgeKeemi.dto.resp.RespTransaction;
 import com.example.budgeKeemi.oauth.CustomOAuth2User;
 import com.example.budgeKeemi.service.TransactionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,7 @@ public class TransactionController {
 
     //거래 생성
     @PostMapping
-    public ResponseEntity<?> addTransaction(@RequestBody ReqTransaction reqTransaction, Principal principal) {
+    public ResponseEntity<?> addTransaction(@Valid @RequestBody ReqTransaction reqTransaction, Principal principal) {
         String username = getUsername(principal);
         RespTransaction respTransaction = this.service.createTransaction(reqTransaction, username);
 

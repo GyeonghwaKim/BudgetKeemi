@@ -186,20 +186,20 @@
         var accountType = $('#accountType').val();
 
         // 입력값 검증
-        if (!accountName) {
-          alert("계좌 이름을 선택하세요.");
-          return;
-        }
+        // if (!accountName) {
+        //   alert("계좌 이름을 선택하세요.");
+        //   return;
+        // }
 
-        if (!balance || isNaN(balance) || balance <= 0) {
-          alert("유효한 금액을 입력하세요.");
-          return;
-        }
+        // if (!balance || isNaN(balance) || balance <= 0) {
+        //   alert("유효한 금액을 입력하세요.");
+        //   return;
+        // }
 
-        if (!accountType) {
-          alert("계좌 유형을 선택하세요.");
-          return;
-        }
+        // if (!accountType) {
+        //   alert("계좌 유형을 선택하세요.");
+        //   return;
+        // }
 
         // 요청 데이터 생성
         var accountData = {
