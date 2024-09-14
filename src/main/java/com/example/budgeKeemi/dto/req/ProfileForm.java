@@ -6,7 +6,6 @@ import lombok.Getter;
 @Getter
 public class ProfileForm {
 
-    //@Size
     @NotBlank(message = "유효한 파일을 입력하세요")
     private String storeFileName;
 }

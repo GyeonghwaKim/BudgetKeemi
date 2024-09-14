@@ -2,6 +2,7 @@ package com.example.budgeKeemi.exception.handler;
 
 import com.example.budgeKeemi.exception.excep.DuplicateCategoryBudgetException;
 import com.example.budgeKeemi.exception.excep.InsufficientBalanceException;
+import com.example.budgeKeemi.exception.excep.MultipartFileException;
 import com.example.budgeKeemi.exception.excep.UnauthorizedException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
@@ -18,13 +19,15 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+/*class 검색용
+* org.springframework.web.multipart.support.MissingServletRequestPartException */
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> exception(Exception e){
-        System.out.println(e.getClass().getName());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
-
-    }
+/*   @ExceptionHandler(Exception.class)
+*    public ResponseEntity<String> exception(Exception e){
+*        System.out.println(e.getClass().getName());
+*        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
+*
+*    }*/
 
     @ExceptionHandler(InsufficientBalanceException.class)
     public ResponseEntity<String> handleInsufficientBalanceException(InsufficientBalanceException e){
@@ -53,6 +56,12 @@ public class GlobalExceptionHandler {
 
         //Bad Request 400
         return ResponseEntity.badRequest().body(errorMessage);
+    }
+
+    @ExceptionHandler(MultipartFileException.class)
+    public ResponseEntity<String> handleMultipartFileException(MultipartFileException e){
+        //Bad Request 400
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     private static Map<String, String> getErrors(MethodArgumentNotValidException e) {

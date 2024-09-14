@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Getter
 public class ReqTransaction {
 
-    @NotBlank(message = "계좌를 선택하세요")
+    @NotNull(message = "계좌를 선택하세요")
     private Long accountId;
 
-    @NotBlank(message = "카테고리를 선택하세요")
+    @NotNull(message = "카테고리를 선택하세요")
     private Long categoryId;
 
     @Positive(message = "유효한 금액을 입력하세요")
