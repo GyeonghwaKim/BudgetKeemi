@@ -1,9 +1,6 @@
 package com.example.budgeKeemi.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +16,10 @@ public class ProfileImg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "original_file_name")
     private String originalFileName;
+
+    @Column(name = "stored_file_name")
     private String storedFileName;
 
     @Builder
