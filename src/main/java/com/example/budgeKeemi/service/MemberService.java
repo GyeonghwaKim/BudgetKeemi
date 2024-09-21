@@ -1,7 +1,6 @@
 package com.example.budgeKeemi.service;
 
 import com.example.budgeKeemi.domain.entity.ProfileImg;
-import com.example.budgeKeemi.dto.req.JoinForm;
 import com.example.budgeKeemi.domain.entity.Member;
 import com.example.budgeKeemi.dto.resp.RespMember;
 import com.example.budgeKeemi.repository.MemberRepository;
@@ -17,16 +16,6 @@ public class MemberService {
     private final MemberRepository repository;
 
     private final ProfileImgService profileImgService;
-
-    public RespMember joinMember(JoinForm joinForm) {
-        Member member=JoinForm.toEntity(joinForm);
-
-        Member savedMember=repository.save(member);
-
-        RespMember respMember=RespMember.toDto(savedMember);
-
-        return respMember;
-    }
 
     public RespMember getMemberProfile(String username) {
         Optional<Member> _member = repository.findByUsername(username);

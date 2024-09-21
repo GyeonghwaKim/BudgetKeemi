@@ -1,7 +1,6 @@
 package com.example.budgeKeemi.controller;
 
 import com.example.budgeKeemi.dto.resp.RespMember;
-import com.example.budgeKeemi.dto.req.JoinForm;
 import com.example.budgeKeemi.oauth.CustomOAuth2User;
 import com.example.budgeKeemi.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +20,6 @@ import java.security.Principal;
 public class MemberController {
 
     private final MemberService service;
-
-
-    //회원가입
-    @PostMapping("/join")
-    public ResponseEntity<?> registerMember(@RequestBody JoinForm joinForm){
-        RespMember respMember=service.joinMember(joinForm);
-
-        return new ResponseEntity<>(respMember, HttpStatus.CREATED);
-    }
 
     //프로필 조회
     @GetMapping("/profile")
