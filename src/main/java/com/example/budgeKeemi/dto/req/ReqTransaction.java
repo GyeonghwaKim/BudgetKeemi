@@ -18,7 +18,7 @@ public class ReqTransaction {
     private Long categoryId;
 
     @Positive(message = "유효한 금액을 입력하세요")
-    private int amount;
+    private long amount;
 
     @NotNull(message = "거래 날짜를 선택하세요")
     private LocalDateTime transacDate;

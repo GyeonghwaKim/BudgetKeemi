@@ -13,7 +13,7 @@ public class ReqBudget {
 
 
     @Positive(message = "유효한 금액을 입력하세요")
-    private int goalAmount;
+    private long goalAmount;
 
     @NotNull(message = "시작 날짜를 입력하세요")
     private LocalDate startDate;

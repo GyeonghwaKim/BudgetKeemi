@@ -16,7 +16,7 @@ public class ExpenseGraph {
     }
 
 
-    public static ExpenseGraph toDto(String categoryName,int amount) {
+    public static ExpenseGraph toDto(String categoryName,long amount) {
         return ExpenseGraph.builder()
                 .categoryName(categoryName)
                 .amount(amount)

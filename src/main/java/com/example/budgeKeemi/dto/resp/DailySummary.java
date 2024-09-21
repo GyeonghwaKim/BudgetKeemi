@@ -10,10 +10,10 @@ import java.time.LocalDate;
 public class DailySummary {
     private LocalDate date;
     private CategoryStatus status;
-    private int total;
+    private long total;
 
     @Builder
-    public DailySummary(LocalDate date, CategoryStatus status, int total) {
+    public DailySummary(LocalDate date, CategoryStatus status, long total) {
         this.date = date;
         this.status = status;
         this.total = total;

@@ -10,11 +10,11 @@ import java.time.YearMonth;
 public class MonthlySummary {
 
     private YearMonth yearMonth;
-    private int totalIncome;
-    private int totalExpense;
+    private long totalIncome;
+    private long totalExpense;
 
     @Builder
-    public MonthlySummary(YearMonth yearMonth, int totalIncome, int totalExpense) {
+    public MonthlySummary(YearMonth yearMonth, long totalIncome, long totalExpense) {
         this.yearMonth = yearMonth;
         this.totalIncome = totalIncome;
         this.totalExpense = totalExpense;

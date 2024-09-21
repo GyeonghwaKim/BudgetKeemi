@@ -15,13 +15,13 @@ public class RespTransaction {
     private Long accountId;
     private String categoryName;
     private CategoryStatus categoryStatus;
-    private int amount;
+    private long amount;
     private LocalDateTime transacDate;
     private String description;
     private IsActive active;
 
     @Builder
-    public RespTransaction(Long id, Long accountId, String categoryName, CategoryStatus categoryStatus, int amount, LocalDateTime transacDate, String description,IsActive active) {
+    public RespTransaction(Long id, Long accountId, String categoryName, CategoryStatus categoryStatus, long amount, LocalDateTime transacDate, String description,IsActive active) {
         this.id = id;
         this.accountId = accountId;
         this.categoryName = categoryName;

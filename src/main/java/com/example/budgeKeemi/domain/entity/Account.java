@@ -21,7 +21,7 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private AccountType status;
 
-    private int balance;
+    private long balance;
 
     @Column(name = "create_date")
     private LocalDateTime createDate;
@@ -36,14 +36,14 @@ public class Account {
 
 
     @Builder
-    public Account(String name, AccountType status, int balance, LocalDateTime createDate) {
+    public Account(String name, AccountType status, long balance, LocalDateTime createDate) {
         this.name = name;
         this.status = status;
         this.balance = balance;
         this.createDate = createDate;
     }
 
-    public void adjustBalance(int amount) {
+    public void adjustBalance(long amount) {
         this.balance=this.balance+amount;
     }
 
@@ -51,7 +51,7 @@ public class Account {
         this.name=name;
     }
 
-    public void replaceBalance(int balance) {
+    public void replaceBalance(long balance) {
         this.balance=balance;
     }
 

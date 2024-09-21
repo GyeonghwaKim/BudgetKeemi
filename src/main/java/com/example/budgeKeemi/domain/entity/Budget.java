@@ -18,7 +18,7 @@ public class Budget {
     private Long id;
 
     @Column(name = "goal_amount")
-    private int goalAmount;
+    private long goalAmount;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -31,7 +31,7 @@ public class Budget {
     private Category category;
 
     @Builder
-    public Budget(Long id, int goalAmount, LocalDate startDate, LocalDate endDate) {
+    public Budget(Long id, long goalAmount, LocalDate startDate, LocalDate endDate) {
         this.id = id;
         this.goalAmount = goalAmount;
         this.startDate = startDate;
@@ -42,7 +42,7 @@ public class Budget {
         this.category = category;
     }
 
-    public void replaceGoalAmount(int goalAmount) {
+    public void replaceGoalAmount(long goalAmount) {
         this.goalAmount = goalAmount;
     }
 

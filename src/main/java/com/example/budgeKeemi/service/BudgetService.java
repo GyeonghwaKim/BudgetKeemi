@@ -34,12 +34,12 @@ public class BudgetService {
         //사용자의 카테고리 아이디 리스트로 예산 리스트 조회
         List<Budget> budgets = repository.findAllByCategoryIdIn(categoryIds);
 
-        Map<Long, Integer> useAmountMap = getUseAmountMap(budgets);
+        Map<Long, Long> useAmountMap = getUseAmountMap(budgets);
 
         return budgets.stream()
                 .map(budget -> {
                     RespBudget respBudget = RespBudget.toDto(budget);
-                    respBudget.updateUseAmount(useAmountMap.getOrDefault(respBudget.getCategoryId(), 0));
+                    respBudget.updateUseAmount(useAmountMap.getOrDefault(respBudget.getCategoryId(), 0L));
                     return respBudget;
                 })
                 .toList();
@@ -124,27 +124,27 @@ public class BudgetService {
         }
     }
 
-    private Map<Long, Integer> getUseAmountMap(List<Budget> budgets) {
+    private Map<Long, Long> getUseAmountMap(List<Budget> budgets) {
 
-        Map<Long, Integer> useAmountMap = new HashMap<>();
+        Map<Long, Long> useAmountMap = new HashMap<>();
 
         for (Budget budget : budgets) {
             Long categoryId = budget.getCategory().getId();
             LocalDate startDate = budget.getStartDate();
             LocalDate endDate = budget.getEndDate();
 
-            int sum = getTransactionsSum(categoryId, startDate, endDate);
+            long sum = getTransactionsSum(categoryId, startDate, endDate);
 
             useAmountMap.put(categoryId, sum);
         }
         return useAmountMap;
     }
 
-    private int getTransactionsSum(Long categoryId, LocalDate startDate, LocalDate endDate) {
+    private long getTransactionsSum(Long categoryId, LocalDate startDate, LocalDate endDate) {
 
         List<Transaction> transactions = transactionService.getTransactionsByCategoryIdAndDate(categoryId, startDate, endDate);
 
-        return transactions.stream().mapToInt(Transaction::getAmount).sum();
+        return transactions.stream().mapToLong(Transaction::getAmount).sum();
     }
 
     private void validationExistingCategory(Category category) {

@@ -16,13 +16,13 @@ public class RespAccount {
     private Long id;
     private String name;
     private AccountType status;
-    private int balance;
+    private long balance;
     private LocalDateTime createDate;
     private IsActive active;
 
 
     @Builder
-    public RespAccount(Long id, String name, AccountType status, int balance, LocalDateTime createDate, IsActive active) {
+    public RespAccount(Long id, String name, AccountType status, long balance, LocalDateTime createDate, IsActive active) {
         this.id = id;
         this.name = name;
         this.status = status;

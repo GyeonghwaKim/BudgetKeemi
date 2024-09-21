@@ -18,7 +18,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int amount;
+    private long amount;
 
     @Column(name = "transac_date")
     private LocalDateTime transacDate;
@@ -40,7 +40,7 @@ public class Transaction {
 
 
     @Builder
-    public Transaction(int amount, LocalDateTime transacDate, String description) {
+    public Transaction(long amount, LocalDateTime transacDate, String description) {
         this.amount = amount;
         this.transacDate = transacDate;
         this.description = description;
@@ -55,7 +55,7 @@ public class Transaction {
         this.category=category;
     }
 
-    public void updateAmount(int amount) {
+    public void updateAmount(long amount) {
         this.amount=amount;
     }
 

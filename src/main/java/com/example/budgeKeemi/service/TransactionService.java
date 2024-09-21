@@ -97,17 +97,17 @@ public class TransactionService {
         List<Transaction> transactionList = getMonthlyTransactions(yearMonth, username);
 
         //월 별 총 수입
-        int totalIncome = transactionList
+        long totalIncome = transactionList
                 .stream()
                 .filter(transaction -> transaction.getCategory().getStatus() == CategoryStatus.INCOME)
-                .mapToInt(Transaction::getAmount)
+                .mapToLong(Transaction::getAmount)
                 .sum();
 
         //월 별 총 지출
-        int totalExpense = transactionList
+        long totalExpense = transactionList
                 .stream()
                 .filter(transaction -> transaction.getCategory().getStatus() == CategoryStatus.EXPENSE)
-                .mapToInt(Transaction::getAmount)
+                .mapToLong(Transaction::getAmount)
                 .sum();
 
         return MonthlySummary.builder()
@@ -127,8 +127,8 @@ public class TransactionService {
         List<Transaction> transactions = getMonthlyTransactions(yearMonth, username);
 
         //거래내역 당일 수입, 지출 분류
-        Map<LocalDate, Integer> incomeMap = classifyTransactionByLocalDate(transactions, income);
-        Map<LocalDate, Integer> expenseMap = classifyTransactionByLocalDate(transactions, expense);
+        Map<LocalDate, Long> incomeMap = classifyTransactionByLocalDate(transactions, income);
+        Map<LocalDate, Long> expenseMap = classifyTransactionByLocalDate(transactions, expense);
 
 
         //분류된 당일 수입, 지출 합계
@@ -145,7 +145,7 @@ public class TransactionService {
 
         List<Transaction> transactions = getTransactionsByPeriod(startDate, endDate, username);
 
-        Map<String, Integer> expenseMap = classifyTransactionByCategoryName(transactions, CategoryStatus.EXPENSE);
+        Map<String, Long> expenseMap = classifyTransactionByCategoryName(transactions, CategoryStatus.EXPENSE);
 
         return expenseMap.entrySet().stream()
                         .map(e -> ExpenseGraph.toDto(e.getKey(), e.getValue()))
@@ -192,8 +192,8 @@ public class TransactionService {
         return transactions;
     }
 
-    private void makeDailySummary(Map<LocalDate, Integer> map, CategoryStatus value, List<DailySummary> dailySummaries) {
-        for (Map.Entry<LocalDate, Integer> e : map.entrySet()) {
+    private void makeDailySummary(Map<LocalDate, Long> map, CategoryStatus value, List<DailySummary> dailySummaries) {
+        for (Map.Entry<LocalDate, Long> e : map.entrySet()) {
             dailySummaries.add(DailySummary.builder()
                     .date(e.getKey())
                     .status(value)
@@ -202,34 +202,34 @@ public class TransactionService {
         }
     }
 
-    private Map<LocalDate, Integer> classifyTransactionByLocalDate(List<Transaction> transactions, CategoryStatus status) {
+    private Map<LocalDate, Long> classifyTransactionByLocalDate(List<Transaction> transactions, CategoryStatus status) {
 
-        Map<LocalDate, Integer> map = new HashMap<>();
+        Map<LocalDate, Long> map = new HashMap<>();
 
         for (Transaction transaction : transactions) {
             LocalDate key = transaction.getTransacDate().toLocalDate();
-            int amount = transaction.getAmount();
+            long amount = transaction.getAmount();
             CategoryStatus categoryStatus = transaction.getCategory().getStatus();
 
             if (status == categoryStatus &&( status ==CategoryStatus.INCOME || transaction.getActive() ==IsActive.Y)) {
-                map.put(key, map.getOrDefault(key, 0) + amount);
+                map.put(key, map.getOrDefault(key, 0L) + amount);
             }
 
         }
         return map;
     }
 
-    private Map<String, Integer> classifyTransactionByCategoryName(List<Transaction> transactions, CategoryStatus status) {
+    private Map<String, Long> classifyTransactionByCategoryName(List<Transaction> transactions, CategoryStatus status) {
 
-        Map<String, Integer> map = new HashMap<>();
+        Map<String, Long> map = new HashMap<>();
 
         for (Transaction transaction : transactions) {
             String key = transaction.getCategory().getName();
-            int amount = transaction.getAmount();
+            long amount = transaction.getAmount();
             CategoryStatus categoryStatus = transaction.getCategory().getStatus();
 
             if (status == categoryStatus &&( status ==CategoryStatus.INCOME || transaction.getActive() ==IsActive.Y)) {
-                map.put(key, map.getOrDefault(key, 0) + amount);
+                map.put(key, map.getOrDefault(key, 0L) + amount);
             }
 
         }
@@ -238,7 +238,7 @@ public class TransactionService {
 
     private static void InsufficientBalance(ReqTransaction reqTransaction, Category category, Account account) {
         boolean isIncome = category.getStatus() == CategoryStatus.INCOME;
-        int transactionAmount = reqTransaction.getAmount();
+        long transactionAmount = reqTransaction.getAmount();
 
         if (isIncome) {
             account.adjustBalance(transactionAmount);

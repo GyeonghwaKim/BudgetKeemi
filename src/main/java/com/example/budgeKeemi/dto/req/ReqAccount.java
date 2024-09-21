@@ -5,6 +5,7 @@ import com.example.budgeKeemi.domain.type.AccountType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -18,8 +19,8 @@ public class ReqAccount {
     @NotNull(message = "계좌 유형을 선택하세요")
     private AccountType status;
 
-    @Positive(message = "유효한 금액을 입력하세요")
-    private int balance;
+    @PositiveOrZero(message = "유효한 금액을 입력하세요")
+    private long balance;
 
     public static Account toEntity(ReqAccount req){
         return Account.builder()
